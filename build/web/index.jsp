@@ -16,7 +16,11 @@
                 </a>
               </div>
               <div class="content">
+<<<<<<< HEAD
                 <h2 class="title">All Kind Of Shoes</h2>
+=======
+                <h2 class="title">Wellcome FashionStore</h2>
+>>>>>>> 9851bd2084e5f73fb90ca91e77448375f6561741
                 <p class="desc">Up To 50% Off All Shoes & Products</p>
                 <a class="btn-theme" href="ProductController">Shop Now</a>
               </div>
