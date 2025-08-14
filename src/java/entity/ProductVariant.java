@@ -12,13 +12,13 @@ public class ProductVariant {
     public int pv_id;
     public int product_id;
     public String color;
-    public String size;
+    public int size;
     public int quantity;
 
     public ProductVariant() {
     }
 
-    public ProductVariant(int pv_id, int product_id, String color, String size, int quantity) {
+    public ProductVariant(int pv_id, int product_id, String color, int size, int quantity) {
         this.pv_id = pv_id;
         this.product_id = product_id;
         this.color = color;
@@ -50,11 +50,11 @@ public class ProductVariant {
         this.color = color;
     }
 
-    public String getSize() {
+    public int getSize() {
         return size;
     }
 
-    public void setSize(String size) {
+    public void setSize(int size) {
         this.size = size;
     }
 

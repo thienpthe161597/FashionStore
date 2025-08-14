@@ -2,7 +2,77 @@
   <!--== End Header Wrapper ==-->
   
   <main class="main-content">
-      <br>
+    <!--== Start Hero Area Wrapper ==-->
+    
+    <!--== End Hero Area Wrapper ==-->
+
+    <!--== Start Product Collection Area Wrapper ==-->
+   
+    <!--== End Product Collection Area Wrapper ==-->
+
+    <!--== Start Product Area Wrapper ==-->
+    <section class="product-area product-default-area">
+      <div class="container pt--0">
+          <div class="row" style="margin-top: 30px">
+          <div class="col-12">
+            <div class="section-title text-center">
+              <h3 class="title">Random shoes</h3>
+              <div class="desc">
+                <p>There are many shoes available</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+            <c:forEach items="${randomPro}" var="randomPro">
+          <div class="col-sm-6 col-lg-3">
+            <!--== Start Product Item ==-->
+            <div class="product-item">
+              <div class="inner-content">
+                <div class="product-thumb">
+                    <a href="single-product.jsp"> <%--${randomPro.getImage() --%>
+                    <img src="${randomPro.getImage()}" width="270" height="274" alt="Image-HasTech">
+                  </a>
+                  <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                  <a class="banner-link-overlay" href="shop.jsp"></a>
+                </div>
+                <div class="product-info">
+<!--                  <div class="category">
+                    <ul>
+                      <li><a href="shop.jsp">Men</a></li>
+                      <li class="sep">/</li>
+                      <li><a href="shop.jsp">Women</a></li>
+                    </ul>
+                  </div>-->
+                  <h4 class="title"><a href="single-product.jsp">${randomPro.getProductName()}</a></h4>
+                  <div class="prices">
+                    <span class="price">${randomPro.getPrice()}$</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--== End prPduct Item ==-->
+          </div>
+        </c:forEach>
+        </div>
+      </div>
+    </section>
+    <!--== End Product Area Wrapper ==-->
+
+    <!--== Start Divider Area Wrapper ==-->
+  
+    <!--== End Divider Area Wrapper ==-->
+
+    <!--== Start Product Area Wrapper ==-->
+   
+    <!--== End Product Area Wrapper ==-->
 
     <!--== Start Divider Area Wrapper ==-->
     <section>
@@ -16,13 +86,9 @@
                 </a>
               </div>
               <div class="content">
-<<<<<<< HEAD
-                <h2 class="title">All Kind Of Shoes</h2>
-=======
-                <h2 class="title">Wellcome FashionStore</h2>
->>>>>>> 9851bd2084e5f73fb90ca91e77448375f6561741
-                <p class="desc">Up To 50% Off All Shoes & Products</p>
-                <a class="btn-theme" href="ProductController">Shop Now</a>
+                <h2 class="title">Sports Shoes</h2>
+                <p class="desc">Up To 30% Off All Shoes & Products</p>
+                <a class="btn-theme" href="shop.jsp">Shop Now</a>
               </div>
             </div>
           </div>

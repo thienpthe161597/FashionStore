@@ -1,218 +1,860 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.List" %>
-<%@ page import="entity.Product" %>
-<%@ page import="entity.Category" %>
-<%@ page import="dao.ProductDAO" %>
-<%@ page import="dao.CategoryDAO" %>
-
-<%  
-    ProductDAO productDao = new ProductDAO();
-    CategoryDAO categoryDao = new CategoryDAO();
-    List<Category> categoryList = categoryDao.getAllCategories();
-    List<Product> productList = (List<Product>) request.getAttribute("productList");
-    
-    int currentPage = (request.getAttribute("currentPage") != null) ? (int) request.getAttribute("currentPage") : 1;
-    int totalPages = (request.getAttribute("totalPages") != null) ? (int) request.getAttribute("totalPages") : 1;
-    int selectedCategory = (request.getAttribute("category") != null) ? (int) request.getAttribute("category") : 0;
-    String selectedGender = (request.getAttribute("gender") != null) ? (String) request.getAttribute("gender") : "default";
-    String selectedSort = (request.getAttribute("sort") != null) ? (String) request.getAttribute("sort") : "default";
-%>
-
 <%@ include file="./header.jsp" %>
+  <!--== End Header Wrapper ==-->
+  
+  <main class="main-content">
+    <!--== Start Page Header Area Wrapper ==-->
+  
+    <!--== End Page Header Area Wrapper ==-->
 
-<style> 
-    .product-thumb {
-    width: 100%;
-    height: 250px; /* Fixed image size */
-    overflow: hidden;
-}
-
-.product-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Prevents distortion */
-    transition: transform 0.3s ease-in-out;
-}
-
-.product-thumb:hover img {
-    transform: scale(1.05);
-}
-
-/* Fix title text overflowing issue */
-.title {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-    height: 48px; /* Ensures consistent height */
-    line-height: 1.4;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* Limits title to 2 lines */
-    -webkit-box-orient: vertical;
-    word-wrap: break-word;
-}
-
-/* Ensures uniform price alignment */
-.prices {
-    min-height: 30px;
-}
-
-</style>
-
-<main class="main-content">
+    <!--== Start Product Area Wrapper ==-->
     <section class="product-area product-default-area">
-        <div class="container">
-            <div class="row flex-xl-row-reverse justify-content-between">
-                <div class="col-xl-9">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="shop-top-bar">
-                                <div class="shop-top-left">
-                                    <p class="pagination-line"><%= productList.size() %> Products Found</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-    <div class="tab-content">
-        <div class="tab-pane fade show active" id="nav-grid">
+      <div class="container">
+        <div class="row flex-xl-row-reverse justify-content-between">
+          <div class="col-xl-9">
             <div class="row">
-                <% if (productList != null && !productList.isEmpty()) { %>
-                <% for (Product product : productList) { %>
-                    <div class="col-sm-6 col-lg-4 mb-4">
-                        <div class="product-item card border-0 shadow-sm h-100 d-flex flex-column">
-                            <!-- Product Image -->
-                            <div class="product-thumb w-100">
-                                <a href="single-product.jsp?id=<%= product.getProductID() %>">
-                                    <img src="<%= product.getImage() %>" class="img-fluid product-img" alt="Product Image">
-                                </a>
-                            </div>
-                            <!-- Product Info -->
-                            <div class="product-info text-center p-3 flex-grow-1 d-flex flex-column">
-                                <h4 class="title">
-                                    <a href="single-product.jsp?id=<%= product.getProductID() %>" class="text-dark text-decoration-none d-block">
-                                        <%= product.getProductName() %>
-                                    </a>
-                                </h4>
-                                <div class="prices mt-auto">
-                                        <% if (product.getSaleID() != 0) { 
-                                            double originalPrice = product.getPrice();
-                                            double discountPercent = productDao.getSaleDiscount(product.getSaleID()); // Fetch the discount percentage
-                                            double salePrice = originalPrice * ((100 - discountPercent) / 100);
-                                        %>
-                                            <span class="old-price text-muted text-decoration-line-through">$<%= originalPrice %></span>
-                                            <span class="price text-danger fw-bold fs-5">$<%= String.format("%.2f", salePrice) %></span>
-                                        <% } else { %>
-                                            <span class="price text-danger fw-bold fs-5">$<%= product.getPrice() %></span>
-                                        <% } %>
-                                </div>
-                            </div>
-                        </div>
+              <div class="col-12">
+                <div class="shop-top-bar">
+                  <div class="shop-top-left">
+                    <p class="pagination-line"><a href="shop.jsp">12</a> Product Found of <a href="shop.jsp">30</a></p>
+                  </div>
+                  <div class="shop-top-center">
+                    <nav class="product-nav">
+                      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-grid-tab" data-bs-toggle="tab" data-bs-target="#nav-grid" type="button" role="tab" aria-controls="nav-grid" aria-selected="true"><i class="fa fa-th"></i></button>
+                        <button class="nav-link" id="nav-list-tab" data-bs-toggle="tab" data-bs-target="#nav-list" type="button" role="tab" aria-controls="nav-list" aria-selected="false"><i class="fa fa-list"></i></button>
+                      </div>
+                    </nav>
+                  </div>
+                  <div class="shop-top-right">
+                    <div class="shop-sort">
+                      <span>Sort By :</span>
+                      <select class="form-select" aria-label="Sort select example">
+                        <option selected>Default</option>
+                        <option value="1">Popularity</option>
+                        <option value="2">Average Rating</option>
+                        <option value="3">Newsness</option>
+                        <option value="4">Price Low to High</option>
+                      </select>
                     </div>
-                <% } %>
-                <% } else { %>
-                    <div class="col-12 text-center">
-                        <p class="text-muted">No products found.</p>
-                    </div>
-                <% } %>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-                        <!-- Pagination -->
-                        <div class="col-12">
-                            <ul class="pagination justify-content-end mb-0">
-                                <% if (currentPage > 1) { %>
-                                    <li class="page-item">
-                                        <a class="page-link" href="ProductController?page=<%= currentPage - 1 %>&category=<%= selectedCategory %>&sort=<%= selectedSort %>&gender=<%= selectedGender %>">Prev</a>
-                                    </li>
-                                <% } %>
-
-                                <% for (int i = 1; i <= totalPages; i++) { %>
-                                    <li class="page-item <%= (i == currentPage) ? "active" : "" %>">
-                                        <a class="page-link" href="ProductController?page=<%= i %>&category=<%= selectedCategory %>&sort=<%= selectedSort %>&gender=<%= selectedGender %>"><%= i %></a>
-                                    </li>
-                                <% } %>
-
-                                <% if (currentPage < totalPages) { %>
-                                    <li class="page-item">
-                                        <a class="page-link" href="ProductController?page=<%= currentPage + 1 %>&category=<%= selectedCategory %>&sort=<%= selectedSort %>&gender=<%= selectedGender %>">Next</a>
-                                    </li>
-                                <% } %>
-                            </ul>
-                        </div>
-                    </div>
+                  </div>
                 </div>
-
-                <div class="col-xl-3">
-                    <div class="shop-sidebar">
-                        <form action="ProductController" method="get">
-                            <div class="shop-sidebar-category">
-                                <h4 class="sidebar-title">Categories</h4>
-                                <div class="sidebar-category">
-                                        <div>
-                                            <input type="radio" id="cat0" name="category" value="0" 
-                                                   <%= (selectedCategory == 0) ? "checked" : "" %>>
-                                            <label for="cat0">All</label>
-                                        </div>
-                                    <% for (Category category : categoryList) { %>
-                                        <div>
-                                            <input type="radio" id="cat<%= category.getCategoryID() %>" name="category" value="<%= category.getCategoryID() %>" 
-                                                   <%= (selectedCategory == category.getCategoryID()) ? "checked" : "" %>>
-                                            <label for="cat<%= category.getCategoryID() %>"><%= category.getCategoryName() %></label>
-                                        </div>
-                                    <% } %>
-                                </div>
+              </div>
+              <div class="col-12">
+                <div class="tab-content" id="nav-tabContent">
+                  <div class="tab-pane fade show active" id="nav-grid" role="tabpanel" aria-labelledby="nav-grid-tab">
+                    <div class="row">
+                      <div class="col-sm-6 col-lg-4">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/1.webp" width="270" height="274" alt="Image-HasTech">
+                              </a>
+                              <div class="product-flag">
+                                <ul>
+                                  <li class="discount">-10%</li>
+                                </ul>
+                              </div>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
                             </div>
-                                
-                            <div class="shop-sidebar-category">
-                                <h4 class="sidebar-title">Gender</h4>
-                                <div class="sidebar-category">
-                                        <div>
-                                            <input type="radio" id="gender0" name="gender" value="default" 
-                                                   <%= selectedGender.equals("default") ? "checked" : "" %>>
-                                            <label for="gender0">All</label>
-                                        </div>
-                                        <div>
-                                            <input type="radio" id="gender1" name="gender" value="Men" 
-                                                   <%= selectedGender.equals("Men") ? "checked" : "" %>>
-                                            <label for="gender1">Men</label>
-                                        </div>
-                                        <div>
-                                            <input type="radio" id="gender2" name="gender" value="Women" 
-                                                   <%= selectedGender.equals("Women") ? "checked" : "" %>>
-                                            <label for="gender2">Women</label>
-                                        </div>
-                                        <div>
-                                            <input type="radio" id="gender3" name="gender" value="Unisex" 
-                                                   <%= selectedGender.equals("Unisex") ? "checked" : "" %>>
-                                            <label for="gender3">Unisex</label>
-                                        </div>
-                                </div>
-                            </div>    
-
-                            <div class="shop-sidebar-price-range">
-                                <h4 class="sidebar-title">Sort By Price</h4>
-                                <select name="sort">
-                                    <option value="default" <%= selectedSort.equals("default") ? "selected" : "" %>>Default</option>
-                                    <option value="asc" <%= selectedSort.equals("asc") ? "selected" : "" %>>Low to High</option>
-                                    <option value="desc" <%= selectedSort.equals("desc") ? "selected" : "" %>>High to Low</option>
-                                </select>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Leather Mens Slipper</a></h4>
+                              <div class="prices">
+                                <span class="price-old">$300</span>
+                                <span class="sep">-</span>
+                                <span class="price">$240.00</span>
+                              </div>
                             </div>
-
-                            <input type="hidden" name="page" value="1">
-                            <button type="submit">Apply Filters</button>
-                        </form>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-sm-6 col-lg-4">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/2.webp" width="270" height="274" alt="Image-HasTech">
+                              </a>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Quickiin Mens shoes</a></h4>
+                              <div class="prices">
+                                <span class="price">$240.00</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-sm-6 col-lg-4">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/3.webp" width="270" height="274" alt="Image-HasTech">
+                              </a>
+                              <div class="product-flag">
+                                <ul>
+                                  <li class="discount">-10%</li>
+                                </ul>
+                              </div>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Rexpo Womens shoes</a></h4>
+                              <div class="prices">
+                                <span class="price-old">$300</span>
+                                <span class="sep">-</span>
+                                <span class="price">$240.00</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-sm-6 col-lg-4">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/4.webp" width="270" height="274" alt="Image-HasTech">
+                              </a>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Modern Smart Shoes</a></h4>
+                              <div class="prices">
+                                <span class="price">$240.00</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-sm-6 col-lg-4">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/5.webp" width="270" height="274" alt="Image-HasTech">
+                              </a>
+                              <div class="product-flag">
+                                <ul>
+                                  <li class="discount">-10%</li>
+                                </ul>
+                              </div>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Primitive Mens shoes</a></h4>
+                              <div class="prices">
+                                <span class="price">$240.00</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-sm-6 col-lg-4">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/6.webp" width="270" height="274" alt="Image-HasTech">
+                              </a>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Leather Mens Slipper</a></h4>
+                              <div class="prices">
+                                <span class="price-old">$300</span>
+                                <span class="sep">-</span>
+                                <span class="price">$240.00</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-sm-6 col-lg-4">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/7.webp" width="270" height="274" alt="Image-HasTech">
+                              </a>
+                              <div class="product-flag">
+                                <ul>
+                                  <li class="discount">-10%</li>
+                                </ul>
+                              </div>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Simple Fabric Shoe</a></h4>
+                              <div class="prices">
+                                <span class="price">$240.00</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-sm-6 col-lg-4">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/8.webp" width="270" height="274" alt="Image-HasTech">
+                              </a>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Primitive Men shoes</a></h4>
+                              <div class="prices">
+                                <span class="price-old">$300</span>
+                                <span class="sep">-</span>
+                                <span class="price">$240.00</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-sm-6 col-lg-4">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/1.webp" width="270" height="274" alt="Image-HasTech">
+                              </a>
+                              <div class="product-flag">
+                                <ul>
+                                  <li class="discount">-10%</li>
+                                </ul>
+                              </div>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Hollister V-Neck Knit</a></h4>
+                              <div class="prices">
+                                <span class="price-old">$300</span>
+                                <span class="sep">-</span>
+                                <span class="price">$240.00</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-sm-6 col-lg-4">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/4.webp" width="270" height="274" alt="Image-HasTech">
+                              </a>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">exclusive mens shoe</a></h4>
+                              <div class="prices">
+                                <span class="price">$240.00</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-sm-6 col-lg-4">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/2.webp" width="270" height="274" alt="Image-HasTech">
+                              </a>
+                              <div class="product-flag">
+                                <ul>
+                                  <li class="discount">-10%</li>
+                                </ul>
+                              </div>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">New Womens High Hills</a></h4>
+                              <div class="prices">
+                                <span class="price-old">$300</span>
+                                <span class="sep">-</span>
+                                <span class="price">$240.00</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-sm-6 col-lg-4">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/3.webp" width="270" height="274" alt="Image-HasTech">
+                              </a>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Leather Mens slippers</a></h4>
+                              <div class="prices">
+                                <span class="price">$240.00</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-12">
+                        <div class="pagination-items">
+                          <ul class="pagination justify-content-end mb--0">
+                            <li><a class="active" href="shop.jsp">1</a></li>
+                            <li><a href="shop-four-columns.jsp">2</a></li>
+                            <li><a href="shop-three-columns.jsp">3</a></li>
+                          </ul>                    
+                        </div>
+                      </div>
                     </div>
+                  </div>
+                  <div class="tab-pane fade" id="nav-list" role="tabpanel" aria-labelledby="nav-list-tab">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item product-list-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/list-1.webp" width="322" height="360" alt="Image-HasTech">
+                              </a>
+                              <div class="product-flag">
+                                <ul>
+                                  <li class="discount">-10%</li>
+                                </ul>
+                              </div>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Leather Mens Slipper</a></h4>
+                              <div class="prices">
+                                <span class="price-old">$300</span>
+                                <span class="sep">-</span>
+                                <span class="price">$240.00</span>
+                              </div>
+                              <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem quo, rerum rem soluta quisquam, repellat is deleniti omnis culpa ea quis provident dolore esse, offici modi dolorem nam cum eligendi enim!</p>
+                              <a class="btn-theme btn-sm" href="shop-cart.jsp">Add To Cart</a>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-md-12">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item product-list-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/list-2.webp" width="322" height="360" alt="Image-HasTech">
+                              </a>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Quickiin Mens shoes</a></h4>
+                              <div class="prices">
+                                <span class="price">$240.00</span>
+                              </div>
+                              <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem quo, rerum rem soluta quisquam, repellat is deleniti omnis culpa ea quis provident dolore esse, offici modi dolorem nam cum eligendi enim!</p>
+                              <a class="btn-theme btn-sm" href="shop-cart.jsp">Add To Cart</a>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-md-12">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item product-list-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/list-3.webp" width="322" height="360" alt="Image-HasTech">
+                              </a>
+                              <div class="product-flag">
+                                <ul>
+                                  <li class="discount">-10%</li>
+                                </ul>
+                              </div>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Rexpo Womens shoes</a></h4>
+                              <div class="prices">
+                                <span class="price-old">$300</span>
+                                <span class="sep">-</span>
+                                <span class="price">$240.00</span>
+                              </div>
+                              <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem quo, rerum rem soluta quisquam, repellat is deleniti omnis culpa ea quis provident dolore esse, offici modi dolorem nam cum eligendi enim!</p>
+                              <a class="btn-theme btn-sm" href="shop-cart.jsp">Add To Cart</a>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-md-12">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item product-list-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/list-4.webp" width="322" height="360" alt="Image-HasTech">
+                              </a>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Modern Smart Shoes</a></h4>
+                              <div class="prices">
+                                <span class="price">$240.00</span>
+                              </div>
+                              <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem quo, rerum rem soluta quisquam, repellat is deleniti omnis culpa ea quis provident dolore esse, offici modi dolorem nam cum eligendi enim!</p>
+                              <a class="btn-theme btn-sm" href="shop-cart.jsp">Add To Cart</a>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-md-12">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item product-list-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/list-5.webp" width="322" height="360" alt="Image-HasTech">
+                              </a>
+                              <div class="product-flag">
+                                <ul>
+                                  <li class="discount">-10%</li>
+                                </ul>
+                              </div>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Primitive Mens shoes</a></h4>
+                              <div class="prices">
+                                <span class="price">$240.00</span>
+                              </div>
+                              <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem quo, rerum rem soluta quisquam, repellat is deleniti omnis culpa ea quis provident dolore esse, offici modi dolorem nam cum eligendi enim!</p>
+                              <a class="btn-theme btn-sm" href="shop-cart.jsp">Add To Cart</a>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-md-12">
+                        <!--== Start Product Item ==-->
+                        <div class="product-item product-list-item">
+                          <div class="inner-content">
+                            <div class="product-thumb">
+                              <a href="single-product.jsp">
+                                <img src="assets/img/shop/list-6.webp" width="322" height="360" alt="Image-HasTech">
+                              </a>
+                              <div class="product-action">
+                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
+                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
+                    <button type="button" class="btn-product-quick-view-open">
+                      <i class="fa fa-arrows"></i>
+                    </button>
+                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
+                  </div>
+                              <a class="banner-link-overlay" href="shop.jsp"></a>
+                            </div>
+                            <div class="product-info">
+                              <div class="category">
+                                <ul>
+                                  <li><a href="shop.jsp">Men</a></li>
+                                  <li class="sep">/</li>
+                                  <li><a href="shop.jsp">Women</a></li>
+                                </ul>
+                              </div>
+                              <h4 class="title"><a href="single-product.jsp">Leather Mens Slipper</a></h4>
+                              <div class="prices">
+                                <span class="price-old">$300</span>
+                                <span class="sep">-</span>
+                                <span class="price">$240.00</span>
+                              </div>
+                              <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem quo, rerum rem soluta quisquam, repellat is deleniti omnis culpa ea quis provident dolore esse, offici modi dolorem nam cum eligendi enim!</p>
+                              <a class="btn-theme btn-sm" href="shop-cart.jsp">Add To Cart</a>
+                            </div>
+                          </div>
+                        </div>
+                        <!--== End prPduct Item ==-->
+                      </div>
+                      <div class="col-12">
+                        <div class="pagination-items">
+                          <ul class="pagination justify-content-end mb--0">
+                            <li><a class="active" href="shop.jsp">1</a></li>
+                            <li><a href="shop-four-columns.jsp">2</a></li>
+                            <li><a href="shop-three-columns.jsp">3</a></li>
+                          </ul>                    
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
+          <div class="col-xl-3">
+            <div class="shop-sidebar">
+              <div class="shop-sidebar-category">
+                <h4 class="sidebar-title">Top Categories</h4>
+                <div class="sidebar-category">
+                  <ul class="category-list mb--0">
+                    <li><a href="shop.jsp">Shoes <span>(6)</span></a></li>
+                    <li><a href="shop.jsp">Computer <span>(4)</span></a></li>
+                    <li><a href="shop.jsp">Covid-19 <span>(2)</span></a></li>
+                    <li><a href="shop.jsp">Electronics <span>(6)</span></a></li>
+                    <li><a href="shop.jsp">Frame Sunglasses <span>(12)</span></a></li>
+                    <li><a href="shop.jsp">Furniture <span>(7)</span></a></li>
+                    <li><a href="shop.jsp">Genuine Leather <span>(9)</span></a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="shop-sidebar-price-range">
+                <h4 class="sidebar-title">Price Filter</h4>
+                <div class="sidebar-price-range">   
+                  <div id="price-range"></div>
+                </div>
+              </div>
+
+              <div class="shop-sidebar-color">
+                <h4 class="sidebar-title">Color</h4>
+                <div class="sidebar-color">
+                  <ul class="color-list">
+                    <li data-bg-color="#39ed8c" class="active"></li>
+                    <li data-bg-color="#a6ed42"></li>
+                    <li data-bg-color="#daed39"></li>
+                    <li data-bg-color="#eed739"></li>
+                    <li data-bg-color="#eca23a"></li>
+                    <li data-bg-color="#f36768"></li>
+                    <li data-bg-color="#e14755"></li>
+                    <li data-bg-color="#dc83a3"></li>
+                    <li data-bg-color="#dc82da"></li>
+                    <li data-bg-color="#9a82dd"></li>
+                    <li data-bg-color="#82c2db"></li>
+                    <li data-bg-color="#6bd6b0"></li>
+                    <li data-bg-color="#9ed76b"></li>
+                    <li data-bg-color="#c8c289"></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="shop-sidebar-size">
+                <h4 class="sidebar-title">Size</h4>
+                <div class="sidebar-size">
+                  <ul class="size-list">
+                    <li><a href="shop.jsp">S <span>(6)</span></a></li>
+                    <li><a href="shop.jsp">M <span>(4)</span></a></li>
+                    <li><a href="shop.jsp">L <span>(2)</span></a></li>
+                    <li><a href="shop.jsp">XL <span>(6)</span></a></li>
+                    <li><a href="shop.jsp">XXL <span>(12)</span></a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="shop-sidebar-brand">
+                <h4 class="sidebar-title">Brand</h4>
+                <div class="sidebar-brand">
+                  <ul class="brand-list mb--0">
+                    <li><a href="shop.jsp">Lakmeetao <span>(6)</span></a></li>
+                    <li><a href="shop.jsp">Beautifill <span>(4)</span></a></li>
+                    <li><a href="shop.jsp">Made In GD <span>(2)</span></a></li>
+                    <li><a href="shop.jsp">Pecifico <span>(6)</span></a></li>
+                    <li><a href="shop.jsp">Xlovgtir <span>(12)</span></a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </section>
-</main>
-                                
+    <!--== End Product Area Wrapper ==-->
+  </main>
+
   <!--== Start Footer Area Wrapper ==-->
   <%@ include file="./footer.jsp" %>
   <!--== End Footer Area Wrapper ==-->
@@ -286,23 +928,23 @@
     <div class="offcanvas-body">
       <ul class="aside-cart-product-list">
         <li class="product-list-item">
-          <a href="#/" class="remove">Ã</a>
+          <a href="#/" class="remove">×</a>
           <a href="single-product.jsp">
             <img src="assets/img/shop/product-mini/1.webp" width="90" height="110" alt="Image-HasTech">
             <span class="product-title">Leather Mens Slipper</span>
           </a>
-          <span class="product-price">1 Ã Â£69.99</span>
+          <span class="product-price">1 × £69.99</span>
         </li>
         <li class="product-list-item">
-          <a href="#/" class="remove">Ã</a>
+          <a href="#/" class="remove">×</a>
           <a href="single-product.jsp">
             <img src="assets/img/shop/product-mini/2.webp" width="90" height="110" alt="Image-HasTech">
             <span class="product-title">Quickiin Mens shoes</span>
           </a>
-          <span class="product-price">1 Ã Â£20.00</span>
+          <span class="product-price">1 × £20.00</span>
         </li>
       </ul>
-      <p class="cart-total"><span>Subtotal:</span><span class="amount">Â£89.99</span></p>
+      <p class="cart-total"><span>Subtotal:</span><span class="amount">£89.99</span></p>
       <a class="btn-theme" data-margin-bottom="10" href="shop-cart.jsp">View cart</a>
       <a class="btn-theme" href="shop-checkout.jsp">Checkout</a>
       <a class="d-block text-end lh-1" href="shop-checkout.jsp"><img src="assets/img/photos/paypal.webp" width="133" height="26" alt="Has-image"></a>
@@ -325,7 +967,7 @@
           <form action="#" method="post">
             <div class="search-form position-relative">
               <label for="search-input" class="visually-hidden">Search</label>
-              <input id="search-input" type="search" class="form-control" placeholder="Search entire storeâ¦">
+              <input id="search-input" type="search" class="form-control" placeholder="Search entire store…">
               <button class="search-button"><i class="fa fa-search"></i></button>
             </div>
           </form>

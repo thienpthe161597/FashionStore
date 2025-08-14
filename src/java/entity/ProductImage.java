@@ -1,72 +1,66 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package entity;
 
+/**
+ *
+ * @author Admin
+ */
 public class ProductImage {
-    private int imgId;
-    private int productId;
-    private String color;
-    private String imgUrl;
-    private boolean isMain;
+    public int img_id;
+    public int pv_id;
+    public String image_url;
+    public int isMain;
 
-    // Constructors
-    public ProductImage() {}
+    public ProductImage() {
+    }
 
-    public ProductImage(int imgId, int productId, String color, String imgUrl, boolean isMain) {
-        this.imgId = imgId;
-        this.productId = productId;
-        this.color = color;
-        this.imgUrl = imgUrl;
+    public ProductImage(int img_id, int pv_id, String image_url, int isMain) {
+        this.img_id = img_id;
+        this.pv_id = pv_id;
+        this.image_url = image_url;
         this.isMain = isMain;
     }
 
-    // Getters and Setters
-    public int getImgId() {
-        return imgId;
+    public int getImg_id() {
+        return img_id;
     }
 
-    public void setImgId(int imgId) {
-        this.imgId = imgId;
+    public void setImg_id(int img_id) {
+        this.img_id = img_id;
     }
 
-    public int getProductId() {
-        return productId;
+    public int getPv_id() {
+        return pv_id;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
+    public void setPv_id(int pv_id) {
+        this.pv_id = pv_id;
     }
 
-    public String getColor() {
-        return color;
+    public String getImage_url() {
+        return image_url;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void setImage_url(String image_url) {
+        this.image_url = image_url;
     }
 
-    public String getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
-    }
-
-    public boolean isMain() {
+    public int getIsMain() {
         return isMain;
     }
 
-    public void setMain(boolean isMain) {
+    public void setIsMain(int isMain) {
         this.isMain = isMain;
     }
 
     @Override
     public String toString() {
-        return "ProductImage{" +
-                "imgId=" + imgId +
-                ", productId=" + productId +
-                ", color='" + color + '\'' +
-                ", imgUrl='" + imgUrl + '\'' +
-                ", isMain=" + isMain +
-                '}';
+        return "ProductImage{" + "img_id=" + img_id + ", pv_id=" + pv_id + ", image_url=" + image_url + ", isMain=" + isMain + '}';
     }
+    
+    
+    
 }
