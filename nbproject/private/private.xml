@@ -2,20 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/FashionStore/src/java/controller/ProductController.java</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/FashionStore/src/java/entity/ProductImage.java</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/FashionStore/src/java/entity/Category.java</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/FashionStore/web/header.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/FashionStore/web/header_1.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/FashionStore/src/java/entity/Sale.java</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/FashionStore/src/java/controller/homeController.java</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/FashionStore/web/footer.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/FashionStore/src/java/dao/DBContext.java</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/FashionStore/src/java/dao/ProductDAO.java</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/FashionStore/web/index.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/FashionStore/web/footer_1.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/FashionStore/src/java/entity/ProductVariant.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
