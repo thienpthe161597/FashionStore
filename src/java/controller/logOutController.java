@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpSession;
  */
 @WebServlet(name = "logOutController", urlPatterns = {"/logout"})
 public class logOutController extends HttpServlet {
+    
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
