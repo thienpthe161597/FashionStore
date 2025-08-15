@@ -19,6 +19,7 @@ public class UserDAO {
         UserDAO d = new UserDAO();
         User u = new User(6, "aaaaa", "aaaaa", "aaaaa");
         d.updateProfileUser(u);
+        
     }
 
     public boolean registerAcc(User userAccount) {
