@@ -13,7 +13,7 @@ public class Mail {
 
     public static String generateOTP() {
         Random random = new Random();
-        int otp = 1000 + random.nextInt(9000); // Tạo OTP ngẫu nhiên 4 chữ số
+        int otp = 100 + random.nextInt(900); // Tạo OTP ngẫu nhiên 4 chữ số
         return String.valueOf(otp);
     }
 

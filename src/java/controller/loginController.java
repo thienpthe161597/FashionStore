@@ -22,7 +22,6 @@ import utils.HashPass;
  */
 @WebServlet(name = "loginController", urlPatterns = {"/login"})
 public class loginController extends HttpServlet {
-    
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
