@@ -19,7 +19,6 @@ import jakarta.servlet.http.HttpSession;
  */
 @WebServlet(name = "logOutController", urlPatterns = {"/logout"})
 public class logOutController extends HttpServlet {
-    
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,7 +37,7 @@ public class logOutController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet logOutController</title>");            
+            out.println("<title>Servlet logOutController</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet logOutController at " + request.getContextPath() + "</h1>");
