@@ -75,7 +75,7 @@ public class checkOTPController extends HttpServlet {
     UserDAO dao = new UserDAO();
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         HttpSession s = request.getSession();
         HashPass hass = new HashPass();
         String action = request.getParameter("action");
