@@ -29,6 +29,20 @@ public class DBContext {
             Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public static Connection getConnection(){
+        try {
+            Connection connection = null;
+            String user = "sa";
+            String pass = "43413112221a";
+            String url = "jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=ShoesOnlineShop";
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            return connection = DriverManager.getConnection(url, user, pass);
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
     public static void main(String[] args) {
         try {
             DBContext db = new DBContext();
