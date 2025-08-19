@@ -40,7 +40,7 @@ public class resetPasswordController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet resetPasswordController</title>");            
+            out.println("<title>Servlet resetPasswordController</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet resetPasswordController at " + request.getContextPath() + "</h1>");
@@ -73,22 +73,23 @@ public class resetPasswordController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     UserDAO dao = new UserDAO();
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession s = request.getSession();
         String email = request.getParameter("email");
-        if(!dao.checkEmailExit(email)){
+        if (!dao.checkEmailExit(email)) {
             request.setAttribute("mess", "Mail isn't register");
             request.getRequestDispatcher("reset-password.jsp").forward(request, response);
         } else {
-           Mail m = new Mail();
-           String otp = m.sendEmail(email);
-           User u = new User(email);
-           s.setAttribute("userReset", u);
-           s.setAttribute("otp", otp);
-           request.setAttribute("resetpa", "resetpa");
-           request.getRequestDispatcher("account-check-otp.jsp").forward(request, response);
+            Mail m = new Mail();
+            String otp = m.sendEmail(email);
+            User u = new User(email);
+            s.setAttribute("userReset", u);
+            s.setAttribute("otp", otp);
+            request.setAttribute("resetpa", "resetpa");
+            request.getRequestDispatcher("account-check-otp.jsp").forward(request, response);
         }
     }
 

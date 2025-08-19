@@ -20,6 +20,7 @@
                 </div>
             </div>
         </div>
+
     </div>
     <!--== End Page Header Area Wrapper ==-->
 
@@ -126,7 +127,7 @@
                                         <form action="AddToCartServlet" method="post">
                                             <div class="qty-wrap">
                                                 <div class="pro-qty">
-                                                    <!-- quantity ph?i có name ?? servlet ??c -->
+                                                    <!-- quantity ph?i cï¿½ name ?? servlet ??c -->
                                                     <input type="number" name="quantity" title="Quantity" value="1" min="1">
                                                 </div>
                                             </div>
