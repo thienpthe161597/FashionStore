@@ -9,7 +9,7 @@
         <meta content="" name="description">
         <title>Dashboard admin</title>
         <!-- Favicon -->
-        <link href="${pageContext.request.contextPath}/assets2/img/favicon.ico" rel="icon">
+        <link href="${pageContext.request.contextPath}/assets2/img/favicon.ico" rel="icon"> 
 
         <!-- Google Web Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -7,7 +7,7 @@
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content="" name="keywords">
         <meta content="" name="description">
-        <title>Dashboard admin</title>
+        <title>Dashboard admin </title>
         <!-- Favicon -->
         <link href="${pageContext.request.contextPath}/assets2/img/favicon.ico" rel="icon">
 

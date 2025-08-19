@@ -265,7 +265,7 @@
                                             </td>
                                         </tr>
                                     </c:forEach>
-                                </tbody>
+                                </tbody> 
                             </table>
                             <script>
                                 function confirmDelete() {

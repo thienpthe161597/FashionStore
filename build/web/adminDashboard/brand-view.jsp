@@ -150,7 +150,7 @@
                                             </button>
                                         </form>
                                     </div>
-                                </div>
+                                </div> 
                             </div>
                         </div><div style="margin-top: 30px"></div>
                         <c:if test="${message != null}">

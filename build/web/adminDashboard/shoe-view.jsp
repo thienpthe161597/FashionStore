@@ -305,7 +305,7 @@
                                                     <input type="hidden" name="idtodel" value="${listProduct.getProductID()}">
                                                     <input type="submit" class="btn btn-danger" value="Delete">
                                                 </form>
-                                                <script>
+                                                <script> 
                                                     function confirmDelete() {
                                                         var confirmAction = confirm("Are you sure you want to delete?");
                                                         if (confirmAction) {
