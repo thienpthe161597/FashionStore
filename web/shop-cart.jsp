@@ -1,4 +1,7 @@
 <%@ include file="./header.jsp" %>
+<%@ page import="java.util.List" %>
+<%@ page import="entity.CartItem" %>
+
 <!--== End Header Wrapper ==-->
 
 <main class="main-content">
