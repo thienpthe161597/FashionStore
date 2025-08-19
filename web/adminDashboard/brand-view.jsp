@@ -7,7 +7,7 @@
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content="" name="keywords">
         <meta content="" name="description">
-<title>Dashboard admin</title>
+        <title>Dashboard admin</title>
         <!-- Favicon -->
         <link href="${pageContext.request.contextPath}/assets2/img/favicon.ico" rel="icon">
 
@@ -59,7 +59,7 @@
                     </div>
                     <div class="navbar-nav w-100">
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle " data-bs-toggle="dropdown"><i class=" fas fa-shoe-prints me-2"></i>Shoes</a>
+                            <a href="#" class="nav-link dropdown-toggle " data-bs-toggle="dropdown"><i class=" fas fa-shoe-prints me-2"></i>Fashion Store</a>
                             <div class="dropdown-menu bg-transparent border-0">
                                 <a href="shoes" class="dropdown-item " style="margin-left: 50px">List shoes</a>
                                 <a href="shoesimage" class="dropdown-item" style="margin-left: 50px">Image shoes</a>
@@ -86,6 +86,19 @@
                     </div>
                 </nav>
             </div>
+            <script>
+                function validateForm() {
+                    var catename = document.getElementById("catename").value.trim();
+                    var errorMessage = document.getElementById("error-message");
+                    if (catename === "") {
+                        errorMessage.style.display = "block";
+                        return false;
+                    } else {
+                        errorMessage.style.display = "none"; 
+                        return true; 
+                    }
+                }
+            </script>
             <!-- Sidebar End -->
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -94,20 +107,21 @@
                             <h5 class="modal-title" id="exampleModalLabel">Add new category</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div> 
-                        <form action="brand" method="post">
-                        <div class="modal-body">
+                        <form action="brand" method="post" onsubmit="return validateForm()">
+                            <div class="modal-body">
                                 <div class="mb-3">
                                     <input type="hidden" class="form-control" name="action" value="addCate">
                                     <label for="exampleInputEmail1" class="form-label">Category Name</label>
-                                    <input type="text" class="form-control" name="catename">
+                                    <input type="text" class="form-control" name="catename" id="catename">
                                     <div id="emailHelp" class="form-text" >Don't add category with exited name!!</div>
+                                    <div id="error-message" style="color: red; display: none;">Category name cannot be empty or just spaces!</div>
                                 </div>
-                            
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <input type="submit" class="btn btn-primary" value="Add">
-                        </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <input type="submit" class="btn btn-primary" value="Add">
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -123,6 +137,25 @@
                                 Add new category
                             </button>
                         </div>
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-md-6">
+                                    <div class="search-container">
+                                        <form action="brand" method="post" style="display: flex; align-items: center;">
+                                            <input type="hidden" name="action" value="searchname">
+                                            <label for="nameSearch" style="margin-right: 10px;">Search By Name:</label>
+                                            <input name="nameSearch" type="text" class="form-control search-input" placeholder="Input name..." style="flex: 1;">
+                                            <button type="submit" class="btn btn-primary btn-edit" style="margin-left: 10px;">
+                                                Search
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><div style="margin-top: 30px"></div>
+                        <c:if test="${message != null}">
+                            <p style="color: green">${message}</p>
+                        </c:if>
                         <div class="table-responsive">
                             <table class="table text-start align-middle table-bordered table-hover mb-0">
                                 <thead>
@@ -147,13 +180,66 @@
                                     </c:forEach>
                                 </tbody>
                             </table>
-                            
-                           
+
+
                         </div>
                     </div>
-                    <c:if test="${message != null}">
-                            <p style="color: green">${message}</p>
-                            </c:if>
+
+                    <c:if test="${nameSearch == null}">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination" style="margin-left: 300px; margin-top: 30px">
+                                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                                    <a class="page-link" href="brand?page=${currentPage - 1}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <c:forEach var="i" begin="1" end="${totalPages}">
+                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                        <a class="page-link" href="brand?page=${i}">${i}</a>
+                                    </li>
+                                </c:forEach>
+                                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                    <a class="page-link" href="brand?page=${currentPage + 1}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </c:if>
+
+                    <c:if test="${nameSearch != null}">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination" style="margin-left: 300px; margin-top: 30px">
+                                <!-- N�t Previous -->
+                                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                                    <form method="POST" action="brand">
+                                        <input type="hidden" name="action" value="searchname">
+                                        <input type="hidden" name="nameSearch" value="${nameSearch}">
+                                        <input type="hidden" name="page" value="${currentPage - 1}">
+                                        <button type="submit" class="page-link">&laquo;</button>
+                                    </form>
+                                </li>
+                                <c:forEach var="i" begin="1" end="${totalPages}">
+                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                        <form method="POST" action="brand">
+                                            <input type="hidden" name="action" value="searchname">
+                                            <input type="hidden" name="nameSearch" value="${nameSearch}">
+                                            <input type="hidden" name="page" value="${i}">
+                                            <button type="submit" class="page-link">${i}</button>
+                                        </form>
+                                    </li>
+                                </c:forEach>
+                                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                    <form method="POST" action="brand">
+                                        <input type="hidden" name="action" value="searchname">
+                                        <input type="hidden" name="nameSearch" value="${nameSearch}">
+                                        <input type="hidden" name="page" value="${currentPage + 1}">
+                                        <button type="submit" class="page-link">&raquo;</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </nav>
+                    </c:if>    
                 </div>
                 <!-- Recent Sales End -->
 

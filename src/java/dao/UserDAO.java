@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
 import entity.User;
@@ -61,7 +57,7 @@ public class UserDAO {
 
     public boolean registerAcc(User userAccount) {
         try {
-            String query = "INSERT INTO [dbo].[User] (User_Name,Email,Password,Role) VALUES (?,?,?,?)";
+            String query = "INSERT INTO [dbo].[User] (User_Name, Email, Password, Role, Created_At) VALUES (?,?,?,?,GETDATE())";
             PreparedStatement ps = con.prepareStatement(query);
             ps.setString(1, userAccount.getUser_Name());
             ps.setString(2, userAccount.getEmail());
@@ -105,7 +101,7 @@ public class UserDAO {
 
     public User getUser(String email) {
         User userAccount = new User();
-        String query = " select * from [dbo].[User] where Email = ? ";
+        String query = "SELECT * FROM [dbo].[User] WHERE Email = ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
@@ -117,6 +113,7 @@ public class UserDAO {
                     userAccount.setAddress(rs.getString("Address"));
                     userAccount.setPhone(rs.getString("Phone"));
                     userAccount.setRole(rs.getString("Role"));
+                    userAccount.setCreated_At(rs.getTimestamp("Created_At"));
                 } else {
                     return null;
                 }
@@ -139,7 +136,7 @@ public class UserDAO {
     }
 
     public void updateProfileUser(User user) {
-        String query = "UPDATE [dbo].[User] SET [User_Name] = ?,[Address] = ?,[Phone] = ? WHERE User_ID = ?";
+        String query = "UPDATE [dbo].[User] SET [User_Name] = ?, [Address] = ?, [Phone] = ? WHERE User_ID = ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, user.getUser_Name());
             ps.setString(2, user.getAddress());

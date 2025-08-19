@@ -1,14 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package entity;
 
-/**
- *
- * @author Admin
- */
+import java.util.Date;
+
 public class User {
+
     public int User_ID;
     public String User_Name;
     public String Email;
@@ -16,8 +11,8 @@ public class User {
     public String Address;
     public String Phone;
     public String Role;
-    
-    
+    public Date Created_At;
+
     public User() {
     }
 
@@ -43,7 +38,7 @@ public class User {
         this.Password = Password;
         this.Role = Role;
     }
- 
+
     public User(int User_ID, String User_Name, String Email, String Password, String Address, String Phone, String Role) {
         this.User_ID = User_ID;
         this.User_Name = User_Name;
@@ -110,10 +105,16 @@ public class User {
         this.Role = Role;
     }
 
+    public Date getCreated_At() {
+        return Created_At;
+    }
+
+    public void setCreated_At(Date Created_At) {
+        this.Created_At = Created_At;
+    }
+
     @Override
     public String toString() {
-        return "User{" + "User_ID=" + User_ID + ", User_Name=" + User_Name + ", Email=" + Email + ", Password=" + Password + ", Address=" + Address + ", Phone=" + Phone + ", Role=" + Role + '}';
+        return "User{" + "User_ID=" + User_ID + ", User_Name=" + User_Name + ", Email=" + Email + ", Password=" + Password + ", Address=" + Address + ", Phone=" + Phone + ", Role=" + Role + ", Created_At=" + Created_At + '}';
     }
-    
-    
 }

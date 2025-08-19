@@ -88,12 +88,21 @@ public class registerController extends HttpServlet {
         String cpassword = request.getParameter("cpassword");
         String hassPass = hass.hashPassword(password);
         User u = new User(username, email, hassPass, "User");
-        if (!password.equals(cpassword)) {
-            request.setAttribute("mess", "Please check again password");
+
+        if (username.length() < 6) {
+            request.setAttribute("mess", "Username must be at least 6 characters");
             request.getRequestDispatcher("account-register.jsp").forward(request, response);
+            return;
         }
+
+        if (!password.equals(cpassword)) {
+            request.setAttribute("mess", "Password and Confirm Password do not match");
+            request.getRequestDispatcher("account-register.jsp").forward(request, response);
+            return;
+        }
+
         if (dao.checkEmailExit(email)) {
-            request.setAttribute("mess", "Email alreay exited");
+            request.setAttribute("mess", "Email already exists");
             request.getRequestDispatcher("account-register.jsp").forward(request, response);
         } else {
             Mail m = new Mail();
@@ -105,15 +114,9 @@ public class registerController extends HttpServlet {
         }
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Register Controller";
+    }
     
 }
