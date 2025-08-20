@@ -210,7 +210,7 @@
                     <c:if test="${nameSearch != null}">
                         <nav aria-label="Page navigation example">
                             <ul class="pagination" style="margin-left: 300px; margin-top: 30px">
-                                <!-- Nút Previous -->
+                                <!-- Nï¿½t Previous -->
                                 <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
                                     <form method="POST" action="brand">
                                         <input type="hidden" name="action" value="searchname">

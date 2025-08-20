@@ -5,6 +5,7 @@
 package dao;
 
 import entity.Category;
+import entity.Product;
 import entity.ProductVariant;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,7 +26,43 @@ public class ProductVariantDAO {
     public static void main(String[] args) {
         ProductVariantDAO b = new ProductVariantDAO();
         ProductVariant p = new ProductVariant(6, 12, "yellow", 1, 10);
-        System.out.println(b.updateVariant(p));
+        System.out.println(b.deleteVariant(3));
+    }
+
+    public List<ProductVariant> getAllProductVariantPagein(int page, int pageSize) {
+        List<ProductVariant> product = new ArrayList<>();
+        String query = "SELECT * FROM Product_Variant ORDER BY Product_ID, Color, Size OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, (page - 1) * pageSize);
+            ps.setInt(2, pageSize);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ProductVariant p = new ProductVariant();
+                p.setPv_id(rs.getInt("PV_ID"));
+                p.setProduct_id(rs.getInt("Product_ID"));
+                p.setColor(rs.getString("Color"));
+                p.setSize(rs.getInt("Size"));
+                p.setQuantity(rs.getInt("Quantity"));
+                product.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return product;
+    }
+
+    public int getTotalPages(int pageSize) {
+        String query = "SELECT COUNT(*) FROM [dbo].[Product_Variant]";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int totalProducts = rs.getInt(1);
+                return (int) Math.ceil((double) totalProducts / pageSize);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 1;
     }
 
     public List<ProductVariant> getAllProductVariant() {
@@ -173,5 +210,50 @@ public class ProductVariantDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<ProductVariant> searchByName(String nameSearch, int page, int pageSize) {
+        List<ProductVariant> productv = new ArrayList<>();
+        String query = "SELECT * FROM [dbo].[Product_Variant] pv "
+                + "JOIN Product p ON pv.Product_ID = p.Product_ID "
+                + "WHERE p.ProductName LIKE ? "
+                + "ORDER BY pv.Product_ID, pv.Color, pv.Size OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, "%" + nameSearch + "%");
+            ps.setInt(2, (page - 1) * pageSize);
+            ps.setInt(3, pageSize);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ProductVariant p = new ProductVariant();
+                Product product = new Product();
+                product.setProductID(rs.getInt("Product_ID"));
+                product.setProductName(rs.getString("ProductName"));
+                p.setPv_id(rs.getInt("PV_ID"));
+                p.setProduct_id(rs.getInt("Product_ID"));
+                p.setColor(rs.getString("Color"));
+                p.setSize(rs.getInt("Size"));
+                p.setQuantity(rs.getInt("Quantity"));
+                productv.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productv;
+    }
+
+    public int getTotalPagesBySearch(String nameSearch, int pageSize) {
+        String query = "SELECT COUNT(*) FROM [dbo].[Product_Variant] pv JOIN Product p ON pv.Product_ID = p.Product_ID"
+                + " WHERE p.ProductName LIKE ?";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, "%" + nameSearch + "%");
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int totalProducts = rs.getInt(1);
+                return (int) Math.ceil((double) totalProducts / pageSize);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 1;
     }
 }
