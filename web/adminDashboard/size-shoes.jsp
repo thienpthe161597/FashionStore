@@ -13,6 +13,7 @@
     <link href="${pageContext.request.contextPath}/assets2/img/favicon.ico" rel="icon">
     <title>Shoe Size Management</title>
 
+    
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

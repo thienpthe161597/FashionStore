@@ -27,3 +27,5 @@ public class ShoeSize {
         this.sizeValue = sizeValue;
     }
 }
+
+
