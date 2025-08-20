@@ -65,10 +65,30 @@ public class shoesVariantController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<ProductVariant> listProductVariant = pvdao.getAllProductVariant();
-        List<Product> listProduct = pdao.getAllProduct();
+        String pageParam = request.getParameter("page");
+        Integer page = null;
+        if (pageParam != null && !pageParam.isEmpty()) {
+            try {
+                page = Integer.parseInt(pageParam);
+            } catch (NumberFormatException e) {
+                page = 1;
+            }
+        }
+        if (page == null) {
+            page = 1;
+        }
+        String message = (String) request.getSession().getAttribute("message");
+        if (message != null) {
+            request.setAttribute("message", message);
+            request.getSession().removeAttribute("message");
+        }
+        int totalPages = pvdao.getTotalPages(5);
+        List<ProductVariant> listProductVariant = pvdao.getAllProductVariantPagein(page, 5);
+        List<Product> listProduct = pdao.getAllProductt();
         request.setAttribute("listProduct", listProduct);
         request.setAttribute("listProductVariant", listProductVariant);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("currentPage", page);
         request.getRequestDispatcher("adminDashboard/variant-view.jsp").forward(request, response);
     }
 
@@ -98,14 +118,19 @@ public class shoesVariantController extends HttpServlet {
                 shoesname = request.getParameter("shoesvariantname");
                 pcheck = pvdao.getVariantByShoesName(Integer.parseInt(shoesname));
                 for (ProductVariant pc : pcheck) {
-                    if (pc.getColor().equalsIgnoreCase(color)) {
+                    if (pc.getColor().equalsIgnoreCase(color) && pc.getSize() == Integer.parseInt(size)) {
                         Product p = pdao.getProductByID(Integer.parseInt(shoesname));
-                        request.setAttribute("message", "Color " + color + " for " + p.getProductName() + " already exited");
-                        List<ProductVariant> listProductVariant = pvdao.getAllProductVariant();
-                        List<Product> listProduct = pdao.getAllProduct();
-                        request.setAttribute("listProduct", listProduct);
-                        request.setAttribute("listProductVariant", listProductVariant);
-                        request.getRequestDispatcher("adminDashboard/variant-view.jsp").forward(request, response);
+                        request.getSession().setAttribute("message", "Color " + color + " or size " + " for " + p.getProductName() + " already exited");
+                        response.sendRedirect("shoesvariant");
+                        return;
+                    }
+                    if (pc.getColor().equalsIgnoreCase(color) && pc.getSize() != Integer.parseInt(size)) {
+                        ProductVariant padd = new ProductVariant(0, Integer.parseInt(shoesname),
+                                color, Integer.parseInt(size), Integer.parseInt(quantity));
+                        pvdao.addNewVariant(padd);
+                        pvdao.add404ToNewVariant(pvdao.getLastVariant());
+                        request.getSession().setAttribute("message", "Add variant successfully");
+                        response.sendRedirect("shoesvariant");
                         return;
                     }
                 }
@@ -113,7 +138,7 @@ public class shoesVariantController extends HttpServlet {
                         color, Integer.parseInt(size), Integer.parseInt(quantity));
                 pvdao.addNewVariant(padd);
                 pvdao.add404ToNewVariant(pvdao.getLastVariant());
-                request.setAttribute("message", "Add variant successfully");
+                request.getSession().setAttribute("message", "Add variant successfully");
                 break;
             case "edit":
                 idVariant = request.getParameter("id");
@@ -123,35 +148,59 @@ public class shoesVariantController extends HttpServlet {
                 shoesname = request.getParameter("shoesvariantname");
                 pcheck = pvdao.getVariantByShoesName(Integer.parseInt(shoesname));
                 for (ProductVariant pc : pcheck) {
-                    if (pc.getColor().equalsIgnoreCase(color)) {
+                    if (pc.getColor().equalsIgnoreCase(color) && pc.getSize() == Integer.parseInt(size)) {
                         Product p = pdao.getProductByID(Integer.parseInt(shoesname));
-                        request.setAttribute("message", "Color " + color + " for " + p.getProductName() + " already exited");
-                        List<ProductVariant> listProductVariant = pvdao.getAllProductVariant();
-                        List<Product> listProduct = pdao.getAllProduct();
-                        request.setAttribute("listProduct", listProduct);
-                        request.setAttribute("listProductVariant", listProductVariant);
-                        request.getRequestDispatcher("adminDashboard/variant-view.jsp").forward(request, response);
+                        request.getSession().setAttribute("message", "Color " + " or size " + " for " + p.getProductName() + " already exited");
+                        response.sendRedirect("shoesvariant");
+                        return;
+                    }
+                    if (pc.getColor().equalsIgnoreCase(color) && pc.getSize() != Integer.parseInt(size)) {
+                        ProductVariant pedit = new ProductVariant(Integer.parseInt(idVariant), Integer.parseInt(shoesname),
+                                color, Integer.parseInt(size), Integer.parseInt(quantity));
+                        pvdao.updateVariant(pedit);
+                        request.getSession().setAttribute("message", "Edit variant successfully");
+                        response.sendRedirect("shoesvariant");
                         return;
                     }
                 }
                 ProductVariant pedit = new ProductVariant(Integer.parseInt(idVariant), Integer.parseInt(shoesname),
                         color, Integer.parseInt(size), Integer.parseInt(quantity));
                 pvdao.updateVariant(pedit);
-                request.setAttribute("message", "Edit variant successfully");
+                request.getSession().setAttribute("message", "Edit variant successfully");
                 break;
             case "delete":
-                idVariant = request.getParameter("id");
+                idVariant = request.getParameter("idc");
                 pvdao.deleteVariant(Integer.parseInt(idVariant));
-                request.setAttribute("message", "Delete variant successfully");
+                request.getSession().setAttribute("message", "Delete variant successfully");
                 break;
+            case "searchname":
+                String nameSearch = request.getParameter("nameSearch");
+                String pageParam = request.getParameter("page");
+                Integer page = null;
+                if (pageParam != null && !pageParam.isEmpty()) {
+                    try {
+                        page = Integer.parseInt(pageParam);
+                    } catch (NumberFormatException e) {
+                        page = 1;
+                    }
+                }
+                if (page == null) {
+                    page = 1;
+                }
+                List<ProductVariant> listProductVariant = pvdao.searchByName(nameSearch, page, 5);
+                int totalPages = pvdao.getTotalPagesBySearch(nameSearch, 5);
+                List<Product> listProduct = pdao.getAllProductt();
+                request.setAttribute("listProduct", listProduct);
+                request.setAttribute("listProductVariant", listProductVariant);
+                request.setAttribute("currentPage", page);
+                request.setAttribute("totalPages", totalPages);
+                request.setAttribute("nameSearch", nameSearch);
+                request.getRequestDispatcher("adminDashboard/variant-view.jsp").forward(request, response);
+                return;
             default:
                 throw new AssertionError();
         }
-        List<ProductVariant> listProductVariant = pvdao.getAllProductVariant();
-        List<Product> listProduct = pdao.getAllProduct();
-        request.setAttribute("listProduct", listProduct);
-        request.setAttribute("listProductVariant", listProductVariant);
-        request.getRequestDispatcher("adminDashboard/variant-view.jsp").forward(request, response);
+        response.sendRedirect("shoesvariant");
 
     }
 

@@ -23,7 +23,25 @@ public class ProductDAO {
 
     public static void main(String[] args) {
         ProductDAO dao = new ProductDAO();
-        System.out.println(dao.getProductByName("Nike Air Maxs"));
+        System.out.println(dao.getProductByName("Nike Air Maxx", 12));
+    }
+
+    public Product getProductByNamee(String namePro) {
+        Product product = new Product();
+        String query = " select * from [dbo].[Product] where ProductName = ? ";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, namePro);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    product.setProductID(rs.getInt("Product_ID"));
+                } else {
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return product;
     }
 
     public List<Product> getRandomProduct() {
@@ -50,11 +68,49 @@ public class ProductDAO {
         return product;
     }
 
-    public List<Product> getAllProduct() {
-        List<Product> product = new ArrayList<>();
-        String query = "SELECT  * \n"
-                + "FROM Product\n";
+    public int getTotalPages(int pageSize) {
+        String query = "SELECT COUNT(*) FROM Product";
         try (PreparedStatement ps = con.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                int totalProducts = rs.getInt(1);
+                return (int) Math.ceil((double) totalProducts / pageSize); // Tính tổng số trang
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 1;
+    }
+
+    public List<Product> getAllProduct(int page, int pageSize) {
+        List<Product> product = new ArrayList<>();
+        String query = "SELECT * FROM Product ORDER BY Product_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, (page - 1) * pageSize);
+            ps.setInt(2, pageSize);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Product p = new Product();
+                p.setCategoryID(rs.getInt("Category_ID"));
+                p.setDescription(rs.getString("Description"));
+                p.setGender(rs.getString("Gender"));
+                p.setImage(rs.getString("Image"));
+                p.setPrice(rs.getInt("Price"));
+                p.setProductID(rs.getInt("Product_ID"));
+                p.setProductName(rs.getString("ProductName"));
+                p.setSaleID(rs.getInt("Sale_ID"));
+                product.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return product;
+    }
+
+    public List<Product> getAllProductt() {
+        List<Product> product = new ArrayList<>();
+        String query = "SELECT * FROM Product ";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Product p = new Product();
                 p.setCategoryID(rs.getInt("Category_ID"));
@@ -133,16 +189,25 @@ public class ProductDAO {
         }
     }
 
-    public Product getProductByName(String namePro) {
-        Product product = new Product();
-        String query = " select * from [dbo].[Product] where ProductName = ? ";
+    public Product getProductByName(String namePro, int excludeId) {
+        Product product = null;
+        String query = "SELECT * FROM [dbo].[Product] WHERE ProductName = ? AND Product_ID <> ?";
+
         try (PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, namePro);
+            ps.setInt(2, excludeId);
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
+                    product = new Product();
                     product.setProductID(rs.getInt("Product_ID"));
-                } else {
-                    return null;
+                    product.setProductName(rs.getString("ProductName"));
+                    product.setDescription(rs.getString("Description"));
+                    product.setCategoryID(rs.getInt("Category_ID"));
+                    product.setGender(rs.getString("Gender"));
+                    product.setImage(rs.getString("Image"));
+                    product.setPrice(rs.getInt("Price"));
+                    product.setSaleID(rs.getInt("Sale_ID"));
                 }
             }
         } catch (SQLException e) {
@@ -180,6 +245,89 @@ public class ProductDAO {
                 } else {
                     return null;
                 }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return product;
+    }
+
+    public List<Product> searchByName(String nameSearch, int page, int pageSize) {
+        List<Product> product = new ArrayList<>();
+        String query = "SELECT * FROM [dbo].[Product] WHERE ProductName LIKE ? ORDER BY Product_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, "%" + nameSearch + "%");
+            ps.setInt(2, (page - 1) * pageSize);
+            ps.setInt(3, pageSize);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Product p = new Product();
+                p.setCategoryID(rs.getInt("Category_ID"));
+                p.setDescription(rs.getString("Description"));
+                p.setGender(rs.getString("Gender"));
+                p.setImage(rs.getString("Image"));
+                p.setPrice(rs.getInt("Price"));
+                p.setProductID(rs.getInt("Product_ID"));
+                p.setProductName(rs.getString("ProductName"));
+                p.setSaleID(rs.getInt("Sale_ID"));
+                product.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return product;
+    }
+
+    public int getTotalPagesBySearch(String nameSearch, int pageSize) {
+        String query = "SELECT COUNT(*) FROM [dbo].[Product] WHERE ProductName LIKE ?";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, "%" + nameSearch + "%");
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int totalProducts = rs.getInt(1);
+                return (int) Math.ceil((double) totalProducts / pageSize);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 1;
+    }
+
+    public int getTotalPagesByFilter(int brandCheck, int pageSize) {
+        String query = "SELECT COUNT(*) FROM [dbo].[Product] WHERE Category_ID = ?";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, brandCheck);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int totalProducts = rs.getInt(1);
+                return (int) Math.ceil((double) totalProducts / pageSize);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 1;
+    }
+
+    public List<Product> filterByBrand(int brandCheck, Integer page, int pageSize) {
+        List<Product> product = new ArrayList<>();
+        String query = "SELECT * FROM [dbo].[Product] WHERE Category_ID = ? ORDER BY Product_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, brandCheck);
+            ps.setInt(2, (page - 1) * pageSize);
+            ps.setInt(3, pageSize);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Product p = new Product();
+                p.setCategoryID(rs.getInt("Category_ID"));
+                p.setDescription(rs.getString("Description"));
+                p.setGender(rs.getString("Gender"));
+                p.setImage(rs.getString("Image"));
+                p.setPrice(rs.getInt("Price"));
+                p.setProductID(rs.getInt("Product_ID"));
+                p.setProductName(rs.getString("ProductName"));
+                p.setSaleID(rs.getInt("Sale_ID"));
+                product.add(p);
             }
         } catch (SQLException e) {
             e.printStackTrace();
