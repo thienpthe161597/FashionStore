@@ -87,6 +87,11 @@ public class loginController extends HttpServlet {
             request.getRequestDispatcher("account-login.jsp").forward(request, response);
         } else {
             User user = dao.getUser(email);
+            if (!user.isIsActive()) {
+                request.setAttribute("mess", "Your account is banned!");
+                request.getRequestDispatcher("account-login.jsp").forward(request, response);
+                return;
+            }
             boolean isLoginSuccessful = true;
             if (user.getRole().equals("User")) {
                 s.setAttribute("user", user);
