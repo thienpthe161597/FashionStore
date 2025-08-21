@@ -25,12 +25,7 @@ public class AdminUserController extends HttpServlet {
     private static final int PAGE_SIZE = 5; // Number of users per page
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * Processes requests for both HTTP GET and POST methods.
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -49,12 +44,7 @@ public class AdminUserController extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP <code>GET</code> method to display the user list.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * Handles GET requests to display the user list with pagination and search.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -96,12 +86,7 @@ public class AdminUserController extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method for add, update, delete, and search actions.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * Handles POST requests for add, update, ban, unban, and search actions.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -116,13 +101,14 @@ public class AdminUserController extends HttpServlet {
 
         try {
             String action = request.getParameter("action");
-            System.out.println("Action received: " + action); // Debug
+            System.out.println("Action received: " + action); // Debug log
 
             if (action == null) {
                 throw new IllegalArgumentException("Invalid action!");
             }
 
             if ("add".equals(action)) {
+                // Add new user
                 String username = request.getParameter("username");
                 String email = request.getParameter("email");
                 String password = request.getParameter("password");
@@ -145,6 +131,7 @@ public class AdminUserController extends HttpServlet {
                 User newUser = new User(email, hash.hashPassword(password));
                 newUser.setUser_Name(username);
                 newUser.setRole(role);
+                newUser.setIsActive(true); // Set active by default
 
                 boolean success = dao.registerAcc(newUser);
 
@@ -154,6 +141,7 @@ public class AdminUserController extends HttpServlet {
                     throw new IllegalStateException("Failed to add user!");
                 }
             } else if ("update".equals(action)) {
+                // Update existing user
                 String idStr = request.getParameter("id");
                 if (idStr == null || idStr.trim().isEmpty()) {
                     throw new IllegalArgumentException("Invalid user ID!");
@@ -208,11 +196,15 @@ public class AdminUserController extends HttpServlet {
                     updatedUser.setPassword(userToEdit.getPassword());
                 }
 
+                // Keep isActive the same
+                updatedUser.setIsActive(userToEdit.isIsActive());
+
                 // Update user information
                 dao.updateUser(updatedUser);
                 response.sendRedirect("userlist");
-            } else if ("delete".equals(action)) {
-                String idStr = request.getParameter("idtodel");
+            } else if ("ban".equals(action)) {
+                // Ban a user
+                String idStr = request.getParameter("idtoban");
                 if (idStr == null || idStr.trim().isEmpty()) {
                     throw new IllegalArgumentException("Invalid user ID!");
                 }
@@ -222,9 +214,56 @@ public class AdminUserController extends HttpServlet {
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("Invalid user ID format!");
                 }
-                dao.deleteUser(userId);
+
+                User userToBan = dao.getUserById(userId);
+                if (userToBan == null) {
+                    throw new IllegalArgumentException("User not found!");
+                }
+                if (userId == currentUser.getUser_ID()) {
+                    throw new IllegalArgumentException("You cannot ban yourself!");
+                }
+                if ("Admin".equalsIgnoreCase(userToBan.getRole()) && userId != currentUser.getUser_ID()) {
+                    throw new IllegalArgumentException("You are not authorized to ban other admins!");
+                }
+                if (!userToBan.isIsActive()) {
+                    throw new IllegalArgumentException("User is already banned!");
+                }
+
+                userToBan.setIsActive(false);
+                dao.updateUser(userToBan);
+                response.sendRedirect("userlist");
+            } else if ("unban".equals(action)) {
+                // Unban a user
+                String idStr = request.getParameter("idtounban");
+                if (idStr == null || idStr.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Invalid user ID!");
+                }
+                int userId;
+                try {
+                    userId = Integer.parseInt(idStr);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Invalid user ID format!");
+                }
+
+                User userToUnban = dao.getUserById(userId);
+                if (userToUnban == null) {
+                    throw new IllegalArgumentException("User not found!");
+                }
+                if (userId == currentUser.getUser_ID()) {
+                    throw new IllegalArgumentException("You cannot unban yourself!");
+                }
+                if ("Admin".equalsIgnoreCase(userToUnban.getRole()) && userId != currentUser.getUser_ID()) {
+                    throw new IllegalArgumentException("You are not authorized to unban other admins!");
+                }
+                if (userToUnban.isIsActive()) {
+                    throw new IllegalArgumentException("User is not banned!");
+                }
+
+                userToUnban.setIsActive(true);
+                dao.updateUser(userToUnban);
                 response.sendRedirect("userlist");
             } else if ("searchname".equals(action)) {
+                // Search users by name or email
                 String nameSearch = request.getParameter("nameSearch");
                 String pageStr = request.getParameter("page");
                 int page = (pageStr == null || pageStr.isEmpty()) ? 1 : Integer.parseInt(pageStr);
@@ -250,15 +289,13 @@ public class AdminUserController extends HttpServlet {
             request.setAttribute("users", users);
             request.setAttribute("currentPage", 1);
             request.setAttribute("totalPages", (int) Math.ceil((double) dao.getTotalUsers() / PAGE_SIZE));
-            // Do not set currentUser if session is null or user is not logged in
+            request.setAttribute("currentUser", currentUser); // Pass current user to JSP
             request.getRequestDispatcher("adminDashboard/user-list.jsp").forward(request, response);
         }
     }
 
     /**
      * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
      */
     @Override
     public String getServletInfo() {

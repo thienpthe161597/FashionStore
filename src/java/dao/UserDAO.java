@@ -18,6 +18,7 @@ public class UserDAO {
         User u = new User(6, "aaaaa", "aaaaa", "aaaaa");
         d.updateProfileUser(u);
         
+        // Test retrieving all users
         UserDAO dao = new UserDAO();
         List<User> users = dao.getAllUsers();
         for (User user : users) {
@@ -25,12 +26,13 @@ public class UserDAO {
                 "ID: " + user.getUser_Name() +
                 ", Email: " + user.getEmail() +
                 ", Password: " + user.getPassword() +
-                ", Role: " + user.getRole()
+                ", Role: " + user.getRole() +
+                ", isActive: " + user.isIsActive()
             );
         }
-        
     }
     
+    // Retrieve all users (active and banned)
     public List<User> getAllUsers() {
         List<User> list = new ArrayList<>();
         String sql = "SELECT * FROM [User]";
@@ -46,6 +48,7 @@ public class UserDAO {
                 u.setAddress(rs.getString("Address"));
                 u.setPhone(rs.getString("Phone"));
                 u.setRole(rs.getString("Role"));
+                u.setIsActive(rs.getBoolean("isActive"));
                 list.add(u);
             }
         } catch (Exception e) {
@@ -54,10 +57,14 @@ public class UserDAO {
         return list;
     }
 
-
+    // Register a new user account
     public boolean registerAcc(User userAccount) {
+        if (con == null) {
+            System.err.println("Database connection failed!");
+            return false;
+        }
         try {
-            String query = "INSERT INTO [dbo].[User] (User_Name, Email, Password, Role, Created_At) VALUES (?,?,?,?,GETDATE())";
+            String query = "INSERT INTO [dbo].[User] (User_Name, Email, Password, Role, Created_At, isActive) VALUES (?,?,?,?,GETDATE(),1)";
             PreparedStatement ps = con.prepareStatement(query);
             ps.setString(1, userAccount.getUser_Name());
             ps.setString(2, userAccount.getEmail());
@@ -72,6 +79,7 @@ public class UserDAO {
         }
     }
 
+    // Check if an email already exists
     public boolean checkEmailExit(String email) {
         String query = "SELECT * FROM [dbo].[User] WHERE Email = ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -84,10 +92,11 @@ public class UserDAO {
         }
     }
 
+    // Verify user login credentials and check if active
     public boolean checkLogin(User u) {
         String email = u.getEmail();
         String password = u.getPassword();
-        String query = "SELECT * FROM [dbo].[User] WHERE Email = ? and Password = ?";
+        String query = "SELECT * FROM [dbo].[User] WHERE Email = ? and Password = ? and isActive = 1";
         try (PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, email);
             ps.setString(2, password);
@@ -99,9 +108,10 @@ public class UserDAO {
         }
     }
 
+    // Retrieve a user by email (only if active)
     public User getUser(String email) {
         User userAccount = new User();
-        String query = "SELECT * FROM [dbo].[User] WHERE Email = ?";
+        String query = "SELECT * FROM [dbo].[User] WHERE Email = ? and isActive = 1";
         try (PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
@@ -114,6 +124,7 @@ public class UserDAO {
                     userAccount.setPhone(rs.getString("Phone"));
                     userAccount.setRole(rs.getString("Role"));
                     userAccount.setCreated_At(rs.getTimestamp("Created_At"));
+                    userAccount.setIsActive(rs.getBoolean("isActive"));
                 } else {
                     return null;
                 }
@@ -124,6 +135,7 @@ public class UserDAO {
         return userAccount;
     }
 
+    // Reset user password
     public void resetPassword(User user) {
         String query = "UPDATE [dbo].[User] SET [Password] = ? WHERE Email = ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -135,6 +147,7 @@ public class UserDAO {
         }
     }
 
+    // Update user profile information
     public void updateProfileUser(User user) {
         String query = "UPDATE [dbo].[User] SET [User_Name] = ?, [Address] = ?, [Phone] = ? WHERE User_ID = ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -148,6 +161,7 @@ public class UserDAO {
         }
     }
 
+    // Update user password
     public void updatePassword(int user_ID, String new_pwd) {
         String query = "UPDATE [dbo].[User] SET [Password] = ? WHERE User_ID = ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -159,7 +173,7 @@ public class UserDAO {
         }
     }
 
-    // Phương thức mới: getUserById
+    // Retrieve a user by ID
     public User getUserById(int userId) {
         User user = new User();
         String query = "SELECT * FROM [dbo].[User] WHERE User_ID = ?";
@@ -175,6 +189,7 @@ public class UserDAO {
                     user.setPhone(rs.getString("Phone"));
                     user.setRole(rs.getString("Role"));
                     user.setCreated_At(rs.getTimestamp("Created_At"));
+                    user.setIsActive(rs.getBoolean("isActive"));
                 } else {
                     return null;
                 }
@@ -186,13 +201,13 @@ public class UserDAO {
         return user;
     }
 
-    // Phương thức mới: updateUser
+    // Update user information
     public void updateUser(User user) {
         if (user == null || user.getUser_ID() == 0) {
-            System.out.println("User hoặc User_ID không hợp lệ");
+            System.out.println("User or User_ID is invalid");
             return;
         }
-        String query = "UPDATE [dbo].[User] SET [User_Name] = ?, [Email] = ?, [Password] = ?, [Address] = ?, [Phone] = ?, [Role] = ? WHERE User_ID = ?";
+        String query = "UPDATE [dbo].[User] SET [User_Name] = ?, [Email] = ?, [Password] = ?, [Address] = ?, [Phone] = ?, [Role] = ?, [isActive] = ? WHERE User_ID = ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, user.getUser_Name() != null ? user.getUser_Name() : "");
             ps.setString(2, user.getEmail() != null ? user.getEmail() : "");
@@ -200,25 +215,15 @@ public class UserDAO {
             ps.setString(4, user.getAddress() != null ? user.getAddress() : "");
             ps.setString(5, user.getPhone() != null ? user.getPhone() : "");
             ps.setString(6, user.getRole() != null ? user.getRole() : "");
-            ps.setInt(7, user.getUser_ID());
+            ps.setBoolean(7, user.isIsActive());
+            ps.setInt(8, user.getUser_ID());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    // Phương thức mới: deleteUser
-    public void deleteUser(int userId) {
-        String query = "DELETE FROM [dbo].[User] WHERE User_ID = ?";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setInt(1, userId);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    // Phương thức mới: Tìm kiếm người dùng theo User_Name hoặc Email với phân trang
+    // Search users by User_Name or Email with pagination
     public List<User> searchUsersByNameOrEmail(String keyword, int page, int pageSize) {
         List<User> list = new ArrayList<>();
         String query = "SELECT * FROM [dbo].[User] WHERE User_Name LIKE ? OR Email LIKE ? ORDER BY User_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
@@ -238,6 +243,7 @@ public class UserDAO {
                     u.setAddress(rs.getString("Address"));
                     u.setPhone(rs.getString("Phone"));
                     u.setRole(rs.getString("Role"));
+                    u.setIsActive(rs.getBoolean("isActive"));
                     list.add(u);
                 }
             }
@@ -247,7 +253,7 @@ public class UserDAO {
         return list;
     }
 
-    // Phương thức mới: Đếm tổng số người dùng phù hợp với từ khóa
+    // Count total users matching the keyword
     public int getTotalUsersByNameOrEmail(String keyword) {
         String query = "SELECT COUNT(*) FROM [dbo].[User] WHERE User_Name LIKE ? OR Email LIKE ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -265,7 +271,7 @@ public class UserDAO {
         return 0;
     }
 
-    // Phương thức mới: Lấy tất cả người dùng với phân trang
+    // Retrieve all users with pagination
     public List<User> getAllUsersWithPaging(int page, int pageSize) {
         List<User> list = new ArrayList<>();
         String query = "SELECT * FROM [dbo].[User] ORDER BY User_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
@@ -282,6 +288,7 @@ public class UserDAO {
                     u.setAddress(rs.getString("Address"));
                     u.setPhone(rs.getString("Phone"));
                     u.setRole(rs.getString("Role"));
+                    u.setIsActive(rs.getBoolean("isActive"));
                     list.add(u);
                 }
             }
@@ -291,7 +298,7 @@ public class UserDAO {
         return list;
     }
 
-    // Phương thức mới: Đếm tổng số người dùng
+    // Count total number of users
     public int getTotalUsers() {
         String query = "SELECT COUNT(*) FROM [dbo].[User]";
         try (PreparedStatement ps = con.prepareStatement(query)) {
