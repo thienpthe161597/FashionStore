@@ -13,16 +13,18 @@ public class ProductVariant {
     public int product_id;
     public String color;
     public int size;
+    public String sizeValue;
     public int quantity;
 
     public ProductVariant() {
     }
 
-    public ProductVariant(int pv_id, int product_id, String color, int size, int quantity) {
+    public ProductVariant(int pv_id, int product_id, String color, int size, String sizeValue, int quantity) {
         this.pv_id = pv_id;
         this.product_id = product_id;
         this.color = color;
         this.size = size;
+        this.sizeValue = sizeValue;
         this.quantity = quantity;
     }
 
@@ -58,6 +60,14 @@ public class ProductVariant {
         this.size = size;
     }
 
+    public String getSizeValue() {
+        return sizeValue;
+    }
+
+    public void setSizeValue(String sizeValue) {
+        this.sizeValue = sizeValue;
+    }
+
     public int getQuantity() {
         return quantity;
     }
@@ -68,8 +78,10 @@ public class ProductVariant {
 
     @Override
     public String toString() {
-        return "ProductVarivant{" + "pv_id=" + pv_id + ", product_id=" + product_id + ", color=" + color + ", size=" + size + ", quantity=" + quantity + '}';
+        return "ProductVarivant{" + "pv_id=" + pv_id + ", product_id=" + product_id + ", color=" + color + ", size=" + size + ", sizeValue="+ sizeValue + ",quantity=" + quantity + '}';
     }
+
+
     
     
 }
