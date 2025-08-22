@@ -58,12 +58,14 @@ public class UserDAO {
             return false;
         }
         try {
-            String query = "INSERT INTO [dbo].[User] (User_Name, Email, Password, Role, Created_At, isActive) VALUES (?,?,?,?,GETDATE(),1)";
+            String query = "INSERT INTO [dbo].[User] (User_Name, Email, Password, Address, Phone, Role, Created_At, isActive) VALUES (?,?,?,?,?,?,GETDATE(),1)";
             PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, userAccount.getUser_Name());
+            ps.setString(1, userAccount.getUser_Name()); // Vẫn dùng User_Name vì map với DB
             ps.setString(2, userAccount.getEmail());
             ps.setString(3, userAccount.getPassword());
-            ps.setString(4, userAccount.getRole());
+            ps.setString(4, userAccount.getAddress());
+            ps.setString(5, userAccount.getPhone());
+            ps.setString(6, userAccount.getRole());
 
             int rowAffected = ps.executeUpdate();
             return rowAffected > 0;
@@ -78,7 +80,7 @@ public class UserDAO {
         try (Connection con = DBContext.getConnection()) {
             if (con == null) {
                 System.out.println("DB connection is null!");
-                return false; // hoặc throw exception
+                return false;
             }
             try (PreparedStatement ps = con.prepareStatement(sql)) {
                 ps.setString(1, email);
@@ -91,6 +93,7 @@ public class UserDAO {
         }
         return false;
     }
+
 
     public boolean insertUser(User user) {
         String sql = "INSERT INTO [dbo].[User] (User_Name, Email, Password, Address, Phone, Role, Created_At, isActive) "
