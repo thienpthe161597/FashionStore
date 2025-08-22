@@ -17,28 +17,26 @@ public class UserDAO {
         UserDAO d = new UserDAO();
         User u = new User(6, "aaaaa", "aaaaa", "aaaaa");
         d.updateProfileUser(u);
-        
+
         // Test retrieving all users
         UserDAO dao = new UserDAO();
         List<User> users = dao.getAllUsers();
         for (User user : users) {
             System.out.println(
-                "ID: " + user.getUser_Name() +
-                ", Email: " + user.getEmail() +
-                ", Password: " + user.getPassword() +
-                ", Role: " + user.getRole() +
-                ", isActive: " + user.isIsActive()
+                    "ID: " + user.getUser_Name()
+                    + ", Email: " + user.getEmail()
+                    + ", Password: " + user.getPassword()
+                    + ", Role: " + user.getRole()
+                    + ", isActive: " + user.isIsActive()
             );
         }
     }
-    
+
     // Retrieve all users (active and banned)
     public List<User> getAllUsers() {
         List<User> list = new ArrayList<>();
         String sql = "SELECT * FROM [User]";
-        try (Connection con = DBContext.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 User u = new User();
                 u.setUser_ID(rs.getInt("User_ID"));
@@ -312,4 +310,98 @@ public class UserDAO {
         }
         return 0;
     }
+
+    public List<User> getUsersByRoleWithPaging(String role, int page, int pageSize) {
+        List<User> list = new ArrayList<>();
+        String query = "SELECT * FROM [dbo].[User] WHERE Role = ? ORDER BY User_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, role);
+            ps.setInt(2, (page - 1) * pageSize);
+            ps.setInt(3, pageSize);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    User u = new User();
+                    u.setUser_ID(rs.getInt("User_ID"));
+                    u.setUser_Name(rs.getString("User_Name"));
+                    u.setEmail(rs.getString("Email"));
+                    u.setPassword(rs.getString("Password"));
+                    u.setAddress(rs.getString("Address"));
+                    u.setPhone(rs.getString("Phone"));
+                    u.setRole(rs.getString("Role"));
+                    u.setCreated_At(rs.getTimestamp("Created_At"));
+                    list.add(u);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public int getTotalUsersByRole(String role) {
+        String query = "SELECT COUNT(*) FROM [dbo].[User] WHERE Role = ?";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, role);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<User> searchUsersByRoleAndKeyword(String role, String keyword, int page, int pageSize) {
+        List<User> list = new ArrayList<>();
+        String query = "SELECT * FROM [dbo].[User] "
+                + "WHERE Role = ? AND (User_Name LIKE ? OR Email LIKE ?) "
+                + "ORDER BY User_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, role);
+            String searchPattern = "%" + keyword + "%";
+            ps.setString(2, searchPattern);
+            ps.setString(3, searchPattern);
+            ps.setInt(4, (page - 1) * pageSize);
+            ps.setInt(5, pageSize);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    User u = new User();
+                    u.setUser_ID(rs.getInt("User_ID"));
+                    u.setUser_Name(rs.getString("User_Name"));
+                    u.setEmail(rs.getString("Email"));
+                    u.setPassword(rs.getString("Password"));
+                    u.setAddress(rs.getString("Address"));
+                    u.setPhone(rs.getString("Phone"));
+                    u.setRole(rs.getString("Role"));
+                    u.setCreated_At(rs.getTimestamp("Created_At"));
+                    list.add(u);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public int getTotalUsersByRoleAndKeyword(String role, String keyword) {
+        String query = "SELECT COUNT(*) FROM [dbo].[User] "
+                + "WHERE Role = ? AND (User_Name LIKE ? OR Email LIKE ?)";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, role);
+            String searchPattern = "%" + keyword + "%";
+            ps.setString(2, searchPattern);
+            ps.setString(3, searchPattern);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 }
