@@ -314,7 +314,7 @@ public class UserDAO {
         ps.executeUpdate();
     } catch (Exception e) {
         e.printStackTrace();
-    }
+    } 
 }
 
     
