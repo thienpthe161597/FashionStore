@@ -64,12 +64,15 @@
                                 <a href="shoes" class="dropdown-item " style="margin-left: 50px">List shoes</a>
                                 <a href="shoesimage" class="dropdown-item" style="margin-left: 50px">Image shoes</a>
                                 <a href="shoesvariant" class="dropdown-item" style="margin-left: 50px">Variant shoes</a>
+                                <a href="shoessize" class="dropdown-item" style="margin-left: 50px">Shoe Sizes</a>
+                               
                             </div>
                         </div>
                         <a href="brand" class="nav-item nav-link active"><i class="fa fa-th me-2"></i>Category</a>
                         <c:if test="${user.getRole() eq 'Admin'}">
                             <a href="userlist" class="nav-item nav-link "><i class="fa fa-th me-2"></i>User List</a>
                         </c:if>
+                        <a href="customer-list" class="dropdown-item" style="margin-left: 50px">Customer List</a>
                         <a href="order" class="nav-item nav-link "><i class="fa fa-th me-2"></i>Oder List</a>
                         <a href="logout" class="nav-item nav-link"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
                         <!--                    <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
@@ -94,8 +97,8 @@
                         errorMessage.style.display = "block";
                         return false;
                     } else {
-                        errorMessage.style.display = "none"; 
-                        return true; 
+                        errorMessage.style.display = "none";
+                        return true;
                     }
                 }
             </script>
