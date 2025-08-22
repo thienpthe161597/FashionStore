@@ -73,7 +73,9 @@
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class=" fas fa-shoe-prints me-2"></i>Fashion Store</a>
                             <div class="dropdown-menu bg-transparent border-0">
+                                <a href="dashBoard" class="dropdown-item" style="margin-left: 50px">DashBoard</a>
                                 <a href="shoes" class="dropdown-item" style="margin-left: 50px">List shoes</a>
+                                <a href="shoes-sale" class="dropdown-item" style="margin-left: 50px">List sale shoes</a>
                                 <a href="shoesimage" class="dropdown-item" style="margin-left: 50px">Image shoes</a>
                                 <a href="shoesvariant" class="dropdown-item" style="margin-left: 50px">Variant shoes</a>
                             </div>

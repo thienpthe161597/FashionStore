@@ -14,10 +14,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.security.MessageDigest;
 import utils.HashPass;
 import utils.Mail;
-
 
 /**
  *
@@ -26,55 +24,12 @@ import utils.Mail;
 @WebServlet(name = "registerController", urlPatterns = {"/register"})
 public class registerController extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet registerController</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet registerController at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.getRequestDispatcher("account-register.jsp").forward(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     UserDAO dao = new UserDAO();
 
     @Override
@@ -82,25 +37,41 @@ public class registerController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession s = request.getSession();
         HashPass hass = new HashPass();
+
         String username = request.getParameter("username");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String cpassword = request.getParameter("cpassword");
-        String hassPass = hass.hashPassword(password);
-        User u = new User(username, email, hassPass, "User");
 
+        // Regex kiểm tra password
+        // Bắt buộc có @, có thêm ít nhất 1 ký tự đặc biệt khác, không chứa khoảng trắng, tối thiểu 6 ký tự
+        String passwordRegex = "^(?=.*[@])(?=.*[^a-zA-Z0-9@])(?!.*\\s).{6,}$";
+
+        // Kiểm tra username
         if (username.length() < 6) {
             request.setAttribute("mess", "Username must be at least 6 characters");
             request.getRequestDispatcher("account-register.jsp").forward(request, response);
             return;
         }
 
+        // Kiểm tra password == confirm password
         if (!password.equals(cpassword)) {
             request.setAttribute("mess", "Password and Confirm Password do not match");
             request.getRequestDispatcher("account-register.jsp").forward(request, response);
             return;
         }
 
+        // Kiểm tra password hợp lệ
+        if (!password.matches(passwordRegex)) {
+            request.setAttribute("mess", "Password must contain '@', at least one special character, no spaces, and be at least 6 characters long");
+            request.getRequestDispatcher("account-register.jsp").forward(request, response);
+            return;
+        }
+
+        String hassPass = hass.hashPassword(password);
+        User u = new User(username, email, hassPass, "User");
+
+        // Kiểm tra email tồn tại
         if (dao.checkEmailExit(email)) {
             request.setAttribute("mess", "Email already exists");
             request.getRequestDispatcher("account-register.jsp").forward(request, response);
@@ -118,5 +89,5 @@ public class registerController extends HttpServlet {
     public String getServletInfo() {
         return "Register Controller";
     }
-    
+
 }

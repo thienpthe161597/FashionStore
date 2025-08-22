@@ -23,6 +23,10 @@ public class UserDAO {
         List<User> users = dao.getAllUsers();
         for (User user : users) {
             System.out.println(
+                "ID: " + user.getUser_Name() +
+                ", Email: " + user.getEmail() +   
+                ", Password: " + user.getPassword() +
+                ", Role: " + user.getRole()
                     "ID: " + user.getUser_Name()
                     + ", Email: " + user.getEmail()
                     + ", Password: " + user.getPassword()
@@ -310,6 +314,20 @@ public class UserDAO {
         }
         return 0;
     }
+    public void updatePasswordByEmail(String email, String newHashedPass) {
+    String sql = "UPDATE [User] SET [Password] = ? WHERE Email = ?";
+    try {
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, newHashedPass);
+        ps.setString(2, email);
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    } 
+}
+
+    
+}
 
     public List<User> getUsersByRoleWithPaging(String role, int page, int pageSize) {
         List<User> list = new ArrayList<>();
@@ -373,6 +391,7 @@ public class UserDAO {
                     u.setEmail(rs.getString("Email"));
                     u.setPassword(rs.getString("Password"));
                     u.setAddress(rs.getString("Address"));
+                
                     u.setPhone(rs.getString("Phone"));
                     u.setRole(rs.getString("Role"));
                     u.setCreated_At(rs.getTimestamp("Created_At"));
@@ -405,3 +424,4 @@ public class UserDAO {
     }
 
 }
+
