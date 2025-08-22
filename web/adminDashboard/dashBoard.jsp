@@ -16,7 +16,7 @@
     <div class="main p-4">
         <h2 class="mb-4">Dashboard</h2>
 
-        <div class="row">
+        <div class="row"> 
             <div class="col-md-4">
                 <div class="card text-white bg-primary mb-3">
                     <div class="card-body">

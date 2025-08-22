@@ -23,7 +23,7 @@ public class UserDAO {
         for (User user : users) {
             System.out.println(
                 "ID: " + user.getUser_Name() +
-                ", Email: " + user.getEmail() +
+                ", Email: " + user.getEmail() +   
                 ", Password: " + user.getPassword() +
                 ", Role: " + user.getRole()
             );
