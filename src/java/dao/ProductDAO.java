@@ -5,6 +5,7 @@
 package dao;
 
 import entity.Product;
+import entity.Sale;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,6 +28,23 @@ public class ProductDAO {
     }
 
     public Product getProductByNamee(String namePro) {
+        Product product = new Product();
+        String query = " select * from [dbo].[Product] where ProductName = ? ";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, namePro);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    product.setProductID(rs.getInt("Product_ID"));
+                } else {
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return product;
+    }
+      public Product getProductByNameSale(String namePro) {
         Product product = new Product();
         String query = " select * from [dbo].[Product] where ProductName = ? ";
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -98,8 +116,7 @@ public class ProductDAO {
                 p.setProductID(rs.getInt("Product_ID"));
                 p.setProductName(rs.getString("ProductName"));
                 p.setSaleID(rs.getInt("Sale_ID"));
-                product.add(p);
-            }
+                product.add(p);            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -334,4 +351,61 @@ public class ProductDAO {
         }
         return product;
     }
+
+    public List<Product> getAllProductSale() {
+        List<Product> productList = new ArrayList<>();
+        String query = "SELECT * FROM Product Where Sale_ID IS NOT NULL";  // Fixed SQL Query
+        try (PreparedStatement ps = con.prepareStatement(query); ResultSet resultSet = ps.executeQuery()) {
+            while (resultSet.next()) {
+                int productId = resultSet.getInt("Product_ID");
+                int categoryId = resultSet.getInt("Category_ID");
+                int saleId = resultSet.getInt("Sale_ID");
+                String name = resultSet.getString("ProductName");
+                String description = resultSet.getString("Description");
+                int price = resultSet.getInt("Price");
+                String productGender = resultSet.getString("Gender");
+                String image = resultSet.getString("Image");
+
+                productList.add(new Product(productId, categoryId, saleId, name, description, price, productGender, image));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productList;
+    }
+       public List<Sale> getAllSales() {
+        List<Sale> salesList = new ArrayList<>();
+        String sql = "SELECT Sale_ID, Sale FROM Sale";
+
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                int saleId = rs.getInt("Sale_ID");
+                int sale = rs.getInt("Sale");
+                salesList.add(new Sale(saleId, sale));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return salesList;
+    }
+    public int getTotalProducts() {
+    int count = 0;
+    String sql = "SELECT COUNT(*) FROM Product";
+    try {
+        Connection conn = DBContext.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            count = rs.getInt(1);
+        }
+        conn.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return count;
+}
+
 }

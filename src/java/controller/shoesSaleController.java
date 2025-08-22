@@ -22,8 +22,8 @@ import java.util.List;
  *
  * @author Admin
  */
-@WebServlet(name = "shoesController", urlPatterns = {"/shoes"})
-public class shoesController extends HttpServlet {
+@WebServlet(name = "shoesSaleController", urlPatterns = {"/shoes-sale"})
+public class shoesSaleController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,19 +37,11 @@ public class shoesController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet shoesControssller</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet shoesController at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
+
     }
+
+    CategoryDAO cdao = new CategoryDAO();
+    ProductDAO pdao = new ProductDAO();
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -60,48 +52,25 @@ public class shoesController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    CategoryDAO cdao = new CategoryDAO();
-    ProductDAO pdao = new ProductDAO();
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        processRequest(request, response);
         HttpSession session = request.getSession();
-        String pageParam = request.getParameter("page");
-        Integer page = null;
-        if (pageParam != null && !pageParam.isEmpty()) {
-            try {
-                page = Integer.parseInt(pageParam);
-            } catch (NumberFormatException e) {
-                page = 1;
-            }
-        }
-        if (page == null) {
-            page = 1;
-        }
-        List<Product> listProduct = pdao.getAllProduct(page, 5);
-        int totalPages = pdao.getTotalPages(5);
+
+        List<Product> listProduct = pdao.getAllProductSale();
         List<Category> listCategory = cdao.getAllCategory();
         Boolean isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
         if (isLoggedIn == null) {
-            String message = (String) request.getSession().getAttribute("message");
-            if (message != null) {
-                request.setAttribute("message", message);
-                request.getSession().removeAttribute("message"); 
-            }
             request.setAttribute("listCategory", listCategory);
             request.setAttribute("listProduct", listProduct);
-            request.setAttribute("totalPages", totalPages);
-            request.setAttribute("currentPage", page);
-            request.getRequestDispatcher("adminDashboard/shoe-view.jsp").forward(request, response);
+            request.getRequestDispatcher("adminDashboard/shoes-sale-view.jsp").forward(request, response);
         } else {
             request.setAttribute("listCategory", listCategory);
             request.setAttribute("listProduct", listProduct);
-            request.setAttribute("totalPages", totalPages);
-            request.setAttribute("currentPage", page);
             request.setAttribute("loginMessage", "Login successfully!");
             session.removeAttribute("isLoggedIn");
-            request.getRequestDispatcher("adminDashboard/shoe-view.jsp").forward(request, response);
+            request.getRequestDispatcher("adminDashboard/shoes-sale-view.jsp").forward(request, response);
         }
     }
 
@@ -114,7 +83,7 @@ public class shoesController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
         String id = request.getParameter("id");
@@ -172,44 +141,12 @@ public class shoesController extends HttpServlet {
                 if (page == null) {
                     page = 1;
                 }
-                List<Product> listProduct = pdao.searchByName(nameSearch, page, 5);
-                List<Category> listCategory = cdao.getAllCategory();
-                int totalPages = pdao.getTotalPagesBySearch(nameSearch, 5);
-                request.setAttribute("listCategory", listCategory);
-                request.setAttribute("listProduct", listProduct);
-                request.setAttribute("currentPage", page);
-                request.setAttribute("totalPages", totalPages);
-                request.setAttribute("nameSearch", nameSearch);
-                request.getRequestDispatcher("adminDashboard/shoe-view.jsp").forward(request, response);
-                return;
-            case "filter":
-                int brandCheck = Integer.parseInt(request.getParameter("brandCheck"));
-                String pageParamm = request.getParameter("page");
-                Integer pagee = null;
-                if (pageParamm != null && !pageParamm.isEmpty()) {
-                    try {
-                        pagee = Integer.parseInt(pageParamm);
-                    } catch (NumberFormatException e) {
-                        pagee = 1;
-                    }
-                }
-                if (pagee == null) {
-                    pagee = 1;
-                }
-                List<Product> listProductt = pdao.filterByBrand(brandCheck, pagee, 5);
-                List<Category> listCategoryy = cdao.getAllCategory();
-                int totalPagess = pdao.getTotalPagesByFilter(brandCheck, 5);
-                request.setAttribute("listCategory", listCategoryy);
-                request.setAttribute("listProduct", listProductt);
-                request.setAttribute("currentPage", pagee);
-                request.setAttribute("totalPages", totalPagess);
-                request.setAttribute("brandCheck", brandCheck);
-                request.getRequestDispatcher("adminDashboard/shoe-view.jsp").forward(request, response);
-                return;
-            default:
-                throw new AssertionError();
         }
-        response.sendRedirect("shoes");
+        List<Product> listProduct = pdao.getAllProductSale();
+        List<Category> listCategory = cdao.getAllCategory();
+        request.setAttribute("listCategory", listCategory);
+        request.setAttribute("listProduct", listProduct);
+        request.getRequestDispatcher("adminDashboard/shoe-sale-view.jsp").forward(request, response);
     }
 
     /**

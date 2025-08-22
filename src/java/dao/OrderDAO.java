@@ -202,6 +202,22 @@ public class OrderDAO {
             }
         }
     }
+  public double getTotalRevenue() {
+    double revenue = 0;
+    String sql = "SELECT SUM(TotalAmount) FROM [Order]"; // thay TotalAmount bằng cột doanh thu
+    try {
+        Connection conn = DBContext.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            revenue = rs.getDouble(1);
+        }
+        conn.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return revenue;
+}
 
 
 

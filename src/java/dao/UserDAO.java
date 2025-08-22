@@ -305,4 +305,16 @@ public class UserDAO {
         }
         return 0;
     }
+    public void updatePasswordByEmail(String email, String newHashedPass) {
+    String sql = "UPDATE [User] SET [Password] = ? WHERE Email = ?";
+    try {
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, newHashedPass);
+        ps.setString(2, email);
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 }

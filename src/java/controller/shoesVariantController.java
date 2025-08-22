@@ -105,7 +105,7 @@ public class shoesVariantController extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         String color;
-        int size;
+        String size;
         String quantity;
         String shoesname;
         String idVariant;
@@ -215,3 +215,4 @@ public class shoesVariantController extends HttpServlet {
     }// </editor-fold>
 
 }
+
