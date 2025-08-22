@@ -12,6 +12,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
+import entity.Blog;
 
 /**
  *
@@ -56,11 +58,33 @@ public class blogController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     BlogDAO dao = new BlogDAO();
+    private static final int RECORDS_PER_PAGE = 5;
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("blog", dao.getAllBlog());
-        request.setAttribute("blogImg", dao.getAllBlogImg());
+        int page = 1;
+        String pageParam = request.getParameter("page");
+        if (pageParam != null && !pageParam.isEmpty()) {
+            try {
+                page = Integer.parseInt(pageParam);
+            } catch (NumberFormatException e) {
+                page = 1; // fallback nếu người dùng nhập lỗi
+            }
+        }
+
+        int offset = (page - 1) * RECORDS_PER_PAGE;
+
+        // Lấy danh sách blog và tổng số blog từ DAO
+        List<Blog> blogs = dao.getBlogsByPage(offset, RECORDS_PER_PAGE);
+        int totalRecords = dao.getTotalBlogCount();
+        int totalPages = (int) Math.ceil((double) totalRecords / RECORDS_PER_PAGE);
+
+        // Gửi dữ liệu qua JSP
+        request.setAttribute("blog", blogs);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+
         request.getRequestDispatcher("blog.jsp").forward(request, response);
     }
 
@@ -77,7 +101,6 @@ public class blogController extends HttpServlet {
             throws ServletException, IOException {
         int blogID = Integer.parseInt(request.getParameter("idBlog"));
         request.setAttribute("blog", dao.getBlogByID(blogID));
-        request.setAttribute("blogImg", dao.getBlogImgByID(blogID));
         request.getRequestDispatcher("blog-details.jsp").forward(request, response);
     }
 

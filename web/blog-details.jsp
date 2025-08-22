@@ -17,11 +17,11 @@
                     <li class="author-info"><i class="fa fa-user"></i><a href="blog.jsp">Hector Lovett</a></li>
                   </ul>
                 </div>-->
-                <h3 class="main-title">${blog.getBlog_Name()}</h3>
+                <h3 class="main-title">${blog.getTitle()}</h3>
                 
                 <div class="details-wrapper details-wrapper-style2">
                   <p><img class="p-image-right" src="${blogImg.getImage_URL()}" width="370" height="400" alt="Image-HasTech">
-                      <span>${blog.getDescription()}</span></p>
+                      <span>${blog.getContent()}</span></p>
                   
                 </div>
                 <div class="blog-details-footer"> 

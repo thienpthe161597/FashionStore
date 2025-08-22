@@ -1,4 +1,6 @@
 <%@ include file="./header.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!--== End Header Wrapper ==-->
 
 <main class="main-content">
@@ -10,44 +12,59 @@
     <section class="blog-area blog-inner-area">
         <div class="container">
             <div class="row">
-                <c:forEach items="${blogImg}" var="blogImg">
-                    <div class="col-md-6 col-lg-4">
+                <c:forEach items="${blog}" var="blog">
+                    <div class="col-md-12">
                         <!--== Start Blog Item ==-->
                         <div class="post-item">
-                            
+
                             <div class="inner-content">
-                                <c:forEach items="${blog}" var="blog">
-                                <c:if test="${blog.getBlog_ID() == blogImg.getBlog_ID()}">
-                                <div class="thumb">
-                                    <img src="${blogImg.getImage_URL()}" width="370" height="260">
-                                </div>
-                                </c:if>
-                                 </c:forEach>
-                                <div class="content">
-                                    <div class="meta-post">
-<!--                                        <ul>
-                                            <li class="post-date"><i class="fa fa-calendar"></i><a href="blog.jsp">27,Jun 2030</a></li>
-                                            <li class="author-info"><i class="fa fa-user"></i><a href="blog.jsp">Oaklee Odom</a></li>
-                                        </ul>-->
-                                    </div>
-                                    <c:forEach items="${blog}" var="blog">
-                                    <c:if test="${blog.getBlog_ID() == blogImg.getBlog_ID()}">
-                                    <h4 class="title">${blog.getBlog_Name()}</h4>
-                                    </c:if>
-                                     </c:forEach>
-                                    <form action="blog" method="post">
-                                        <input type="hidden" name="idBlog" value="${blogImg.getBlog_ID()}">
-                                        <button class="post-btn" type="submit"><a>Read More</a></button>
-                                    </form>
-                                </div>
+                                <h3>
+                                    <a href="blog-detail?idBlog=${blog.getBlog_ID()}" style="text-decoration: none; color: inherit;">
+
+                                        ${blog.getTitle()}
+                                    </a>
+                                </h3>
+                                <p><strong>Date:</strong> ${blog.getCreateAt()}</p>
+                                <p>
+                                    
+                                    <span>
+                                        <c:choose>
+                                            <c:when test="${fn:length(blog.getContent()) > 50}">
+                                                ${fn:substring(blog.content, 0, 50)}...
+                                            </c:when>
+                                            <c:otherwise>
+                                                ${blog.content}
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </p>
+                                <!--<img class="p-image-right" src="${blogImg.getImage_URL()}" width="370" height="400" alt="Image-HasTech">-->
+                                <hr/>
                             </div>
-                                   
+
                         </div>
                         <!--== End Blog Item ==-->
                     </div>
                 </c:forEach>
             </div>
         </div>
+        <!-- Pagination Buttons -->
+        <div class="pagination" style="display: flex; justify-content: center; margin-top: 20px;">
+            <ul style="list-style: none; display: flex; gap: 10px; padding: 0;">
+                <c:forEach begin="1" end="${totalPages}" var="i">
+                    <li>
+                        <a href="blog?page=${i}"
+                           style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px;
+                           text-decoration: none; color: #333;
+                           ${i == currentPage ? 'font-weight:bold; background-color:#000; color:white;' : ''}">
+                            ${i}
+                        </a>
+                    </li>
+                </c:forEach>
+            </ul>
+        </div>
+
+
     </section>
     <!--== End Blog Area Wrapper ==-->
 </main>

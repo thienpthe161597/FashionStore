@@ -12,8 +12,10 @@ public class User {
     public String Phone;
     public String Role;
     public Date Created_At;
+    public boolean isActive; // New field for ban status (true = active, false = banned)
 
     public User() {
+        this.isActive = true; // Default to active
     }
 
     public User(int User_ID, String User_Name, String Address, String Phone) {
@@ -21,15 +23,18 @@ public class User {
         this.User_Name = User_Name;
         this.Address = Address;
         this.Phone = Phone;
+        this.isActive = true;
     }
 
     public User(String Email) {
         this.Email = Email;
+        this.isActive = true;
     }
 
     public User(String Email, String Password) {
         this.Email = Email;
         this.Password = Password;
+        this.isActive = true;
     }
 
     public User(String User_Name, String Email, String Password, String Role) {
@@ -37,6 +42,7 @@ public class User {
         this.Email = Email;
         this.Password = Password;
         this.Role = Role;
+        this.isActive = true;
     }
 
     public User(int User_ID, String User_Name, String Email, String Password, String Address, String Phone, String Role) {
@@ -47,8 +53,10 @@ public class User {
         this.Address = Address;
         this.Phone = Phone;
         this.Role = Role;
+        this.isActive = true;
     }
 
+    // Getters and Setters
     public int getUser_ID() {
         return User_ID;
     }
@@ -113,8 +121,16 @@ public class User {
         this.Created_At = Created_At;
     }
 
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
     @Override
     public String toString() {
-        return "User{" + "User_ID=" + User_ID + ", User_Name=" + User_Name + ", Email=" + Email + ", Password=" + Password + ", Address=" + Address + ", Phone=" + Phone + ", Role=" + Role + ", Created_At=" + Created_At + '}';
+        return "User{" + "User_ID=" + User_ID + ", User_Name=" + User_Name + ", Email=" + Email + ", Password=" + Password + ", Address=" + Address + ", Phone=" + Phone + ", Role=" + Role + ", Created_At=" + Created_At + ", isActive=" + isActive + '}';
     }
 }
