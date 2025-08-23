@@ -1,840 +1,600 @@
 <%@ include file="./header.jsp" %>
-<!--== End Header Wrapper ==-->
+<%@ page import="dao.ProductDAO,dao.UserDAO, dao.FeedbackDAO, entity.User, entity.Feedback, entity.Product, java.util.List" %>
+<%
+    int pageSize = 8;  // Number of feedback per page
+    int feedbackPage = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
+    int productId = Integer.parseInt(request.getParameter("id"));
+    ProductDAO productDAO = new ProductDAO();
+    FeedbackDAO feedbackDAO = new FeedbackDAO();
+    UserDAO userDAO = new UserDAO();
+    User user = (User) session.getAttribute("user");
+    List<Feedback> feedbackList = feedbackDAO.getFeedbackByProductId(productId, feedbackPage, pageSize);
+    int totalFeedback = feedbackDAO.getTotalFeedbacks(productId);
+    int totalPages = (int) Math.ceil((double) totalFeedback / pageSize);
+    
+    
+    Product product = productDAO.getProductById(productId);
+    List<String> colors = productDAO.getProductColors(productId);
+    
+    // Ensure there's a default color
+    String defaultColor = (colors != null && !colors.isEmpty()) ? colors.get(0) : "";
+    String selectedColor = (request.getParameter("selectedColor") != null) ? request.getParameter("selectedColor") : defaultColor;
 
-<main class="main-content">
-    <!--== Start Page Header Area Wrapper ==-->
-    <div class="page-header-area" data-bg-img="assets/img/photos/bg3.webp">
-        <div class="container pt--0 pb--0">
-            <div class="row">
-                <div class="col-12">
-                    <div class="page-header-content">
-                        <h2 class="title" data-aos="fade-down" data-aos-duration="1000">Product Details</h2>
-                        <nav class="breadcrumb-area" data-aos="fade-down" data-aos-duration="1200">
-                            <ul class="breadcrumb">
-                                <li><a href="index.jsp">Home</a></li>
-                                <li class="breadcrumb-sep">//</li>
-                                <li>Product Details</li>
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--== End Page Header Area Wrapper ==-->
+    List<String> colorImages = productDAO.getImagesByColor(productId, selectedColor);
+    List<String> sizes = productDAO.getProductSizes(productId, selectedColor);
+    List<String> mainImages = productDAO.getProductMainImages(productId);
+    String productColorMainImage = productDAO.getProductColorMainImage(productId, selectedColor);
+%>
+  <!--== End Header Wrapper ==-->
+  
+<!--== CSS for Styling ==-->
+<style>
+/* Product Gallery */
+.product-gallery {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Main Image */
+.main-image-container {
+    width: 500px;
+    height: 450px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f8f8;
+}
+
+.main-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;  /* Ensures the entire image fits inside the border */
+}
+
+/* Thumbnail container: Enables horizontal scrolling */
+.thumbnail-container {
+    display: flex;
+    gap: 10px;              /* Space between thumbnails */
+    overflow-x: auto;       /* Enable horizontal scrolling */
+    white-space: nowrap;    /* Prevents thumbnails from wrapping to a new row */
+    padding-bottom: 5px;    /* Space below to prevent scrollbar overlap */
+    max-width: 100%;        /* Prevents excessive stretching */
+}
+
+/* Hide scrollbar but keep functionality */
+.thumbnail-container::-webkit-scrollbar {
+    height: 8px; /* Adjust scrollbar thickness */
+}
+
+.thumbnail-container::-webkit-scrollbar-thumb {
+    background: #bbb; /* Light gray scrollbar */
+    border-radius: 4px;
+}
+
+.thumbnail-container::-webkit-scrollbar-track {
+    background: transparent; /* Hide the track */
+}
+
+/* Style individual thumbnail images */
+.thumbnail-container img {
+    width: 100px;  /* Fixed size for uniformity */
+    height: 100px;
+    object-fit: cover; /* Ensures image fills the box without distortion */
+    border-radius: 8px; /* Smooth rounded corners */
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Hover effect */
+.thumbnail-container img:hover {
+    transform: scale(1.1); /* Slight zoom effect */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.review-pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.review-pagination a {
+    padding: 8px 12px;
+    margin: 0 5px;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    color: #333;
+    border-radius: 5px;
+}
+
+.review-pagination a.active {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+.review-pagination a:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+
+</style>
+  
+  <main class="main-content">
 
     <!--== Start Product Single Area Wrapper ==-->
     <section class="product-area product-single-area">
-        <div class="container">
-            <div class="row">
+      <div class="container">
+        <div class="row">
                 <div class="col-12">
                     <div class="product-single-item">
                         <div class="row">
                             <div class="col-xl-6">
-                                <!--== Start Product Thumbnail Area ==-->
-                                <div class="product-single-thumb">
-                                    <div class="swiper-container single-product-thumb single-product-thumb-slider">
-                                        <div class="swiper-wrapper">
-                                            <div class="swiper-slide">
-                                                <a class="lightbox-image" data-fancybox="gallery" href="assets/img/shop/product-single/1.webp">
-                                                    <img src="assets/img/shop/product-single/1.webp" width="570" height="541" alt="Image-HasTech">
-                                                </a>
-                                            </div>
-                                            <div class="swiper-slide">
-                                                <a class="lightbox-image" data-fancybox="gallery" href="assets/img/shop/product-single/2.webp">
-                                                    <img src="assets/img/shop/product-single/2.webp" width="570" height="541" alt="Image-HasTech">
-                                                </a>
-                                            </div>
-                                            <div class="swiper-slide">
-                                                <a class="lightbox-image" data-fancybox="gallery" href="assets/img/shop/product-single/3.webp">
-                                                    <img src="assets/img/shop/product-single/3.webp" width="570" height="541" alt="Image-HasTech">
-                                                </a>
-                                            </div>
-                                            <div class="swiper-slide">
-                                                <a class="lightbox-image" data-fancybox="gallery" href="assets/img/shop/product-single/4.webp">
-                                                    <img src="assets/img/shop/product-single/4.webp" width="570" height="541" alt="Image-HasTech">
-                                                </a>
-                                            </div>
-                                            <div class="swiper-slide">
-                                                <a class="lightbox-image" data-fancybox="gallery" href="assets/img/shop/product-single/5.webp">
-                                                    <img src="assets/img/shop/product-single/5.webp" width="570" height="541" alt="Image-HasTech">
-                                                </a>
-                                            </div>
-                                        </div>
+                                <!--== Product Thumbnail Area ==-->
+                                <div class="product-gallery">
+                                    <!--== Main Image ==-->
+                                    <div class="main-image-container">
+                                        <a class="lightbox-image" data-fancybox="gallery">
+                                            <img id="mainImage" src="<%= colorImages.get(0) %>" alt="Product Image">
+                                        </a>
                                     </div>
-                                    <div class="swiper-container single-product-nav single-product-nav-slider">
-                                        <div class="swiper-wrapper">
-                                            <div class="swiper-slide">
-                                                <img src="assets/img/shop/product-single/nav-1.webp" width="127" height="127" alt="Image-HasTech">
-                                            </div>
-                                            <div class="swiper-slide">
-                                                <img src="assets/img/shop/product-single/nav-2.webp" width="127" height="127" alt="Image-HasTech">
-                                            </div>
-                                            <div class="swiper-slide">
-                                                <img src="assets/img/shop/product-single/nav-3.webp" width="127" height="127" alt="Image-HasTech">
-                                            </div>
-                                            <div class="swiper-slide">
-                                                <img src="assets/img/shop/product-single/nav-4.webp" width="127" height="127" alt="Image-HasTech">
-                                            </div>
-                                            <div class="swiper-slide">
-                                                <img src="assets/img/shop/product-single/nav-5.webp" width="127" height="127" alt="Image-HasTech">
-                                            </div>
-                                        </div>
+
+                                    <!--== Thumbnails ==-->
+                                    <div class="thumbnail-container">
+                                        <% for (String img : colorImages) { %>
+                                            <img src="<%= img %>" class="thumbnail" onclick="changeMainImage('<%= img %>')">
+                                        <% } %>
                                     </div>
                                 </div>
                                 <!--== End Product Thumbnail Area ==-->
                             </div>
+
                             <div class="col-xl-6">
-                                <!--== Start Product Info Area ==-->
+                                <!--== Product Info ==-->
                                 <div class="product-single-info">
-                                    <h3 class="main-title">Leather Mens Slipper</h3>
+                                    <h3 class="main-title"><%= product.getProductName() %></h3>
                                     <div class="prices">
-                                        <span class="price">$20.19</span>
+                                        <% if (product.getSaleID() != 0) { 
+                                            double originalPrice = product.getPrice();
+                                            double discountPercent = productDAO.getSaleDiscount(product.getSaleID()); // Fetch the discount percentage
+                                            double salePrice = originalPrice * ((100 - discountPercent) / 100);
+                                        %>
+                                            <span class="price text-danger fw-bold">-<%= (int) discountPercent %>%</span>
+                                            <span class="old-price text-muted text-decoration-line-through">$<%= originalPrice %></span>
+                                            <span class="price text-danger fw-bold">$<%= String.format("%.2f", salePrice) %></span>
+                                        <% } else { %>
+                                            <span class="price text-danger fw-bold">$<%= product.getPrice() %></span>
+                                        <% } %>
                                     </div>
-                                    <div class="rating-box-wrap">
-                                        <div class="rating-box">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                        <div class="review-status">
-                                            <a href="javascript:void(0)">(5 Customer Review)</a>
-                                        </div>
+                                    <p><%= product.getDescription() %></p>
+                                    
+                                    <div class ="product-color">
+                                        <h6 class="title">Gender: <%= product.getGender() %></h6>
                                     </div>
-                                    <p>Lorem ipsum dolor sit amet, consecte adipisicing elit, sed do eiusmll tempor incididunt ut labore et dolore magna aliqua. Ut enim ad mill veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip exet commodo consequat. Duis aute irure dolor</p>
+
+                                    <!-- Color Selection -->
                                     <div class="product-color">
                                         <h6 class="title">Color</h6>
                                         <ul class="color-list">
-                                            <li  data-bg-color="#586882"></li>
-                                            <li class="active" data-bg-color="#505050"></li>
-                                            <li data-bg-color="#73707a"></li>
-                                            <li data-bg-color="#c7bb9b"></li>
+                                            <% for (String img : mainImages) { 
+                                            String imgColor = productDAO.getColorByImage(img);
+                                            boolean isActive = imgColor.equals(selectedColor);
+                                            %>
+                                            <li class="<%= isActive ? "active" : "" %>">
+                                                    <a href="single-product.jsp?id=<%= productId %>&selectedColor=<%= imgColor %>">
+                                                        <img src="<%= img %>" alt="<%= imgColor %>">
+                                                    </a>
+                                                </li>
+                                            <% } %>
                                         </ul>
                                     </div>
+
+                                    <!-- Size Selection -->
+                                    <form action = "AddToCartController" method="get">
                                     <div class="product-size">
                                         <h6 class="title">Size</h6>
-                                        <ul class="size-list">
-                                            <li>S</li>
-                                            <li class="active">M</li>
-                                            <li>L</li>
-                                            <li>XL</li>
-                                        </ul>
+                                        <select class="size-dropdown" name="size">
+                                            <% for (String size : sizes) { %>
+                                                <option value="<%= size %>"><%= size %></option>
+                                            <% } %>
+                                        </select>
                                     </div>
+
+                                    <!-- Add to Cart -->
+                                    
                                     <div class="product-quick-action">
-                                        <form action="AddToCartServlet" method="post">
-                                            <div class="qty-wrap">
-                                                <div class="pro-qty">
-                                                    <!-- quantity ph?i c� name ?? servlet ??c -->
-                                                    <input type="number" name="quantity" title="Quantity" value="1" min="1">
-                                                </div>
+                                        <div class="qty-wrap">
+                                            <div class="pro-qty">
+                                                <input type="number" name="quantity" value="1" min="1">
                                             </div>
+                                            <input type="hidden" name="id" value="<%= productId %>">
+                                            <input type="hidden" name="color" value="<%= selectedColor %>">
+                                        </div>
+                                        <button type="submit" class="btn-theme">Add to Cart</button>
+                                    </div>
+                                    </form>
+                                </div>
+                                <!--== End Product Info ==-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                                    
+                                    <!--== JavaScript to Change Main Image ==-->
+<script>
+function changeMainImage(newSrc) {
+    document.getElementById("mainImage").src = newSrc;
+}
 
-                                            <!-- truy?n hidden field ?? servlet nh?n -->
-                                            <input type="hidden" name="id" value="${product.id}">
-                                            <input type="hidden" name="name" value="${product.name}">
-                                            <input type="hidden" name="price" value="${product.price}">
-                                            <input type="hidden" name="image" value="${product.image}">
+document.addEventListener("DOMContentLoaded", function () {
+        const reviewBtn = document.querySelector(".review-write-btn");
+        const reviewForm = document.querySelector(".reviews-form-area");
 
-                                            <button type="submit" class="btn-theme">Add to Cart</button>
-                                        </form>
+        reviewBtn.addEventListener("click", function () {
+            // Toggle the form visibility
+            if (reviewForm.style.display === "none" || reviewForm.style.display === "") {
+                reviewForm.style.display = "block";
+            } else {
+                reviewForm.style.display = "none";
+            }
+        });
+    });
+</script>
+
+        <div class="row">
+          <div class="col-12">
+            <div class="product-review-tabs-content">
+                <ul class="nav product-tab-nav" id="ReviewTab" role="tablist">
+                    <li role="presentation">
+                        <a id="reviews-tab" href="#reviews">Reviews <span>(<%= totalFeedback %>)</span></a>
+                    </li>
+                </ul>
+              <div class="tab-content product-tab-content" id="ReviewTabContent">
+                <div class="tab-pane fade show active" id="reviews">
+                  <div class="product-review-content">
+                    <div class="review-content-header">
+                        <h3>Customer Reviews</h3>
+                        <div class="review-info">
+                            <ul class="review-rating">
+                                <% 
+                                    double avgRating = feedbackDAO.getAverageRating(productId);
+                                    int fullStars = (int) avgRating;
+                                    boolean halfStar = (avgRating - fullStars) >= 0.5;
+                                %>
+
+                                <% for (int i = 0; i < fullStars; i++) { %>
+                                    <li class="fa fa-star"></li>  <%-- Full Star --%>
+                                <% } %>
+
+                                <% if (halfStar) { %>
+                                    <li class="fa fa-star-half-o"></li>  <%-- Half Star --%>
+                                <% } %>
+
+                                <% for (int i = fullStars + (halfStar ? 1 : 0); i < 5; i++) { %>
+                                    <li class="fa fa-star-o"></li>  <%-- Empty Star --%>
+                                <% } %>
+                            </ul>
+
+                            <span class="review-caption">
+                                Based on <%= totalFeedback %> reviews - Average Rating: <%= String.format("%.1f", avgRating) %> Star
+                            </span>
+
+                            <% 
+                                boolean hasReviewed = user != null && feedbackDAO.hasUserReviewed(user.getUser_ID(), productId);
+                                if (user != null) { 
+                            %>
+                                <span class="review-write-btn"><%= hasReviewed ? "Edit your review" : "Write a review" %></span>
+                            <% } else { %>
+                                <a class="title" href="account-login.jsp">Login to write review</a>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!--== Start Reviews Form Item ==-->
+                    <% if (user != null) { %>
+                    <div class="reviews-form-area">
+                        <div class="reviews-form-content">
+                            <form action="FeedbackController" method="POST">
+                                <input type="hidden" name="productId" value="<%= productId %>">
+
+                                <% 
+                                    int userRating = hasReviewed ? feedbackDAO.getUserRating(user.getUser_ID(), productId) : 0;
+                                    String userComment = hasReviewed ? feedbackDAO.getUserComment(user.getUser_ID(), productId) : "";
+                                %>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <span class="title">Rating</span>
+                                            <select name="rating" class="form-control">
+                                                <% for (int i = 1; i <= 5; i++) { %>
+                                                    <option value="<%= i %>" <%= (i == userRating) ? "selected" : "" %>><%= i %> Star</option>
+                                                <% } %>
+                                            </select>
+                                        </div>
                                     </div>
 
-                                    <div class="product-wishlist-compare">
-                                        <a href="shop-wishlist.jsp"><i class="pe-7s-like"></i>Add to Wishlist</a>
-                                        <a href="shop-compare.jsp"><i class="pe-7s-shuffle"></i>Add to Compare</a>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="for_comment">Your Review</label>
+                                            <textarea id="for_comment" class="form-control" name="comment" placeholder="Write your comments here"><%= userComment %></textarea>
+                                        </div>
                                     </div>
-
-                                    <div class="product-info-footer">
-                                        <h6 class="code"><span>Code :</span>Ch-256xl</h6>
-                                        <div class="social-icons">
-                                            <span>Share</span>
-                                            <a href="#/"><i class="fa fa-facebook"></i></a>
-                                            <a href="#/"><i class="fa fa-dribbble"></i></a>
-                                            <a href="#/"><i class="fa fa-pinterest-p"></i></a>
+                                    <div class="col-md-12">
+                                        <div class="form-submit-btn">
+                                            <button type="submit" class="btn-submit"><%= hasReviewed ? "Update Review" : "Post Comment" %></button>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!--== End Product Info Area ==-->
+                            </form>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
+                    <% } %>
+                    <!--== End Reviews Form Item ==-->
 
-        <div class="row">
-            <div class="col-12">
-                <div class="product-review-tabs-content">
-                    <ul class="nav product-tab-nav" id="ReviewTab" role="tablist">
-                        <li role="presentation">
-                            <a class="active" id="information-tab" data-bs-toggle="pill" href="#information" role="tab" aria-controls="information" aria-selected="true">Information</a>
-                        </li>
-                        <li role="presentation">
-                            <a id="description-tab" data-bs-toggle="pill" href="#description" role="tab" aria-controls="description" aria-selected="false">Description</a>
-                        </li>
-                        <li role="presentation">
-                            <a id="reviews-tab" data-bs-toggle="pill" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">Reviews <span>(05)</span></a>
-                        </li>
-                    </ul>
-                    <div class="tab-content product-tab-content" id="ReviewTabContent">
-                        <div class="tab-pane fade show active" id="information" role="tabpanel" aria-labelledby="information-tab">
-                            <div class="product-information">
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim adlo minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in tun tuni reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserun mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rel aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.</p>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="description" role="tabpanel" aria-labelledby="description-tab">
-                            <div class="product-description">
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim adlo minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in tun tuni reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserun mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rel aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.</p>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
-                            <div class="product-review-content">
-                                <div class="review-content-header">
-                                    <h3>Customer Reviews</h3>
-                                    <div class="review-info">
-                                        <ul class="review-rating">
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star-o"></li>
-                                        </ul>
-                                        <span class="review-caption">Based on 5 reviews</span>
-                                        <span class="review-write-btn">Write a review</span>
-                                    </div>
+                    <div class="reviews-content-body">
+                        <% if (feedbackList != null && !feedbackList.isEmpty()) { %>
+                            <% for (Feedback feedback : feedbackList) { %>
+                                <div class="review-item">
+                                    <ul class="review-rating">
+                                        <% for (int i = 1; i <= 5; i++) { %>
+                                            <li class="fa <%= (i <= feedback.getRating()) ? "fa-star" : "fa-star-o" %>"></li>
+                                        <% } %>
+                                    </ul>
+                                    <h5 class="sub-title">
+                                        <span>User <%= userDAO.getUserNameById(feedback.getUserId()) %></span> 
+                                        on <span><%= feedback.getDate() %></span>
+                                    </h5>
+                                    <p><%= feedback.getComment().replace("<", "&lt;").replace(">", "&gt;") %></p> <%-- Prevents XSS --%>
                                 </div>
-
-                                <!--== Start Reviews Form Item ==-->
-                                <div class="reviews-form-area">
-                                    <h4 class="title">Write a review</h4>
-                                    <div class="reviews-form-content">
-                                        <form action="#">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label for="for_name">Name</label>
-                                                        <input id="for_name" class="form-control" type="text" placeholder="Enter your name">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label for="for_email">Email</label>
-                                                        <input id="for_email" class="form-control" type="email" placeholder="john.smith@example.com">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <span class="title">Rating</span>
-                                                        <ul class="review-rating">
-                                                            <li class="fa fa-star-o"></li>
-                                                            <li class="fa fa-star-o"></li>
-                                                            <li class="fa fa-star-o"></li>
-                                                            <li class="fa fa-star-o"></li>
-                                                            <li class="fa fa-star-o"></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label for="for_review-title">Review Title</label>
-                                                        <input id="for_review-title" class="form-control" type="text" placeholder="Give your review a title">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label for="for_comment">Body of Review (1500)</label>
-                                                        <textarea id="for_comment" class="form-control" placeholder="Write your comments here"></textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="form-submit-btn">
-                                                        <button type="submit" class="btn-submit">Post comment</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <!--== End Reviews Form Item ==-->
-
-                                <div class="reviews-content-body">
-                                    <!--== Start Reviews Content Item ==-->
-                                    <div class="review-item">
-                                        <ul class="review-rating">
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                        </ul>
-                                        <h3 class="title">Awesome shipping service!</h3>
-                                        <h5 class="sub-title"><span>Nantu Nayal</span> no <span>Sep 30, 2022</span></h5>
-                                        <p>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                                        <a href="#/">Report as Inappropriate</a>
-                                    </div>
-                                    <!--== End Reviews Content Item ==-->
-
-                                    <!--== Start Reviews Content Item ==-->
-                                    <div class="review-item">
-                                        <ul class="review-rating">
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star-o"></li>
-                                            <li class="fa fa-star-o"></li>
-                                            <li class="fa fa-star-o"></li>
-                                            <li class="fa fa-star-o"></li>
-                                        </ul>
-                                        <h3 class="title">Low Quality</h3>
-                                        <h5 class="sub-title"><span>Oliv hala</span> no <span>Sep 30, 2022</span></h5>
-                                        <p>My Favorite White Sneakers From Splurge To Save the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.</p>
-                                        <a href="#/">Report as Inappropriate</a>
-                                    </div>
-                                    <!--== End Reviews Content Item ==-->
-
-                                    <!--== Start Reviews Content Item ==-->
-                                    <div class="review-item">
-                                        <ul class="review-rating">
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                        </ul>
-                                        <h3 class="title">Excellent services!</h3>
-                                        <h5 class="sub-title"><span>Halk Marron</span> no <span>Sep 30, 2022</span></h5>
-                                        <p>The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</p>
-                                        <a href="#/">Report as Inappropriate</a>
-                                    </div>
-                                    <!--== End Reviews Content Item ==-->
-
-                                    <!--== Start Reviews Content Item ==-->
-                                    <div class="review-item">
-                                        <ul class="review-rating">
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star-o"></li>
-                                            <li class="fa fa-star-o"></li>
-                                        </ul>
-                                        <h3 class="title">Price is very high</h3>
-                                        <h5 class="sub-title"><span>Musa</span> no <span>Sep 30, 2022</span></h5>
-                                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.</p>
-                                        <a href="#/">Report as Inappropriate</a>
-                                    </div>
-                                    <!--== End Reviews Content Item ==-->
-
-                                    <!--== Start Reviews Content Item ==-->
-                                    <div class="review-item">
-                                        <ul class="review-rating">
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star"></li>
-                                            <li class="fa fa-star-o"></li>
-                                        </ul>
-                                        <h3 class="title">Normal</h3>
-                                        <h5 class="sub-title"><span>Muhammad</span> no <span>Sep 30, 2022</span></h5>
-                                        <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour</p>
-                                        <a href="#/">Report as Inappropriate</a>
-                                    </div>
-                                    <!--== End Reviews Content Item ==-->
-                                </div>
-
-                                <!--== Start Reviews Pagination Item ==-->
-                                <div class="review-pagination">
-                                    <span class="pagination-pag">1</span>
-                                    <span class="pagination-pag">2</span>
-                                    <span class="pagination-next">Next »</span>
-                                </div>
-                                <!--== End Reviews Pagination Item ==-->
-                            </div>
-                        </div>
+                            <% } %>
+                        <% } else { %>
+                            <p>No reviews yet. Be the first to review!</p>
+                        <% } %>
                     </div>
+
+                    <!--== Start Reviews Pagination Item ==-->
+                    <% if (totalPages > 1) { %>
+                    <div class="review-pagination">
+                        <% if (feedbackPage > 1) { %>
+                            <a href="?id=<%= productId %>&page=<%= feedbackPage - 1 %>#reviews" class="pagination-prev">� Previous</a>
+                        <% } %>
+
+                        <% for (int i = 1; i <= totalPages; i++) { %>
+                            <a href="?id=<%= productId %>&page=<%= i %>#reviews" class="pagination-pag <%= (i == feedbackPage) ? "active" : "" %>"><%= i %></a>
+                        <% } %>
+
+                        <% if (feedbackPage < totalPages) { %>
+                            <a href="?id=<%= productId %>&page=<%= feedbackPage + 1 %>#reviews" class="pagination-next">Next �</a>
+                        <% } %>
+                    </div>
+                    <% } %>
+                    <!--== End Reviews Pagination Item ==-->
                 </div>
+
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-        </div>
+      </div>
     </section>
     <!--== End Product Single Area Wrapper ==-->
 
-    <!--== Start Product Area Wrapper ==-->
-    <section class="product-area product-best-seller-area">
-        <div class="container pt--0">
-            <div class="row">
-                <div class="col-12">
-                    <div class="section-title text-center">
-                        <h3 class="title">Related Products</h3>
-                        <div class="desc">
-                            <p>There are many variations of passages of Lorem Ipsum available</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="product-slider-wrap">
-                        <div class="swiper-container product-slider-col4-container">
-                            <div class="swiper-wrapper">
-                                <div class="swiper-slide">
-                                    <!--== Start Product Item ==-->
-                                    <div class="product-item">
-                                        <div class="inner-content">
-                                            <div class="product-thumb">
-                                                <a href="single-product.jsp">
-                                                    <img src="assets/img/shop/1.webp" width="270" height="274" alt="Image-HasTech">
-                                                </a>
-                                                <div class="product-flag">
-                                                    <ul>
-                                                        <li class="discount">-10%</li>
-                                                    </ul>
-                                                </div>
-                                                <div class="product-action">
-                                                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
-                                                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
-                                                    <button type="button" class="btn-product-quick-view-open">
-                                                        <i class="fa fa-arrows"></i>
-                                                    </button>
-                                                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
-                                                </div>
-                                                <a class="banner-link-overlay" href="shop.jsp"></a>
-                                            </div>
-                                            <div class="product-info">
-                                                <div class="category">
-                                                    <ul>
-                                                        <li><a href="shop.jsp">Men</a></li>
-                                                        <li class="sep">/</li>
-                                                        <li><a href="shop.jsp">Women</a></li>
-                                                    </ul>
-                                                </div>
-                                                <h4 class="title"><a href="single-product.jsp">Modern Smart Shoes</a></h4>
-                                                <div class="prices">
-                                                    <span class="price-old">$300</span>
-                                                    <span class="sep">-</span>
-                                                    <span class="price">$240.00</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--== End prPduct Item ==-->
-                                </div>
-                                <div class="swiper-slide">
-                                    <!--== Start Product Item ==-->
-                                    <div class="product-item">
-                                        <div class="inner-content">
-                                            <div class="product-thumb">
-                                                <a href="single-product.jsp">
-                                                    <img src="assets/img/shop/7.webp" width="270" height="274" alt="Image-HasTech">
-                                                </a>
-                                                <div class="product-action">
-                                                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
-                                                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
-                                                    <button type="button" class="btn-product-quick-view-open">
-                                                        <i class="fa fa-arrows"></i>
-                                                    </button>
-                                                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
-                                                </div>
-                                                <a class="banner-link-overlay" href="shop.jsp"></a>
-                                            </div>
-                                            <div class="product-info">
-                                                <div class="category">
-                                                    <ul>
-                                                        <li><a href="shop.jsp">Men</a></li>
-                                                        <li class="sep">/</li>
-                                                        <li><a href="shop.jsp">Women</a></li>
-                                                    </ul>
-                                                </div>
-                                                <h4 class="title"><a href="single-product.jsp">Quickiin Mens shoes</a></h4>
-                                                <div class="prices">
-                                                    <span class="price">$240.00</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--== End prPduct Item ==-->
-                                </div>
-                                <div class="swiper-slide">
-                                    <!--== Start Product Item ==-->
-                                    <div class="product-item">
-                                        <div class="inner-content">
-                                            <div class="product-thumb">
-                                                <a href="single-product.jsp">
-                                                    <img src="assets/img/shop/3.webp" width="270" height="274" alt="Image-HasTech">
-                                                </a>
-                                                <div class="product-flag">
-                                                    <ul>
-                                                        <li class="discount">-10%</li>
-                                                    </ul>
-                                                </div>
-                                                <div class="product-action">
-                                                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
-                                                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
-                                                    <button type="button" class="btn-product-quick-view-open">
-                                                        <i class="fa fa-arrows"></i>
-                                                    </button>
-                                                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
-                                                </div>
-                                                <a class="banner-link-overlay" href="shop.jsp"></a>
-                                            </div>
-                                            <div class="product-info">
-                                                <div class="category">
-                                                    <ul>
-                                                        <li><a href="shop.jsp">Men</a></li>
-                                                        <li class="sep">/</li>
-                                                        <li><a href="shop.jsp">Women</a></li>
-                                                    </ul>
-                                                </div>
-                                                <h4 class="title"><a href="single-product.jsp">Rexpo Womens shoes</a></h4>
-                                                <div class="prices">
-                                                    <span class="price-old">$300</span>
-                                                    <span class="sep">-</span>
-                                                    <span class="price">$240.00</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--== End prPduct Item ==-->
-                                </div>
-                                <div class="swiper-slide">
-                                    <!--== Start Product Item ==-->
-                                    <div class="product-item">
-                                        <div class="inner-content">
-                                            <div class="product-thumb">
-                                                <a href="single-product.jsp">
-                                                    <img src="assets/img/shop/4.webp" width="270" height="274" alt="Image-HasTech">
-                                                </a>
-                                                <div class="product-action">
-                                                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
-                                                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
-                                                    <button type="button" class="btn-product-quick-view-open">
-                                                        <i class="fa fa-arrows"></i>
-                                                    </button>
-                                                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
-                                                </div>
-                                                <a class="banner-link-overlay" href="shop.jsp"></a>
-                                            </div>
-                                            <div class="product-info">
-                                                <div class="category">
-                                                    <ul>
-                                                        <li><a href="shop.jsp">Men</a></li>
-                                                        <li class="sep">/</li>
-                                                        <li><a href="shop.jsp">Women</a></li>
-                                                    </ul>
-                                                </div>
-                                                <h4 class="title"><a href="single-product.jsp">Leather Mens Slipper</a></h4>
-                                                <div class="prices">
-                                                    <span class="price">$240.00</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--== End prPduct Item ==-->
-                                </div>
-                                <div class="swiper-slide">
-                                    <!--== Start Product Item ==-->
-                                    <div class="product-item">
-                                        <div class="inner-content">
-                                            <div class="product-thumb">
-                                                <a href="single-product.jsp">
-                                                    <img src="assets/img/shop/5.webp" width="270" height="274" alt="Image-HasTech">
-                                                </a>
-                                                <div class="product-action">
-                                                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
-                                                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
-                                                    <button type="button" class="btn-product-quick-view-open">
-                                                        <i class="fa fa-arrows"></i>
-                                                    </button>
-                                                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
-                                                </div>
-                                                <a class="banner-link-overlay" href="shop.jsp"></a>
-                                            </div>
-                                            <div class="product-info">
-                                                <div class="category">
-                                                    <ul>
-                                                        <li><a href="shop.jsp">Men</a></li>
-                                                        <li class="sep">/</li>
-                                                        <li><a href="shop.jsp">Women</a></li>
-                                                    </ul>
-                                                </div>
-                                                <h4 class="title"><a href="single-product.jsp">Primitive Mens shoes</a></h4>
-                                                <div class="prices">
-                                                    <span class="price-old">$300</span>
-                                                    <span class="sep">-</span>
-                                                    <span class="price">$240.00</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--== End prPduct Item ==-->
-                                </div>
-                                <div class="swiper-slide">
-                                    <!--== Start Product Item ==-->
-                                    <div class="product-item">
-                                        <div class="inner-content">
-                                            <div class="product-thumb">
-                                                <a href="single-product.jsp">
-                                                    <img src="assets/img/shop/6.webp" width="270" height="274" alt="Image-HasTech">
-                                                </a>
-                                                <div class="product-flag">
-                                                    <ul>
-                                                        <li class="discount">-10%</li>
-                                                    </ul>
-                                                </div>
-                                                <div class="product-action">
-                                                    <a class="btn-product-wishlist" href="shop-wishlist.jsp"><i class="fa fa-heart"></i></a>
-                                                    <a class="btn-product-cart" href="shop-cart.jsp"><i class="fa fa-shopping-cart"></i></a>
-                                                    <button type="button" class="btn-product-quick-view-open">
-                                                        <i class="fa fa-arrows"></i>
-                                                    </button>
-                                                    <a class="btn-product-compare" href="shop-compare.jsp"><i class="fa fa-random"></i></a>
-                                                </div>
-                                                <a class="banner-link-overlay" href="shop.jsp"></a>
-                                            </div>
-                                            <div class="product-info">
-                                                <div class="category">
-                                                    <ul>
-                                                        <li><a href="shop.jsp">Men</a></li>
-                                                        <li class="sep">/</li>
-                                                        <li><a href="shop.jsp">Women</a></li>
-                                                    </ul>
-                                                </div>
-                                                <h4 class="title"><a href="single-product.jsp">Simple Fabric Shoe</a></h4>
-                                                <div class="prices">
-                                                    <span class="price-old">$300</span>
-                                                    <span class="sep">-</span>
-                                                    <span class="price">$240.00</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--== End prPduct Item ==-->
-                                </div>
-                            </div>
-                        </div>
-                        <!--== Add Swiper Arrows ==-->
-                        <div class="product-swiper-btn-wrap">
-                            <div class="product-swiper-btn-prev">
-                                <i class="fa fa-arrow-left"></i>
-                            </div>
-                            <div class="product-swiper-btn-next">
-                                <i class="fa fa-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!--== End Product Area Wrapper ==-->
-</main>
+  </main>
 
-<!--== Start Footer Area Wrapper ==-->
-<%@ include file="./footer.jsp" %>
-<!--== End Footer Area Wrapper ==-->
+  <!--== Start Footer Area Wrapper ==-->
+  <%@ include file="./footer.jsp" %>
+  <!--== End Footer Area Wrapper ==-->
 
-<!--== Scroll Top Button ==-->
-<div id="scroll-to-top" class="scroll-to-top"><span class="fa fa-angle-up"></span></div>
+  <!--== Scroll Top Button ==-->
+  <div id="scroll-to-top" class="scroll-to-top"><span class="fa fa-angle-up"></span></div>
 
-<!--== Start Quick View Menu ==-->
-<aside class="product-quick-view-modal">
+  <!--== Start Quick View Menu ==-->
+  <aside class="product-quick-view-modal">
     <div class="product-quick-view-inner">
-        <div class="product-quick-view-content">
-            <button type="button" class="btn-close">
-                <span class="close-icon"><i class="fa fa-close"></i></span>
-            </button>
-            <div class="row align-items-center">
-                <div class="col-lg-6 col-md-6 col-12">
-                    <div class="thumb">
-                        <img src="assets/img/shop/product-single/1.webp" width="570" height="541" alt="Alan-Shop">
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-6 col-12">
-                    <div class="content">
-                        <h4 class="title">Space X Bag For Office</h4>
-                        <div class="prices">
-                            <del class="price-old">$85.00</del>
-                            <span class="price">$70.00</span>
-                        </div>
-                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia,</p>
-                        <div class="quick-view-select">
-                            <div class="quick-view-select-item">
-                                <label for="forSize" class="form-label">Size:</label>
-                                <select class="form-select" id="forSize" required>
-                                    <option selected value="">s</option>
-                                    <option>m</option>
-                                    <option>l</option>
-                                    <option>xl</option>
-                                </select>
-                            </div>
-                            <div class="quick-view-select-item">
-                                <label for="forColor" class="form-label">Color:</label>
-                                <select class="form-select" id="forColor" required>
-                                    <option selected value="">red</option>
-                                    <option>green</option>
-                                    <option>blue</option>
-                                    <option>yellow</option>
-                                    <option>white</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="action-top">
-                            <div class="pro-qty">
-                                <input type="text" id="quantity20" title="Quantity" value="1" />
-                            </div>
-                            <button class="btn btn-black">Add to cart</button>
-                        </div>
-                    </div>
-                </div>
+      <div class="product-quick-view-content">
+        <button type="button" class="btn-close">
+          <span class="close-icon"><i class="fa fa-close"></i></span>
+        </button>
+        <div class="row align-items-center">
+          <div class="col-lg-6 col-md-6 col-12">
+            <div class="thumb">
+              <img src="assets/img/shop/product-single/1.webp" width="570" height="541" alt="Alan-Shop">
             </div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-12">
+            <div class="content">
+              <h4 class="title">Space X Bag For Office</h4>
+              <div class="prices">
+                <del class="price-old">$85.00</del>
+                <span class="price">$70.00</span>
+              </div>
+              <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia,</p>
+              <div class="quick-view-select">
+                <div class="quick-view-select-item">
+                  <label for="forSize" class="form-label">Size:</label>
+                  <select class="form-select" id="forSize" required>
+                    <option selected value="">s</option>
+                    <option>m</option>
+                    <option>l</option>
+                    <option>xl</option>
+                  </select>
+                </div>
+                <div class="quick-view-select-item">
+                  <label for="forColor" class="form-label">Color:</label>
+                  <select class="form-select" id="forColor" required>
+                    <option selected value="">red</option>
+                    <option>green</option>
+                    <option>blue</option>
+                    <option>yellow</option>
+                    <option>white</option>
+                  </select>
+                </div>
+              </div>
+              <div class="action-top">
+                <div class="pro-qty">
+                  <input type="text" id="quantity20" title="Quantity" value="1" />
+                </div>
+                <button class="btn btn-black">Add to cart</button>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
     <div class="canvas-overlay"></div>
-</aside>
-<!--== End Quick View Menu ==-->
+  </aside>
+  <!--== End Quick View Menu ==-->
 
-<!--== Start Aside Cart Menu ==-->
-<div class="aside-cart-wrapper offcanvas offcanvas-end" tabindex="-1" id="AsideOffcanvasCart" aria-labelledby="offcanvasRightLabel">
+  <!--== Start Aside Cart Menu ==-->
+  <div class="aside-cart-wrapper offcanvas offcanvas-end" tabindex="-1" id="AsideOffcanvasCart" aria-labelledby="offcanvasRightLabel">
     <div class="offcanvas-header">
-        <h1 id="offcanvasRightLabel"></h1>
-        <button class="btn-aside-cart-close" data-bs-dismiss="offcanvas" aria-label="Close">Shopping Cart <i class="fa fa-chevron-right"></i></button>
+      <h1 id="offcanvasRightLabel"></h1>
+      <button class="btn-aside-cart-close" data-bs-dismiss="offcanvas" aria-label="Close">Shopping Cart <i class="fa fa-chevron-right"></i></button>
     </div>
     <div class="offcanvas-body">
-        <ul class="aside-cart-product-list">
-            <li class="product-list-item">
-                <a href="#/" class="remove">×</a>
-                <a href="single-product.jsp">
-                    <img src="assets/img/shop/product-mini/1.webp" width="90" height="110" alt="Image-HasTech">
-                    <span class="product-title">Leather Mens Slipper</span>
-                </a>
-                <span class="product-price">1 × £69.99</span>
-            </li>
-            <li class="product-list-item">
-                <a href="#/" class="remove">×</a>
-                <a href="single-product.jsp">
-                    <img src="assets/img/shop/product-mini/2.webp" width="90" height="110" alt="Image-HasTech">
-                    <span class="product-title">Quickiin Mens shoes</span>
-                </a>
-                <span class="product-price">1 × £20.00</span>
-            </li>
-        </ul>
-        <p class="cart-total"><span>Subtotal:</span><span class="amount">£89.99</span></p>
-        <a class="btn-theme" data-margin-bottom="10" href="shop-cart.jsp">View cart</a>
-        <a class="btn-theme" href="shop-checkout.jsp">Checkout</a>
-        <a class="d-block text-end lh-1" href="shop-checkout.jsp"><img src="assets/img/photos/paypal.webp" width="133" height="26" alt="Has-image"></a>
+      <ul class="aside-cart-product-list">
+        <li class="product-list-item">
+          <a href="#/" class="remove">×</a>
+          <a href="single-product.jsp">
+            <img src="assets/img/shop/product-mini/1.webp" width="90" height="110" alt="Image-HasTech">
+            <span class="product-title">Leather Mens Slipper</span>
+          </a>
+          <span class="product-price">1 × £69.99</span>
+        </li>
+        <li class="product-list-item">
+          <a href="#/" class="remove">×</a>
+          <a href="single-product.jsp">
+            <img src="assets/img/shop/product-mini/2.webp" width="90" height="110" alt="Image-HasTech">
+            <span class="product-title">Quickiin Mens shoes</span>
+          </a>
+          <span class="product-price">1 × £20.00</span>
+        </li>
+      </ul>
+      <p class="cart-total"><span>Subtotal:</span><span class="amount">£89.99</span></p>
+      <a class="btn-theme" data-margin-bottom="10" href="shop-cart.jsp">View cart</a>
+      <a class="btn-theme" href="shop-checkout.jsp">Checkout</a>
+      <a class="d-block text-end lh-1" href="shop-checkout.jsp"><img src="assets/img/photos/paypal.webp" width="133" height="26" alt="Has-image"></a>
     </div>
-</div>
-<!--== End Aside Cart Menu ==-->
+  </div>
+  <!--== End Aside Cart Menu ==-->
 
-<!--== Start Aside Search Menu ==-->
-<aside class="aside-search-box-wrapper offcanvas offcanvas-top" tabindex="-1" id="AsideOffcanvasSearch" aria-labelledby="offcanvasTopLabel">
+  <!--== Start Aside Search Menu ==-->
+  <aside class="aside-search-box-wrapper offcanvas offcanvas-top" tabindex="-1" id="AsideOffcanvasSearch" aria-labelledby="offcanvasTopLabel">
     <div class="offcanvas-header">
-        <h5 class="d-none" id="offcanvasTopLabel">Aside Search</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="pe-7s-close"></i></button>
+      <h5 class="d-none" id="offcanvasTopLabel">Aside Search</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="pe-7s-close"></i></button>
     </div>
     <div class="offcanvas-body">
-        <div class="container pt--0 pb--0">
-            <div class="search-box-form-wrap">
-                <div class="search-note">
-                    <p>Start typing and press Enter to search</p>
-                </div>
-                <form action="#" method="post">
-                    <div class="search-form position-relative">
-                        <label for="search-input" class="visually-hidden">Search</label>
-                        <input id="search-input" type="search" class="form-control" placeholder="Search entire store…">
-                        <button class="search-button"><i class="fa fa-search"></i></button>
-                    </div>
-                </form>
+      <div class="container pt--0 pb--0">
+        <div class="search-box-form-wrap">
+          <div class="search-note">
+            <p>Start typing and press Enter to search</p>
+          </div>
+          <form action="#" method="post">
+            <div class="search-form position-relative">
+              <label for="search-input" class="visually-hidden">Search</label>
+              <input id="search-input" type="search" class="form-control" placeholder="Search entire store…">
+              <button class="search-button"><i class="fa fa-search"></i></button>
             </div>
+          </form>
         </div>
+      </div>
     </div>
-</aside>
-<!--== End Aside Search Menu ==-->
+  </aside>
+  <!--== End Aside Search Menu ==-->
 
-<!--== Start Side Menu ==-->
-<div class="off-canvas-wrapper offcanvas offcanvas-start" tabindex="-1" id="AsideOffcanvasMenu" aria-labelledby="offcanvasExampleLabel">
+  <!--== Start Side Menu ==-->
+  <div class="off-canvas-wrapper offcanvas offcanvas-start" tabindex="-1" id="AsideOffcanvasMenu" aria-labelledby="offcanvasExampleLabel">
     <div class="offcanvas-header">
-        <h1 id="offcanvasExampleLabel"></h1>
-        <button class="btn-menu-close" data-bs-dismiss="offcanvas" aria-label="Close">menu <i class="fa fa-chevron-left"></i></button>
+      <h1 id="offcanvasExampleLabel"></h1>
+      <button class="btn-menu-close" data-bs-dismiss="offcanvas" aria-label="Close">menu <i class="fa fa-chevron-left"></i></button>
     </div>
     <div class="offcanvas-body">
-        <div class="info-items">
-            <ul>
-                <li class="number"><a href="tel://0123456789"><i class="fa fa-phone"></i>+00 123 456 789</a></li>
-                <li class="email"><a href="mailto://demo@example.com"><i class="fa fa-envelope"></i>demo@example.com</a></li>
-                <li class="account"><a href="account-login.jsp"><i class="fa fa-user"></i>Account</a></li>
+      <div class="info-items">
+        <ul>
+          <li class="number"><a href="tel://0123456789"><i class="fa fa-phone"></i>+00 123 456 789</a></li>
+          <li class="email"><a href="mailto://demo@example.com"><i class="fa fa-envelope"></i>demo@example.com</a></li>
+          <li class="account"><a href="account-login.jsp"><i class="fa fa-user"></i>Account</a></li>
+        </ul>
+      </div>
+      <!-- Mobile Menu Start -->
+      <div class="mobile-menu-items">
+        <ul class="nav-menu">
+          <li><a href="#">Home</a>
+            <ul class="sub-menu">
+              <li><a href="index.jsp">Home One</a></li>
+              <li><a href="index-two.jsp">Home Two</a></li>
             </ul>
-        </div>
-        <!-- Mobile Menu Start -->
-        <div class="mobile-menu-items">
-            <ul class="nav-menu">
-                <li><a href="#">Home</a>
-                    <ul class="sub-menu">
-                        <li><a href="index.jsp">Home One</a></li>
-                        <li><a href="index-two.jsp">Home Two</a></li>
-                    </ul>
-                </li>
-                <li><a href="about-us.jsp">About</a></li>
-                <li><a href="#">Pages</a>
-                    <ul class="sub-menu">
-                        <li><a href="account.jsp">Account</a></li>
-                        <li><a href="account-login.jsp">Login</a></li>
-                        <li><a href="account-register.jsp">Register</a></li>
-                        <li><a href="page-not-found.jsp">Page Not Found</a></li>
-                    </ul>
-                </li>
-                <li><a href="#">Shop</a>
-                    <ul class="sub-menu">
-                        <li><a href="#">Shop Layout</a>
-                            <ul class="sub-menu">
-                                <li><a href="shop-three-columns.jsp">Shop 3 Column</a></li>
-                                <li><a href="shop-four-columns.jsp">Shop 4 Column</a></li>
-                                <li><a href="shop.jsp">Shop Left Sidebar</a></li>
-                                <li><a href="shop-right-sidebar.jsp">Shop Right Sidebar</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#">Single Product</a>
-                            <ul class="sub-menu">
-                                <li><a href="single-normal-product.jsp">Single Product Normal</a></li>
-                                <li><a href="single-product.jsp">Single Product Variable</a></li>
-                                <li><a href="single-group-product.jsp">Single Product Group</a></li>
-                                <li><a href="single-affiliate-product.jsp">Single Product Affiliate</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#">Others Pages</a>
-                            <ul class="sub-menu">
-                                <li><a href="shop-cart.jsp">Shopping Cart</a></li>
-                                <li><a href="shop-checkout.jsp">Checkout</a></li>
-                                <li><a href="shop-wishlist.jsp">Wishlist</a></li>
-                                <li><a href="shop-compare.jsp">Compare</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-                <li><a href="#">Blog</a>
-                    <ul class="sub-menu">
-                        <li><a href="#">Blog Layout</a>
-                            <ul class="sub-menu">
-                                <li><a href="blog.jsp">Blog Grid</a></li>
-                                <li><a href="blog-left-sidebar.jsp">Blog Left Sidebar</a></li>
-                                <li><a href="blog-right-sidebar.jsp">Blog Right Sidebar</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#">Single Blog</a>
-                            <ul class="sub-menu">
-                                <li><a href="blog-details-no-sidebar.jsp">Blog Details</a></li>
-                                <li><a href="blog-details-left-sidebar.jsp">Blog Details Left Sidebar</a></li>
-                                <li><a href="blog-details.jsp">Blog Details Right Sidebar</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-                <li><a href="contact.jsp">Contact</a></li>
+          </li>
+          <li><a href="about-us.jsp">About</a></li>
+          <li><a href="#">Pages</a>
+            <ul class="sub-menu">
+              <li><a href="account.jsp">Account</a></li>
+              <li><a href="account-login.jsp">Login</a></li>
+              <li><a href="account-register.jsp">Register</a></li>
+              <li><a href="page-not-found.jsp">Page Not Found</a></li>
             </ul>
-        </div>
-        <!-- Mobile Menu End -->
+          </li>
+          <li><a href="#">Shop</a>
+            <ul class="sub-menu">
+              <li><a href="#">Shop Layout</a>
+                <ul class="sub-menu">
+                  <li><a href="shop-three-columns.jsp">Shop 3 Column</a></li>
+                  <li><a href="shop-four-columns.jsp">Shop 4 Column</a></li>
+                  <li><a href="shop.jsp">Shop Left Sidebar</a></li>
+                  <li><a href="shop-right-sidebar.jsp">Shop Right Sidebar</a></li>
+                </ul>
+              </li>
+              <li><a href="#">Single Product</a>
+                <ul class="sub-menu">
+                  <li><a href="single-normal-product.jsp">Single Product Normal</a></li>
+                  <li><a href="single-product.jsp">Single Product Variable</a></li>
+                  <li><a href="single-group-product.jsp">Single Product Group</a></li>
+                  <li><a href="single-affiliate-product.jsp">Single Product Affiliate</a></li>
+                </ul>
+              </li>
+              <li><a href="#">Others Pages</a>
+                <ul class="sub-menu">
+                  <li><a href="shop-cart.jsp">Shopping Cart</a></li>
+                  <li><a href="shop-checkout.jsp">Checkout</a></li>
+                  <li><a href="shop-wishlist.jsp">Wishlist</a></li>
+                  <li><a href="shop-compare.jsp">Compare</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><a href="#">Blog</a>
+            <ul class="sub-menu">
+              <li><a href="#">Blog Layout</a>
+                <ul class="sub-menu">
+                  <li><a href="blog.jsp">Blog Grid</a></li>
+                  <li><a href="blog-left-sidebar.jsp">Blog Left Sidebar</a></li>
+                  <li><a href="blog-right-sidebar.jsp">Blog Right Sidebar</a></li>
+                </ul>
+              </li>
+              <li><a href="#">Single Blog</a>
+                <ul class="sub-menu">
+                  <li><a href="blog-details-no-sidebar.jsp">Blog Details</a></li>
+                  <li><a href="blog-details-left-sidebar.jsp">Blog Details Left Sidebar</a></li>
+                  <li><a href="blog-details.jsp">Blog Details Right Sidebar</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><a href="contact.jsp">Contact</a></li>
+        </ul>
+      </div>
+      <!-- Mobile Menu End -->
     </div>
-</div>
-<!--== End Side Menu ==-->
+  </div>
+  <!--== End Side Menu ==-->
 </div>
 
 <!--=======================Javascript============================-->
@@ -865,7 +625,6 @@
 <!--=== jQuery Custom Js ===-->
 <script src="assets/js/custom.js"></script>
 
-</body>
 
 
 <!-- Mirrored from htmldemo.net/shome/shome/single-product.jsp by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 02 Feb 2025 02:23:58 GMT -->

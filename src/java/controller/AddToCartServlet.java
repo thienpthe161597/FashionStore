@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet("/AddToCartServlet")
+@WebServlet("/add-to-cart")
 public class AddToCartServlet extends HttpServlet {
 
     @SuppressWarnings("unchecked")

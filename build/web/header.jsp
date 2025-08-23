@@ -78,34 +78,34 @@
                                     </div>
                                     <div class="header-top-align-end">
                                         <c:if test="${user == null}">
-                                        <div class="header-info-items">
-                                            <div class="info-items">
-                                                <ul>
-                                                    <li class="account">
-                                                        <i class="fa fa-user"></i
-                                                        ><a href="login">Account</a>
-                                                    </li>
-                                                </ul>
+                                            <div class="header-info-items">
+                                                <div class="info-items">
+                                                    <ul>
+                                                        <li class="account">
+                                                            <i class="fa fa-user"></i
+                                                            ><a href="login">Account</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
-                                        </div>
                                         </c:if>
                                         <c:if test="${user != null}">
-                                        <div class="header-info-items">
-                                            <div class="info-items">
-                                                <ul>
-                                                    <li class="email">
-                                                        <i class="fa fa-envelope"></i
-                                                        ><a 
-                                                            >${user.getEmail()}</a
-                                                        >
-                                                    </li>
-                                                    <li class="account">
-                                                        <i class="fa fa-user"></i
-                                                        ><a href="user">${user.getUser_Name()}</a>
-                                                    </li>
-                                                </ul>
+                                            <div class="header-info-items">
+                                                <div class="info-items">
+                                                    <ul>
+                                                        <li class="email">
+                                                            <i class="fa fa-envelope"></i
+                                                            ><a 
+                                                                >${user.getEmail()}</a
+                                                            >
+                                                        </li>
+                                                        <li class="account">
+                                                            <i class="fa fa-user"></i
+                                                            ><a href="user">${user.getUser_Name()}</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
-                                        </div>
                                         </c:if>
                                     </div>
                                 </div>
@@ -140,11 +140,13 @@
                                     </div>
                                     <div class="header-middle-align-center">
                                         <div class="header-search-area">
-                                            <form class="header-searchbox">
+                                            <form action="SearchProductController" method="get"class="header-searchbox">
                                                 <input
                                                     type="search"
+                                                    name="search"
                                                     class="form-control"
                                                     placeholder="Search"
+                                                    value="<%= request.getParameter("search") != null ? request.getParameter("search") : "" %>"
                                                     />
                                                 <button class="btn-submit" type="submit">
                                                     <i class="pe-7s-search"></i>
@@ -154,35 +156,13 @@
                                     </div>
                                     <div class="header-middle-align-end">
                                         <div class="header-action-area">
-                                            <div class="shopping-search">
-                                                <button
-                                                    class="shopping-search-btn"
-                                                    type="button"
-                                                    data-bs-toggle="offcanvas"
-                                                    data-bs-target="#AsideOffcanvasSearch"
-                                                    aria-controls="AsideOffcanvasSearch"
-                                                    >
-                                                    <i class="pe-7s-search icon"></i>
-                                                </button>
-                                            </div>
-                                            <div class="shopping-wishlist">
-                                                <a
-                                                    class="shopping-wishlist-btn"
-                                                    href="shop-wishlist.jsp"
-                                                    >
-                                                    <i class="pe-7s-like icon"></i>
-                                                </a>
-                                            </div>
                                             <div class="shopping-cart">
                                                 <button
                                                     class="shopping-cart-btn"
                                                     type="button"
-                                                    data-bs-toggle="offcanvas"
-                                                    data-bs-target="#AsideOffcanvasCart"
-                                                    aria-controls="offcanvasRightLabel"
+                                                    onclick="window.location.href = 'shop-cart.jsp'"
                                                     >
                                                     <i class="pe-7s-shopbag icon"></i>
-                                                    <sup class="shop-count">02</sup>
                                                 </button>
                                             </div>
                                             <button
@@ -210,165 +190,165 @@
                                         <ul class="main-menu nav">
                                             <li >
                                                 <a href="home"><span>Home</span></a>
-<!--                                                <ul class="submenu-nav">
-                                                    <li>
-                                                        <a href="index.jsp"><span>Home One</span></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="index-two.jsp"><span>Home Two</span></a>
-                                                    </li>
-                                                </ul>-->
+                                                <!--                                                <ul class="submenu-nav">
+                                                                                                    <li>
+                                                                                                        <a href="index.jsp"><span>Home One</span></a>
+                                                                                                    </li>
+                                                                                                    <li>
+                                                                                                        <a href="index-two.jsp"><span>Home Two</span></a>
+                                                                                                    </li>
+                                                                                                </ul>-->
                                             </li>
                                             <li>
                                                 <a href="about-us.jsp"><span>About</span></a>
                                             </li>
-<!--                                            <li class="has-submenu">
-                                                <a href="#/"><span>Pages</span></a>
-                                                <ul class="submenu-nav">
-                                                    <li>
-                                                        <a href="account.jsp"><span>Account</span></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="account-login.jsp"><span>Login</span></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="account-register.jsp"
-                                                           ><span>Register</span></a
-                                                        >
-                                                    </li>
-                                                    <li>
-                                                        <a href="page-not-found.jsp"
-                                                           ><span>Page Not Found</span></a
-                                                        >
-                                                    </li>
-                                                </ul>
-                                            </li>-->
+                                            <!--                                            <li class="has-submenu">
+                                                                                            <a href="#/"><span>Pages</span></a>
+                                                                                            <ul class="submenu-nav">
+                                                                                                <li>
+                                                                                                    <a href="account.jsp"><span>Account</span></a>
+                                                                                                </li>
+                                                                                                <li>
+                                                                                                    <a href="account-login.jsp"><span>Login</span></a>
+                                                                                                </li>
+                                                                                                <li>
+                                                                                                    <a href="account-register.jsp"
+                                                                                                       ><span>Register</span></a
+                                                                                                    >
+                                                                                                </li>
+                                                                                                <li>
+                                                                                                    <a href="page-not-found.jsp"
+                                                                                                       ><span>Page Not Found</span></a
+                                                                                                    >
+                                                                                                </li>
+                                                                                            </ul>
+                                                                                        </li>-->
                                             <li class="position-static">
-                                                <a href="shop-three-columns.jsp"><span>Shop</span></a>
-<!--                                                <ul class="submenu-nav submenu-nav-mega column-3">
-                                                    <li class="mega-menu-item">
-                                                        <a href="#/" class="mega-title"
-                                                           ><span>Shop Layout</span></a
-                                                        >
-                                                        <ul>
-                                                            <li>
-                                                                <a href="shop-three-columns.jsp"
-                                                                   ><span>Shop 3 Column</span></a
-                                                                >
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop-four-columns.jsp"
-                                                                   ><span>Shop 4 Column</span></a
-                                                                >
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop.jsp"
-                                                                   ><span>Shop Left Sidebar</span></a
-                                                                >
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop-right-sidebar.jsp"
-                                                                   ><span>Shop Right Sidebar</span></a
-                                                                >
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                    <li class="mega-menu-item">
-                                                        <a href="#/" class="mega-title"
-                                                           ><span>Single Product</span></a
-                                                        >
-                                                        <ul>
-                                                            <li>
-                                                                <a href="single-normal-product.jsp"
-                                                                   ><span>Single Product Normal</span></a
-                                                                >
-                                                            </li>
-                                                            <li>
-                                                                <a href="single-product.jsp"
-                                                                   ><span>Single Product Variable</span></a
-                                                                >
-                                                            </li>
-                                                            <li>
-                                                                <a href="single-group-product.jsp"
-                                                                   ><span>Single Product Group</span></a
-                                                                >
-                                                            </li>
-                                                            <li>
-                                                                <a href="single-affiliate-product.jsp"
-                                                                   ><span>Single Product Affiliate</span></a
-                                                                >
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                    <li class="mega-menu-item">
-                                                        <a href="#/" class="mega-title"
-                                                           ><span>Others Pages</span></a
-                                                        >
-                                                        <ul>
-                                                            <li>
-                                                                <a href="shop-cart.jsp"
-                                                                   ><span>Shopping Cart</span></a
-                                                                >
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop-checkout.jsp"
-                                                                   ><span>Checkout</span></a
-                                                                >
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop-wishlist.jsp"
-                                                                   ><span>Wishlist</span></a
-                                                                >
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop-compare.jsp"
-                                                                   ><span>Compare</span></a
-                                                                >
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                </ul>-->
+                                                <a href="ProductController"><span>Shop</span></a>
+                                                <!--                                                <ul class="submenu-nav submenu-nav-mega column-3">
+                                                                                                    <li class="mega-menu-item">
+                                                                                                        <a href="#/" class="mega-title"
+                                                                                                           ><span>Shop Layout</span></a
+                                                                                                        >
+                                                                                                        <ul>
+                                                                                                            <li>
+                                                                                                                <a href="shop-three-columns.jsp"
+                                                                                                                   ><span>Shop 3 Column</span></a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                            <li>
+                                                                                                                <a href="shop-four-columns.jsp"
+                                                                                                                   ><span>Shop 4 Column</span></a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                            <li>
+                                                                                                                <a href="shop.jsp"
+                                                                                                                   ><span>Shop Left Sidebar</span></a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                            <li>
+                                                                                                                <a href="shop-right-sidebar.jsp"
+                                                                                                                   ><span>Shop Right Sidebar</span></a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                        </ul>
+                                                                                                    </li>
+                                                                                                    <li class="mega-menu-item">
+                                                                                                        <a href="#/" class="mega-title"
+                                                                                                           ><span>Single Product</span></a
+                                                                                                        >
+                                                                                                        <ul>
+                                                                                                            <li>
+                                                                                                                <a href="single-normal-product.jsp"
+                                                                                                                   ><span>Single Product Normal</span></a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                            <li>
+                                                                                                                <a href="single-product.jsp"
+                                                                                                                   ><span>Single Product Variable</span></a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                            <li>
+                                                                                                                <a href="single-group-product.jsp"
+                                                                                                                   ><span>Single Product Group</span></a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                            <li>
+                                                                                                                <a href="single-affiliate-product.jsp"
+                                                                                                                   ><span>Single Product Affiliate</span></a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                        </ul>
+                                                                                                    </li>
+                                                                                                    <li class="mega-menu-item">
+                                                                                                        <a href="#/" class="mega-title"
+                                                                                                           ><span>Others Pages</span></a
+                                                                                                        >
+                                                                                                        <ul>
+                                                                                                            <li>
+                                                                                                                <a href="shop-cart.jsp"
+                                                                                                                   ><span>Shopping Cart</span></a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                            <li>
+                                                                                                                <a href="shop-checkout.jsp"
+                                                                                                                   ><span>Checkout</span></a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                            <li>
+                                                                                                                <a href="shop-wishlist.jsp"
+                                                                                                                   ><span>Wishlist</span></a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                            <li>
+                                                                                                                <a href="shop-compare.jsp"
+                                                                                                                   ><span>Compare</span></a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                        </ul>
+                                                                                                    </li>
+                                                                                                </ul>-->
                                             </li>
                                             <li class="position-static">
                                                 <a href="blog">Blog</a>
-<!--                                                <ul class="submenu-nav submenu-nav-mega">
-                                                    <li class="mega-menu-item">
-                                                        <a href="#/" class="mega-title">Blog Layout</a>
-                                                        <ul>
-                                                            <li><a href="blog.jsp">Blog Grid</a></li>
-                                                            <li>
-                                                                <a href="blog-left-sidebar.jsp"
-                                                                   >Blog Left Sidebar</a
-                                                                >
-                                                            </li>
-                                                            <li>
-                                                                <a href="blog-right-sidebar.jsp"
-                                                                   >Blog Right Sidebar</a
-                                                                >
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                    <li class="mega-menu-item">
-                                                        <a href="#/" class="mega-title">Single Blog</a>
-                                                        <ul>
-                                                            <li>
-                                                                <a href="blog-details-no-sidebar.jsp"
-                                                                   >Blog Details</a
-                                                                >
-                                                            </li>
-                                                            <li>
-                                                                <a href="blog-details-left-sidebar.jsp"
-                                                                   >Blog Details Left Sidebar</a
-                                                                >
-                                                            </li>
-                                                            <li>
-                                                                <a href="blog-details.jsp"
-                                                                   >Blog Details Right Sidebar</a
-                                                                >
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                </ul>-->
+                                                <!--                                                <ul class="submenu-nav submenu-nav-mega">
+                                                                                                    <li class="mega-menu-item">
+                                                                                                        <a href="#/" class="mega-title">Blog Layout</a>
+                                                                                                        <ul>
+                                                                                                            <li><a href="blog.jsp">Blog Grid</a></li>
+                                                                                                            <li>
+                                                                                                                <a href="blog-left-sidebar.jsp"
+                                                                                                                   >Blog Left Sidebar</a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                            <li>
+                                                                                                                <a href="blog-right-sidebar.jsp"
+                                                                                                                   >Blog Right Sidebar</a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                        </ul>
+                                                                                                    </li>
+                                                                                                    <li class="mega-menu-item">
+                                                                                                        <a href="#/" class="mega-title">Single Blog</a>
+                                                                                                        <ul>
+                                                                                                            <li>
+                                                                                                                <a href="blog-details-no-sidebar.jsp"
+                                                                                                                   >Blog Details</a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                            <li>
+                                                                                                                <a href="blog-details-left-sidebar.jsp"
+                                                                                                                   >Blog Details Left Sidebar</a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                            <li>
+                                                                                                                <a href="blog-details.jsp"
+                                                                                                                   >Blog Details Right Sidebar</a
+                                                                                                                >
+                                                                                                            </li>
+                                                                                                        </ul>
+                                                                                                    </li>
+                                                                                                </ul>-->
                                             </li>
                                             <li>
                                                 <a href="contact.jsp"><span>Contact</span></a>

@@ -59,12 +59,12 @@
                                             <a href="CartServlet?action=remove&id=<%=item.getProductId()%>"><i class="fa fa-trash-o"></i></a>
                                         </td>
                                         <td class="product-thumb">
-                                            <a href="single-product.jsp?id=<%=item.getProductId()%>">
+                                            <a href="product-detail?id=<%=item.getProductId()%>">
                                                 <img src="<%=item.getImage()%>" width="90" height="110" alt="<%=item.getName()%>">
                                             </a>
                                         </td>
                                         <td class="product-name">
-                                            <h4 class="title"><a href="single-product.jsp?id=<%=item.getProductId()%>"><%=item.getName()%></a></h4>
+                                            <h4 class="title"><a href="product-detail?id=<%=item.getProductId()%>"><%=item.getName()%></a></h4>
                                         </td>
                                         <td class="product-price">
                                             <span class="price">£<%=item.getPrice()%></span>
@@ -90,7 +90,7 @@
                                         <td class="border-0" colspan="6">
                                             <button type="submit" name="action" value="update" class="update-cart">Update Cart</button>
                                             <button type="submit" name="action" value="clear" class="clear-cart">Clear Cart</button>
-                                            <a href="shop.jsp" class="btn-theme btn-flat">Continue Shopping</a>
+                                            <a href="ProductController" class="btn-theme btn-flat">Continue Shopping</a>
                                         </td>
                                     </tr>
                                 </tbody>
