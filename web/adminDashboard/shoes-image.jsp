@@ -367,4 +367,4 @@
     <script src="${pageContext.request.contextPath}/assets2/js/main.js"></script>
 </body>
 
-</html>
+</html> 
