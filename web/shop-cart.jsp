@@ -1,6 +1,7 @@
 <%@ include file="./header.jsp" %>
 <%@ page import="java.util.List" %>
 <%@ page import="entity.CartItem" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <!--== End Header Wrapper ==-->
 
@@ -46,7 +47,7 @@
                                 </thead>
                                 <tbody>
                                     <%
-                                      // L?y gi? h�ng t? session
+                                      // L?y gi? hàng t? session
                                       List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
                                       double grandTotal = 0;
                                       if (cart != null) {
@@ -67,7 +68,7 @@
                                             <h4 class="title"><a href="product-detail?id=<%=item.getProductId()%>"><%=item.getName()%></a></h4>
                                         </td>
                                         <td class="product-price">
-                                            <span class="price">�<%=item.getPrice()%></span>
+                                            <span class="price">£<%=item.getPrice()%></span>
                                         </td>
                                         <td class="product-quantity">
                                             <div class="pro-qty">
@@ -75,7 +76,7 @@
                                             </div>
                                         </td>
                                         <td class="product-subtotal">
-                                            <span class="price">�<%=subtotal%></span>
+                                            <span class="price">£<%=subtotal%></span>
                                         </td>
                                     </tr>
                                     <%
@@ -100,132 +101,147 @@
                 </div>
             </div>
             <div class="row row-gutter-50">
+                <!-- Shipping Fee -->
                 <div class="col-md-6 col-lg-4">
                     <div id="CategoriesAccordion" class="shipping-form-calculate">
                         <div class="section-title-cart">
-                            <h5 class="title">Calculate Shipping</h5>
+                            <h5 class="title">Shipping Fee</h5>
                             <div class="desc">
-                                <p>Estimate your shipping fee *</p>
-                            </div>
-                        </div>
-                        <span data-bs-toggle="collapse" data-bs-target="#CategoriesTwo" aria-expanded="true" role="button">Calculate shipping</span>
-                        <div id="CategoriesTwo" class="collapse show" data-bs-parent="#CategoriesAccordion">
-                            <form action="#" method="post">
-                                <div class="row row-gutter-50">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label class="visually-hidden" for="FormCountry">State</label>
-                                            <select id="FormCountry" class="form-control">
-                                                <option selected>Select a country…</option>
-                                                <option>...</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="stateCounty" class="visually-hidden">State / County</label>
-                                            <input type="text" id="stateCounty" class="form-control" placeholder="State / County">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="townCity" class="visually-hidden">Town / City</label>
-                                            <input type="text" id="townCity" class="form-control" placeholder="Town / City">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="postcodeZip" class="visually-hidden">Postcode / ZIP</label>
-                                            <input type="text" id="postcodeZip" class="form-control" placeholder="Postcode / ZIP">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <button type="submit" class="update-totals">Update totals</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="shipping-form-coupon">
-                        <div class="section-title-cart">
-                            <h5 class="title">Coupon Code</h5>
-                            <div class="desc">
-                                <p>Enter your coupon code if you have one.</p>
+                                <p>Estimate your delivery cost *</p>
                             </div>
                         </div>
                         <form action="#" method="post">
-                            <div class="row">
+                            <div class="row row-gutter-20">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="couponCode" class="visually-hidden">Coupon Code</label>
-                                        <input type="text" id="couponCode" class="form-control" placeholder="Enter your coupon code..">
+                                        <label for="stateCounty">Province / City</label>
+                                        <input type="text" id="stateCounty" class="form-control" placeholder="Enter your city">
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <button type="submit" class="coupon-btn">Apply coupon</button>
+                                        <label for="townCity">District</label>
+                                        <input type="text" id="townCity" class="form-control" placeholder="Enter your district">
+                                    </div>
+                                </div>
+                                <!-- Optional: remove if you don't need Ward -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="ward">Ward (optional)</label>
+                                        <input type="text" id="ward" class="form-control" placeholder="Enter your ward">
+                                    </div>
+                                </div>
+                                <!-- New Detailed Address -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="detailAddress">Detailed Address</label>
+                                        <input type="text" id="detailAddress" class="form-control" placeholder="House number, street name, apartment...">
+                                    </div>
+                                </div>
+                                <!-- Postal code is optional in Vietnam, so you can skip -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <button type="submit" class="update-totals">Update Shipping</button>
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
+
+                <!-- Coupon -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="shipping-form-coupon">
+                        <div class="section-title-cart">
+                            <h5 class="title">Coupon</h5>
+                            <div class="desc">
+                                <p>Enter your discount code if available.</p>
+                            </div>
+                        </div>
+                        <form action="#" method="post">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <input type="text" id="couponCode" class="form-control" placeholder="Enter coupon code...">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <button type="submit" class="coupon-btn">Apply</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Cart Total -->
                 <div class="col-md-12 col-lg-4">
                     <div class="shipping-form-cart-totals">
                         <div class="section-title-cart">
-                            <h5 class="title">Cart totals</h5>
+                            <h5 class="title">Cart Total</h5>
                         </div>
                         <div class="cart-total-table">
                             <table class="table">
                                 <tbody>
                                     <tr class="cart-subtotal">
-                                        <td>
-                                            <p class="value">Subtotal</p>
-                                        </td>
-                                        <td>
-                                            <p class="price">£128.00</p>
-                                        </td>
+                                        <td><p class="value">Subtotal</p></td>
+                                        <td><p class="price">1,280,000₫</p></td>
                                     </tr>
                                     <tr class="shipping">
-                                        <td>
-                                            <p class="value">Shipping</p>
-                                        </td>
+                                        <td><p class="value">Shipping</p></td>
                                         <td>
                                             <ul class="shipping-list">
                                                 <li class="radio">
                                                     <input type="radio" name="shipping" id="radio1" checked>
-                                                    <label for="radio1"><span></span> Flat Rate</label>
+                                                    <label for="radio1"><span></span> Standard Delivery (30,000₫)</label>
                                                 </li>
                                                 <li class="radio">
                                                     <input type="radio" name="shipping" id="radio2">
-                                                    <label for="radio2"><span></span> Free Shipping</label>
+                                                    <label for="radio2"><span></span> Free Delivery</label>
                                                 </li>
                                                 <li class="radio">
                                                     <input type="radio" name="shipping" id="radio3">
-                                                    <label for="radio3"><span></span> Local Pickup</label>
+                                                    <label for="radio3"><span></span> Store Pickup</label>
                                                 </li>
                                             </ul>
                                         </td>
                                     </tr>
                                     <tr class="order-total">
-                                        <td>
-                                            <p class="value">Total</p>
-                                        </td>
-                                        <td>
-                                            <p class="price">£128.00</p>
-                                        </td>
+                                        <td><p class="value">Total</p></td>
+                                        <td><p class="price">1,310,000₫</p></td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <a class="btn-theme btn-flat" href="shop-checkout.jsp">Proceed to checkout</a>
+                        <a class="btn-theme btn-flat" href="shop-checkout.jsp">Checkout</a>
                     </div>
                 </div>
             </div>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const inputs = document.querySelectorAll(
+                            "#stateCounty, #townCity, #ward, #detailAddress"
+                            );
+
+                    inputs.forEach((input, index) => {
+                        input.addEventListener("keydown", function (e) {
+                            if (e.key === "Enter") {
+                                e.preventDefault(); // prevent form submit
+                                // focus next input if exists
+                                const next = inputs[index + 1];
+                                if (next) {
+                                    next.focus();
+                                } else {
+                                    // if it's the last input, focus the Update button
+                                    document.querySelector(".update-totals").focus();
+                                }
+                            }
+                        });
+                    });
+                });
+            </script>
+
         </div>
     </section>
     <!--== End Blog Area Wrapper ==-->
@@ -304,23 +320,23 @@
     <div class="offcanvas-body">
         <ul class="aside-cart-product-list">
             <li class="product-list-item">
-                <a href="#/" class="remove">×</a>
+                <a href="#/" class="remove">Ã</a>
                 <a href="single-product.jsp">
                     <img src="assets/img/shop/product-mini/1.webp" width="90" height="110" alt="Image-HasTech">
                     <span class="product-title">Leather Mens Slipper</span>
                 </a>
-                <span class="product-price">1 × £69.99</span>
+                <span class="product-price">1 Ã Â£69.99</span>
             </li>
             <li class="product-list-item">
-                <a href="#/" class="remove">×</a>
+                <a href="#/" class="remove">Ã</a>
                 <a href="single-product.jsp">
                     <img src="assets/img/shop/product-mini/2.webp" width="90" height="110" alt="Image-HasTech">
                     <span class="product-title">Quickiin Mens shoes</span>
                 </a>
-                <span class="product-price">1 × £20.00</span>
+                <span class="product-price">1 Ã Â£20.00</span>
             </li>
         </ul>
-        <p class="cart-total"><span>Subtotal:</span><span class="amount">£89.99</span></p>
+        <p class="cart-total"><span>Subtotal:</span><span class="amount">Â£89.99</span></p>
         <a class="btn-theme" data-margin-bottom="10" href="shop-cart.jsp">View cart</a>
         <a class="btn-theme" href="shop-checkout.jsp">Checkout</a>
         <a class="d-block text-end lh-1" href="shop-checkout.jsp"><img src="assets/img/photos/paypal.webp" width="133" height="26" alt="Has-image"></a>
@@ -343,7 +359,7 @@
                 <form action="#" method="post">
                     <div class="search-form position-relative">
                         <label for="search-input" class="visually-hidden">Search</label>
-                        <input id="search-input" type="search" class="form-control" placeholder="Search entire store…">
+                        <input id="search-input" type="search" class="form-control" placeholder="Search entire storeâ¦">
                         <button class="search-button"><i class="fa fa-search"></i></button>
                     </div>
                 </form>
