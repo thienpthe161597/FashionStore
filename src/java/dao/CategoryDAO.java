@@ -85,4 +85,21 @@ public class CategoryDAO {
         }
         return category;
     }
+     
+     // Minh Codes
+     
+     public List<Category> getAllCategories() throws SQLException {
+        List<Category> categoryList = new ArrayList<>();
+        String query = "SELECT * FROM Category";
+        try (PreparedStatement statement = con.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int categoryId = resultSet.getInt("Category_ID");
+                String name = resultSet.getString("Category_Name");
+
+                categoryList.add(new Category(categoryId,name));
+            }
+        }
+        return categoryList;
+    }
 }

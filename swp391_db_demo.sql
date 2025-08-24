@@ -1,4 +1,4 @@
-﻿USE [master]
+USE [master]
 GO
 /****** Object:  Database [ShoesOnlineShop]    Script Date: 14/08/2025 17:12:59 ******/
 CREATE DATABASE [ShoesOnlineShop]

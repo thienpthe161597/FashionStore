@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package dao;
 
 import entity.User;
@@ -17,56 +21,11 @@ public class UserDAO {
         UserDAO d = new UserDAO();
         User u = new User(6, "aaaaa", "aaaaa", "aaaaa");
         d.updateProfileUser(u);
-
-        // Test retrieving all users
-        UserDAO dao = new UserDAO();
-        List<User> users = dao.getAllUsers();
-        for (User user : users) {
-            System.out.println(
-                "ID: " + user.getUser_Name() +
-                ", Email: " + user.getEmail() +   
-                ", Password: " + user.getPassword() +
-                ", Role: " + user.getRole()
-                    "ID: " + user.getUser_Name()
-                    + ", Email: " + user.getEmail()
-                    + ", Password: " + user.getPassword()
-                    + ", Role: " + user.getRole()
-                    + ", isActive: " + user.isIsActive()
-            );
-        }
     }
 
-    // Retrieve all users (active and banned)
-    public List<User> getAllUsers() {
-        List<User> list = new ArrayList<>();
-        String sql = "SELECT * FROM [User]";
-        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                User u = new User();
-                u.setUser_ID(rs.getInt("User_ID"));
-                u.setUser_Name(rs.getString("User_Name"));
-                u.setEmail(rs.getString("Email"));
-                u.setPassword(rs.getString("Password"));
-                u.setAddress(rs.getString("Address"));
-                u.setPhone(rs.getString("Phone"));
-                u.setRole(rs.getString("Role"));
-                u.setIsActive(rs.getBoolean("isActive"));
-                list.add(u);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    // Register a new user account
     public boolean registerAcc(User userAccount) {
-        if (con == null) {
-            System.err.println("Database connection failed!");
-            return false;
-        }
         try {
-            String query = "INSERT INTO [dbo].[User] (User_Name, Email, Password, Role, Created_At, isActive) VALUES (?,?,?,?,GETDATE(),1)";
+            String query = "INSERT INTO [dbo].[User] (User_Name,Email,Password,Role) VALUES (?,?,?,?)";
             PreparedStatement ps = con.prepareStatement(query);
             ps.setString(1, userAccount.getUser_Name());
             ps.setString(2, userAccount.getEmail());
@@ -80,8 +39,52 @@ public class UserDAO {
             return false;
         }
     }
+    
+    public boolean create(User userAccount) {
+        try {
+            String query = "INSERT INTO [dbo].[User] (User_Name,Email,Password,Address,Phone,Role) VALUES (?,?,?,?,?,?)";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, userAccount.getUser_Name());
+            ps.setString(2, userAccount.getEmail());
+            ps.setString(3, userAccount.getPassword());
+            ps.setString(4, userAccount.getAddress());
+            ps.setString(5, userAccount.getPhone());
+            ps.setString(6, userAccount.getRole());
 
-    // Check if an email already exists
+            int rowAffected = ps.executeUpdate();
+            return rowAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean findUserById(int userId) {
+        String query = "SELECT * FROM [dbo].[User] WHERE User_ID = ?";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+               return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // Return null if no user is found or an error occurs
+    }
+
+    public boolean deleteUserById(int userId) {
+        String query = "DELETE FROM [dbo].[User] WHERE User_ID = ?";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, userId);
+            int affectedRows = ps.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean checkEmailExit(String email) {
         String query = "SELECT * FROM [dbo].[User] WHERE Email = ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -94,11 +97,10 @@ public class UserDAO {
         }
     }
 
-    // Verify user login credentials and check if active
     public boolean checkLogin(User u) {
         String email = u.getEmail();
         String password = u.getPassword();
-        String query = "SELECT * FROM [dbo].[User] WHERE Email = ? and Password = ? and isActive = 1";
+        String query = "SELECT * FROM [dbo].[User] WHERE Email = ? and Password = ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, email);
             ps.setString(2, password);
@@ -110,10 +112,9 @@ public class UserDAO {
         }
     }
 
-    // Retrieve a user by email (only if active)
     public User getUser(String email) {
         User userAccount = new User();
-        String query = "SELECT * FROM [dbo].[User] WHERE Email = ? and isActive = 1";
+        String query = " select * from [dbo].[User] where Email = ? ";
         try (PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
@@ -125,8 +126,6 @@ public class UserDAO {
                     userAccount.setAddress(rs.getString("Address"));
                     userAccount.setPhone(rs.getString("Phone"));
                     userAccount.setRole(rs.getString("Role"));
-                    userAccount.setCreated_At(rs.getTimestamp("Created_At"));
-                    userAccount.setIsActive(rs.getBoolean("isActive"));
                 } else {
                     return null;
                 }
@@ -137,7 +136,46 @@ public class UserDAO {
         return userAccount;
     }
 
-    // Reset user password
+    public List<User> getUsers(int start, int total) {
+        List<User> users = new ArrayList<>();
+        String query = "SELECT * FROM [dbo].[User] ORDER BY User_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, start);
+            ps.setInt(2, total);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    User user = new User();
+                    user.setUser_ID(rs.getInt("User_ID"));
+                    user.setUser_Name(rs.getString("User_Name"));
+                    user.setEmail(rs.getString("Email"));
+                    user.setPassword(rs.getString("Password"));
+                    user.setAddress(rs.getString("Address"));
+                    user.setPhone(rs.getString("Phone"));
+                    user.setRole(rs.getString("Role"));
+                    users.add(user);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Consider logging instead of printing
+        }
+        return users;
+    }
+
+    public int getTotalUsers() {
+        int count = 0;
+        String countQuery = "SELECT COUNT(*) FROM [dbo].[User]";
+        try (PreparedStatement preparedStatement = con.prepareStatement(countQuery)) {
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
     public void resetPassword(User user) {
         String query = "UPDATE [dbo].[User] SET [Password] = ? WHERE Email = ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -149,9 +187,37 @@ public class UserDAO {
         }
     }
 
-    // Update user profile information
+    public List<User> searchUsers(String keyword) {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM [dbo].[User] WHERE User_Name LIKE ? OR Email LIKE ? OR Address LIKE ?";
+
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+
+            String searchKeyword = "%" + keyword + "%";
+            preparedStatement.setString(1, searchKeyword);
+            preparedStatement.setString(2, searchKeyword);
+            preparedStatement.setString(3, searchKeyword);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                User user = new User();
+                user.setUser_ID(rs.getInt("User_ID"));
+                user.setUser_Name(rs.getString("User_Name"));
+                user.setEmail(rs.getString("Email"));
+                user.setPassword(rs.getString("Password"));
+                user.setAddress(rs.getString("Address"));
+                user.setPhone(rs.getString("Phone"));
+                user.setRole(rs.getString("Role"));
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
+
     public void updateProfileUser(User user) {
-        String query = "UPDATE [dbo].[User] SET [User_Name] = ?, [Address] = ?, [Phone] = ? WHERE User_ID = ?";
+        String query = "UPDATE [dbo].[User] SET [User_Name] = ?,[Address] = ?,[Phone] = ? WHERE User_ID = ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, user.getUser_Name());
             ps.setString(2, user.getAddress());
@@ -163,7 +229,6 @@ public class UserDAO {
         }
     }
 
-    // Update user password
     public void updatePassword(int user_ID, String new_pwd) {
         String query = "UPDATE [dbo].[User] SET [Password] = ? WHERE User_ID = ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -175,253 +240,46 @@ public class UserDAO {
         }
     }
 
-    // Retrieve a user by ID
+    //minh code
     public User getUserById(int userId) {
-        User user = new User();
-        String query = "SELECT * FROM [dbo].[User] WHERE User_ID = ?";
+        User userAccount = new User();
+        String query = " select * from [dbo].[User] where User_ID = ? ";
         try (PreparedStatement ps = con.prepareStatement(query)) {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    user.setUser_ID(rs.getInt("User_ID"));
-                    user.setUser_Name(rs.getString("User_Name"));
-                    user.setEmail(rs.getString("Email"));
-                    user.setPassword(rs.getString("Password"));
-                    user.setAddress(rs.getString("Address"));
-                    user.setPhone(rs.getString("Phone"));
-                    user.setRole(rs.getString("Role"));
-                    user.setCreated_At(rs.getTimestamp("Created_At"));
-                    user.setIsActive(rs.getBoolean("isActive"));
+                    userAccount.setUser_ID(rs.getInt("User_ID"));
+                    userAccount.setUser_Name(rs.getString("User_Name"));
+                    userAccount.setEmail(rs.getString("Email"));
+                    userAccount.setPassword(rs.getString("Password"));
+                    userAccount.setAddress(rs.getString("Address"));
+                    userAccount.setPhone(rs.getString("Phone"));
+                    userAccount.setRole(rs.getString("Role"));
                 } else {
                     return null;
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
-        return user;
+        return userAccount;
     }
-
-    // Update user information
-    public void updateUser(User user) {
-        if (user == null || user.getUser_ID() == 0) {
-            System.out.println("User or User_ID is invalid");
-            return;
-        }
-        String query = "UPDATE [dbo].[User] SET [User_Name] = ?, [Email] = ?, [Password] = ?, [Address] = ?, [Phone] = ?, [Role] = ?, [isActive] = ? WHERE User_ID = ?";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setString(1, user.getUser_Name() != null ? user.getUser_Name() : "");
-            ps.setString(2, user.getEmail() != null ? user.getEmail() : "");
-            ps.setString(3, user.getPassword() != null ? user.getPassword() : "");
-            ps.setString(4, user.getAddress() != null ? user.getAddress() : "");
-            ps.setString(5, user.getPhone() != null ? user.getPhone() : "");
-            ps.setString(6, user.getRole() != null ? user.getRole() : "");
-            ps.setBoolean(7, user.isIsActive());
-            ps.setInt(8, user.getUser_ID());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Search users by User_Name or Email with pagination
-    public List<User> searchUsersByNameOrEmail(String keyword, int page, int pageSize) {
-        List<User> list = new ArrayList<>();
-        String query = "SELECT * FROM [dbo].[User] WHERE User_Name LIKE ? OR Email LIKE ? ORDER BY User_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            String searchPattern = "%" + keyword + "%";
-            ps.setString(1, searchPattern);
-            ps.setString(2, searchPattern);
-            ps.setInt(3, (page - 1) * pageSize);
-            ps.setInt(4, pageSize);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    User u = new User();
-                    u.setUser_ID(rs.getInt("User_ID"));
-                    u.setUser_Name(rs.getString("User_Name"));
-                    u.setEmail(rs.getString("Email"));
-                    u.setPassword(rs.getString("Password"));
-                    u.setAddress(rs.getString("Address"));
-                    u.setPhone(rs.getString("Phone"));
-                    u.setRole(rs.getString("Role"));
-                    u.setIsActive(rs.getBoolean("isActive"));
-                    list.add(u);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    // Count total users matching the keyword
-    public int getTotalUsersByNameOrEmail(String keyword) {
-        String query = "SELECT COUNT(*) FROM [dbo].[User] WHERE User_Name LIKE ? OR Email LIKE ?";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            String searchPattern = "%" + keyword + "%";
-            ps.setString(1, searchPattern);
-            ps.setString(2, searchPattern);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    // Retrieve all users with pagination
-    public List<User> getAllUsersWithPaging(int page, int pageSize) {
-        List<User> list = new ArrayList<>();
-        String query = "SELECT * FROM [dbo].[User] ORDER BY User_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setInt(1, (page - 1) * pageSize);
-            ps.setInt(2, pageSize);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    User u = new User();
-                    u.setUser_ID(rs.getInt("User_ID"));
-                    u.setUser_Name(rs.getString("User_Name"));
-                    u.setEmail(rs.getString("Email"));
-                    u.setPassword(rs.getString("Password"));
-                    u.setAddress(rs.getString("Address"));
-                    u.setPhone(rs.getString("Phone"));
-                    u.setRole(rs.getString("Role"));
-                    u.setIsActive(rs.getBoolean("isActive"));
-                    list.add(u);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    // Count total number of users
-    public int getTotalUsers() {
-        String query = "SELECT COUNT(*) FROM [dbo].[User]";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-    public void updatePasswordByEmail(String email, String newHashedPass) {
-    String sql = "UPDATE [User] SET [Password] = ? WHERE Email = ?";
-    try {
-        PreparedStatement ps = con.prepareStatement(sql);
-        ps.setString(1, newHashedPass);
-        ps.setString(2, email);
-        ps.executeUpdate();
-    } catch (Exception e) {
-        e.printStackTrace();
-    } 
-}
-
     
-}
-
-    public List<User> getUsersByRoleWithPaging(String role, int page, int pageSize) {
-        List<User> list = new ArrayList<>();
-        String query = "SELECT * FROM [dbo].[User] WHERE Role = ? ORDER BY User_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+    public String getUserNameById(int userId) {
+        String userName = "";
+        String query = " select User_Name from [dbo].[User] where User_ID = ? ";
         try (PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setString(1, role);
-            ps.setInt(2, (page - 1) * pageSize);
-            ps.setInt(3, pageSize);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    User u = new User();
-                    u.setUser_ID(rs.getInt("User_ID"));
-                    u.setUser_Name(rs.getString("User_Name"));
-                    u.setEmail(rs.getString("Email"));
-                    u.setPassword(rs.getString("Password"));
-                    u.setAddress(rs.getString("Address"));
-                    u.setPhone(rs.getString("Phone"));
-                    u.setRole(rs.getString("Role"));
-                    u.setCreated_At(rs.getTimestamp("Created_At"));
-                    list.add(u);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    public int getTotalUsersByRole(String role) {
-        String query = "SELECT COUNT(*) FROM [dbo].[User] WHERE Role = ?";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setString(1, role);
+            ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt(1);
+                    userName = rs.getString("User_Name");
+                } else {
+                    return null;
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0;
+        return userName;
     }
-
-    public List<User> searchUsersByRoleAndKeyword(String role, String keyword, int page, int pageSize) {
-        List<User> list = new ArrayList<>();
-        String query = "SELECT * FROM [dbo].[User] "
-                + "WHERE Role = ? AND (User_Name LIKE ? OR Email LIKE ?) "
-                + "ORDER BY User_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setString(1, role);
-            String searchPattern = "%" + keyword + "%";
-            ps.setString(2, searchPattern);
-            ps.setString(3, searchPattern);
-            ps.setInt(4, (page - 1) * pageSize);
-            ps.setInt(5, pageSize);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    User u = new User();
-                    u.setUser_ID(rs.getInt("User_ID"));
-                    u.setUser_Name(rs.getString("User_Name"));
-                    u.setEmail(rs.getString("Email"));
-                    u.setPassword(rs.getString("Password"));
-                    u.setAddress(rs.getString("Address"));
-                
-                    u.setPhone(rs.getString("Phone"));
-                    u.setRole(rs.getString("Role"));
-                    u.setCreated_At(rs.getTimestamp("Created_At"));
-                    list.add(u);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    public int getTotalUsersByRoleAndKeyword(String role, String keyword) {
-        String query = "SELECT COUNT(*) FROM [dbo].[User] "
-                + "WHERE Role = ? AND (User_Name LIKE ? OR Email LIKE ?)";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setString(1, role);
-            String searchPattern = "%" + keyword + "%";
-            ps.setString(2, searchPattern);
-            ps.setString(3, searchPattern);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
 }
-
