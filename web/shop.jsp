@@ -75,11 +75,19 @@
 
                                 <!-- Dropdown sắp xếp giá bên phải -->
                                 <div class="shop-sort-price ms-3">
-                                    <select name="sort" class="form-select form-select-sm" style="width: 140px; padding: 3px 6px; font-size: 0.875rem;">
-                                        <option value="default" <%= selectedSort.equals("default") ? "selected" : "" %>>Default</option>
-                                        <option value="asc" <%= selectedSort.equals("asc") ? "selected" : "" %>>Low to High</option>
-                                        <option value="desc" <%= selectedSort.equals("desc") ? "selected" : "" %>>High to Low</option>
-                                    </select>
+                                    <form id="sortForm" action="ProductController" method="get" class="d-inline">
+                                        <input type="hidden" name="category" value="<%= selectedCategory %>">
+                                        <input type="hidden" name="gender" value="<%= selectedGender %>">
+                                        <input type="hidden" name="page" value="1">
+
+                                        <select name="sort" class="form-select form-select-sm"
+                                                style="width: 140px; padding: 3px 6px; font-size: 0.875rem;"
+                                                onchange="document.getElementById('sortForm').submit();">
+                                            <option value="default" <%= selectedSort.equals("default") ? "selected" : "" %>>Default</option>
+                                            <option value="asc" <%= selectedSort.equals("asc") ? "selected" : "" %>>Low to High</option>
+                                            <option value="desc" <%= selectedSort.equals("desc") ? "selected" : "" %>>High to Low</option>
+                                        </select>
+                                    </form>
                                 </div>
                             </div>
                         </div>
