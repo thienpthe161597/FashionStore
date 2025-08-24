@@ -4,82 +4,60 @@
  */
 package entity;
 
-import java.util.Date;
-
 /**
  *
  * @author Admin
  */
 public class Blog {
-    public int blog_ID;
-    public int user_ID;
-    public String title;
-    public String content;
-    public String visibility;
-    public Date createdAt;
+    public int Blog_ID;
+    public String Blog_Name;
+    public String Image;
+    public String Description;
 
     public Blog() {
     }
 
-    public Blog(int blog_ID, int user_ID, String title, String content, String visibility, Date createAt) {
-        this.blog_ID = blog_ID;
-        this.user_ID = user_ID;
-        this.title = title;
-        this.content = content;
-        this.visibility = visibility;
-        this.createdAt = createAt;
+    public Blog(int Blog_ID, String Blog_Name, String Image, String Description) {
+        this.Blog_ID = Blog_ID;
+        this.Blog_Name = Blog_Name;
+        this.Image = Image;
+        this.Description = Description;
     }
 
     public int getBlog_ID() {
-        return blog_ID;
+        return Blog_ID;
     }
 
-    public int getUser_ID() {
-        return user_ID;
+    public void setBlog_ID(int Blog_ID) {
+        this.Blog_ID = Blog_ID;
     }
 
-    public String getTitle() {
-        return title;
+    public String getBlog_Name() {
+        return Blog_Name;
     }
 
-    public String getContent() {
-        return content;
+    public void setBlog_Name(String Blog_Name) {
+        this.Blog_Name = Blog_Name;
     }
 
-    public String getVisibility() {
-        return visibility;
+    public String getImage() {
+        return Image;
     }
 
-    public Date getCreateAt() {
-        return createdAt;
+    public void setImage(String Image) {
+        this.Image = Image;
     }
 
-    public void setBlog_ID(int blog_ID) {
-        this.blog_ID = blog_ID;
+    public String getDescription() {
+        return Description;
     }
 
-    public void setUser_ID(int user_ID) {
-        this.user_ID = user_ID;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setVisibility(String visibility) {
-        this.visibility = visibility;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setDescription(String Description) {
+        this.Description = Description;
     }
 
     @Override
     public String toString() {
-        return "Blog{" + "blog_ID=" + blog_ID + ", user_ID=" + user_ID + ", title=" + title + ", content=" + content + ", visibility=" + visibility + ", createAt=" + createdAt + '}';
+        return "BlogImage{" + "Blog_ID=" + Blog_ID + ", Blog_Name=" + Blog_Name + ", Image=" + Image + ", Description=" + Description + '}';
     }
 }
