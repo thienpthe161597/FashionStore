@@ -4,7 +4,8 @@
  */
 package controller;
 
-import dao.BlogDAO;
+import dao.UserDAO;
+import entity.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,13 +13,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import utils.HashPass;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "blogController", urlPatterns = {"/blog"})
-public class blogController extends HttpServlet {
+@WebServlet(name = "profileController", urlPatterns = {"/user"})
+public class profileController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,10 +40,10 @@ public class blogController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet blogController</title>");            
+            out.println("<title>Servlet profileController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet blogController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet profileController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -55,13 +58,10 @@ public class blogController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    BlogDAO dao = new BlogDAO();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("blog", dao.getAllBlog());
-        request.setAttribute("blogImg", dao.getAllBlogImg());
-        request.getRequestDispatcher("blog.jsp").forward(request, response);
+        request.getRequestDispatcher("account.jsp").forward(request, response);
     }
 
     /**
@@ -75,10 +75,40 @@ public class blogController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int blogID = Integer.parseInt(request.getParameter("idBlog"));
-        request.setAttribute("blog", dao.getBlogByID(blogID));
-        request.setAttribute("blogImg", dao.getBlogImgByID(blogID));
-        request.getRequestDispatcher("blog-details.jsp").forward(request, response);
+        HashPass hash = new HashPass();
+        UserDAO dao = new UserDAO();
+        HttpSession s = request.getSession();
+        String action = request.getParameter("action");
+        User u = (User) s.getAttribute("user");
+        switch (action) {
+            case "changeprofile":
+                String username = request.getParameter("username");
+                String address = request.getParameter("address");
+                String phone = request.getParameter("phone");
+                User user = new User(u.getUser_ID(), username, address, phone);
+                dao.updateProfileUser(user);
+                User user1 = dao.getUser(u.getEmail());
+                s.removeAttribute("user");
+                s.setAttribute("user", user1);
+                request.getRequestDispatcher("account.jsp").forward(request, response);
+                break;
+            case "changepass":
+                String current_pwd = request.getParameter("current-pwd");
+                String new_pwd = request.getParameter("new-pwd");
+                User user2 = dao.getUser(u.getEmail());
+                if (!user2.getPassword().equals(hash.hashPassword(current_pwd))) {
+                    request.setAttribute("error", "Current password is incorrect.");
+                    request.getRequestDispatcher("account.jsp").forward(request, response);
+                } else {
+                    dao.updatePassword(user2.getUser_ID(), hash.hashPassword(new_pwd));
+                    request.setAttribute("error", "Change password successfully");
+                    request.getRequestDispatcher("account.jsp").forward(request, response);
+                }
+
+                break;
+            default:
+                throw new AssertionError();
+        }
     }
 
     /**

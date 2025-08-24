@@ -4,7 +4,8 @@
  */
 package controller;
 
-import dao.BlogDAO;
+import dao.UserDAO;
+import entity.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,13 +13,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import utils.HashPass;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "blogController", urlPatterns = {"/blog"})
-public class blogController extends HttpServlet {
+@WebServlet(name = "loginController", urlPatterns = {"/login"})
+public class loginController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,10 +40,10 @@ public class blogController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet blogController</title>");            
+            out.println("<title>Servlet loginController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet blogController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet loginController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -55,13 +58,10 @@ public class blogController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    BlogDAO dao = new BlogDAO();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("blog", dao.getAllBlog());
-        request.setAttribute("blogImg", dao.getAllBlogImg());
-        request.getRequestDispatcher("blog.jsp").forward(request, response);
+        request.getRequestDispatcher("account-login.jsp").forward(request, response);
     }
 
     /**
@@ -72,13 +72,32 @@ public class blogController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    UserDAO dao = new UserDAO();
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int blogID = Integer.parseInt(request.getParameter("idBlog"));
-        request.setAttribute("blog", dao.getBlogByID(blogID));
-        request.setAttribute("blogImg", dao.getBlogImgByID(blogID));
-        request.getRequestDispatcher("blog-details.jsp").forward(request, response);
+        HttpSession s = request.getSession();
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        HashPass hash = new HashPass();
+        User u = new User(email, hash.hashPassword(password));
+        if (!dao.checkLogin(u)) {
+            request.setAttribute("mess", "Please check again email or password");
+            request.getRequestDispatcher("account-login.jsp").forward(request, response);
+        } else {
+            User user = dao.getUser(email);
+            boolean isLoginSuccessful = true;
+            if (user.getRole().equals("User")) {
+                s.setAttribute("user", user);
+                request.getRequestDispatcher("index.jsp").forward(request, response);
+            }
+            if (user.getRole().equals("Admin")) {
+                s.setAttribute("isLoggedIn", true);
+                s.setAttribute("user", user);
+                response.sendRedirect("shoes");
+            }
+        }
     }
 
     /**

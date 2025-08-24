@@ -6,6 +6,7 @@ package dao;
 
 import entity.Category;
 import entity.ProductImage;
+import entity.ProductVariant;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -113,4 +114,94 @@ public class ProductImageDAO {
             return false;
         }
     }
+    public int countVariant(String productName, String color) {
+        int count = 0;
+        String sql = "SELECT COUNT(DISTINCT pv.Pv_id) "
+                   + "FROM Product_Variant pv "
+                   + "JOIN Product p ON pv.Product_ID = p.Product_ID ";
+
+        List<String> conditions = new ArrayList<>();
+        if (productName != null && !productName.isEmpty()) {
+            conditions.add("p.ProductName LIKE ?");
+        }
+        if (color != null && !color.isEmpty()) {
+            conditions.add("pv.Color LIKE ?");
+        }
+        if (!conditions.isEmpty()) {
+            sql += " WHERE " + String.join(" AND ", conditions);
+        }
+
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            int idx = 1;
+            if (productName != null && !productName.isEmpty()) {
+                ps.setString(idx++, "%" + productName + "%");
+            }
+            if (color != null && !color.isEmpty()) {
+                ps.setString(idx++, "%" + color + "%");
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    public List<ProductVariant> getVariantByPage(String productName, String color, int page, int pageSize, String sort) {
+        List<ProductVariant> list = new ArrayList<>();
+        String sql = "SELECT pv.* FROM Product_Variant pv "
+                   + "JOIN Product p ON pv.Product_ID = p.Product_ID ";
+
+        List<String> conditions = new ArrayList<>();
+        if (productName != null && !productName.isEmpty()) {
+            conditions.add("p.ProductName LIKE ?");
+        }
+        if (color != null && !color.isEmpty()) {
+            conditions.add("pv.Color LIKE ?");
+        }
+        if (!conditions.isEmpty()) {
+            sql += " WHERE " + String.join(" AND ", conditions);
+        }
+
+        // sort
+        if ("color".equalsIgnoreCase(sort)) {
+            sql += " ORDER BY pv.Color ASC ";
+        } else {
+            sql += " ORDER BY pv.Pv_id DESC ";
+        }
+
+        // paging
+        sql += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            int idx = 1;
+            if (productName != null && !productName.isEmpty()) {
+                ps.setString(idx++, "%" + productName + "%");
+            }
+            if (color != null && !color.isEmpty()) {
+                ps.setString(idx++, "%" + color + "%");
+            }
+            ps.setInt(idx++, (page - 1) * pageSize);
+            ps.setInt(idx++, pageSize);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ProductVariant pv = new ProductVariant();
+                pv.setPv_id(rs.getInt("Pv_id"));
+                pv.setProduct_id(rs.getInt("Product_ID"));
+                pv.setColor(rs.getString("Color"));
+                pv.setSizeID(rs.getInt("Size_ID"));
+                pv.setQuantity(rs.getInt("Quantity"));
+                list.add(pv);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }
+

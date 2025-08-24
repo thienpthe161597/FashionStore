@@ -5,7 +5,6 @@
 package dao;
 
 import entity.Category;
-import entity.Product;
 import entity.ProductVariant;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,56 +24,23 @@ public class ProductVariantDAO {
 
     public static void main(String[] args) {
         ProductVariantDAO b = new ProductVariantDAO();
-        ProductVariant p = new ProductVariant(6, 12, "yellow", 1, 10);
-        System.out.println(b.deleteVariant(3));
-    }
-
-    public List<ProductVariant> getAllProductVariantPagein(int page, int pageSize) {
-        List<ProductVariant> product = new ArrayList<>();
-        String query = "SELECT * FROM Product_Variant ORDER BY Product_ID, Color, Size OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setInt(1, (page - 1) * pageSize);
-            ps.setInt(2, pageSize);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                ProductVariant p = new ProductVariant();
-                p.setPv_id(rs.getInt("PV_ID"));
-                p.setProduct_id(rs.getInt("Product_ID"));
-                p.setColor(rs.getString("Color"));
-                p.setSize(rs.getInt("Size"));
-                p.setQuantity(rs.getInt("Quantity"));
-                product.add(p);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return product;
-    }
-
-    public int getTotalPages(int pageSize) {
-        String query = "SELECT COUNT(*) FROM [dbo].[Product_Variant]";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                int totalProducts = rs.getInt(1);
-                return (int) Math.ceil((double) totalProducts / pageSize);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 1;
+        ProductVariant p = new ProductVariant(6, 12, "yellow", 1, 10, "");
+        System.out.println(b.updateVariant(p));
     }
 
     public List<ProductVariant> getAllProductVariant() {
         List<ProductVariant> pv = new ArrayList<>();
-        String query = "select * from Product_Variant ";
+        String query = "SELECT pv.PV_ID, pv.Product_ID, pv.Color, pv.Size_ID, pv.Quantity, s.SizeValue "
+                + "FROM Product_Variant pv "
+                + "JOIN ShoeSize s ON pv.Size_ID = s.Size_ID";
         try (PreparedStatement ps = con.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 ProductVariant p = new ProductVariant();
                 p.setPv_id(rs.getInt("PV_ID"));
                 p.setProduct_id(rs.getInt("Product_ID"));
                 p.setColor(rs.getString("Color"));
-                p.setSize(rs.getInt("Size"));
+                p.setSizeID(rs.getInt("Size_ID"));         // lưu Size_ID
+                p.setSizeValue(rs.getString("SizeValue"));// lưu giá trị size (39, 40...)
                 p.setQuantity(rs.getInt("Quantity"));
                 pv.add(p);
             }
@@ -104,7 +70,10 @@ public class ProductVariantDAO {
 
     public List<ProductVariant> getVariantByShoesName(int idProduct) {
         List<ProductVariant> pv = new ArrayList<>();
-        String query = " select * from [dbo].[Product_Variant] where Product_ID = ? ";
+        String query = "SELECT pv.PV_ID, pv.Product_ID, pv.Color, pv.Size_ID, pv.Quantity, s.SizeValue "
+                + "FROM Product_Variant pv "
+                + "JOIN ShoeSize s ON pv.Size_ID = s.Size_ID "
+                + "WHERE pv.Product_ID = ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
             ps.setInt(1, idProduct);
             try (ResultSet rs = ps.executeQuery()) {
@@ -113,7 +82,8 @@ public class ProductVariantDAO {
                     p.setPv_id(rs.getInt("PV_ID"));
                     p.setProduct_id(rs.getInt("Product_ID"));
                     p.setColor(rs.getString("Color"));
-                    p.setSize(rs.getInt("Size"));
+                    p.setSizeID(rs.getInt("Size_ID"));
+                    p.setSizeValue(rs.getString("SizeValue"));
                     p.setQuantity(rs.getInt("Quantity"));
                     pv.add(p);
                 }
@@ -126,12 +96,11 @@ public class ProductVariantDAO {
 
     public boolean addNewVariant(ProductVariant padd) {
         try {
-            String query = "INSERT INTO [dbo].[Product_Variant] (Product_ID,Color,Size,"
-                    + "Quantity) VALUES (?,?,?,?)";
+            String query = "INSERT INTO [dbo].[Product_Variant] (Product_ID, Color, Size_ID, Quantity) VALUES (?,?,?,?)";
             PreparedStatement ps = con.prepareStatement(query);
             ps.setInt(1, padd.getProduct_id());
             ps.setString(2, padd.getColor());
-            ps.setInt(3, padd.getSize());
+            ps.setInt(3, padd.getSizeID());  // đây là Size_ID
             ps.setInt(4, padd.getQuantity());
             int rowAffected = ps.executeUpdate();
             return rowAffected > 0;
@@ -178,17 +147,13 @@ public class ProductVariantDAO {
     }
 
     public boolean updateVariant(ProductVariant productVariant) {
-        String query = "UPDATE [dbo].[Product_Variant]\n"
-                + "SET \n"
-                + "    [Product_ID] = ?, \n"
-                + "    [Color] = ?, \n"
-                + "    [Size] = ?, \n"
-                + "    [Quantity] = ? \n"
-                + "WHERE [PV_ID] = ?";
+        String query = "UPDATE [dbo].[Product_Variant] "
+                + "SET Product_ID = ?, Color = ?, Size_ID = ?, Quantity = ? "
+                + "WHERE PV_ID = ?";
         try (PreparedStatement ps = con.prepareStatement(query)) {
             ps.setInt(1, productVariant.getProduct_id());
             ps.setString(2, productVariant.getColor());
-            ps.setInt(3, productVariant.getSize());
+            ps.setInt(3, productVariant.getSizeID()); // Size_ID
             ps.setInt(4, productVariant.getQuantity());
             ps.setInt(5, productVariant.getPv_id());
             int rowAffected = ps.executeUpdate();
@@ -212,48 +177,77 @@ public class ProductVariantDAO {
         }
     }
 
-    public List<ProductVariant> searchByName(String nameSearch, int page, int pageSize) {
-        List<ProductVariant> productv = new ArrayList<>();
-        String query = "SELECT * FROM [dbo].[Product_Variant] pv "
-                + "JOIN Product p ON pv.Product_ID = p.Product_ID "
-                + "WHERE p.ProductName LIKE ? "
-                + "ORDER BY pv.Product_ID, pv.Color, pv.Size OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setString(1, "%" + nameSearch + "%");
-            ps.setInt(2, (page - 1) * pageSize);
-            ps.setInt(3, pageSize);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                ProductVariant p = new ProductVariant();
-                Product product = new Product();
-                product.setProductID(rs.getInt("Product_ID"));
-                product.setProductName(rs.getString("ProductName"));
-                p.setPv_id(rs.getInt("PV_ID"));
-                p.setProduct_id(rs.getInt("Product_ID"));
-                p.setColor(rs.getString("Color"));
-                p.setSize(rs.getInt("Size"));
-                p.setQuantity(rs.getInt("Quantity"));
-                productv.add(p);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return productv;
-    }
+    public int countProductVariant(String search) {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM Product_Variant pv "
+                + "JOIN ShoeSize s ON pv.Size_ID = s.Size_ID "
+                + "JOIN Product p ON pv.Product_ID = p.Product_ID ";
 
-    public int getTotalPagesBySearch(String nameSearch, int pageSize) {
-        String query = "SELECT COUNT(*) FROM [dbo].[Product_Variant] pv JOIN Product p ON pv.Product_ID = p.Product_ID"
-                + " WHERE p.ProductName LIKE ?";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setString(1, "%" + nameSearch + "%");
+        if (search != null && !search.isEmpty()) {
+            sql += "WHERE p.ProductName LIKE ? OR pv.Color LIKE ? OR s.SizeValue LIKE ? ";
+        }
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            if (search != null && !search.isEmpty()) {
+                String like = "%" + search + "%";
+                ps.setString(1, like);
+                ps.setString(2, like);
+                ps.setString(3, like);
+            }
+
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                int totalProducts = rs.getInt(1);
-                return (int) Math.ceil((double) totalProducts / pageSize);
+                count = rs.getInt(1);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return 1;
+        return count;
     }
+
+    public List<ProductVariant> getProductVariantByPage(String search, int page, int pageSize) {
+        List<ProductVariant> list = new ArrayList<>();
+        String sql = "SELECT pv.PV_ID, pv.Product_ID, pv.Color, pv.Size_ID, "
+                + "s.SizeValue, pv.Quantity, p.ProductName "
+                + "FROM Product_Variant pv "
+                + "JOIN ShoeSize s ON pv.Size_ID = s.Size_ID "
+                + "JOIN Product p ON pv.Product_ID = p.Product_ID ";
+
+        if (search != null && !search.isEmpty()) {
+            sql += "WHERE p.ProductName LIKE ? OR pv.Color LIKE ? OR s.SizeValue LIKE ? ";
+        }
+
+        sql += "ORDER BY pv.PV_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            int idx = 1;
+            if (search != null && !search.isEmpty()) {
+                String like = "%" + search + "%";
+                ps.setString(idx++, like);
+                ps.setString(idx++, like);
+                ps.setString(idx++, like);
+            }
+
+            ps.setInt(idx++, (page - 1) * pageSize);
+            ps.setInt(idx, pageSize);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ProductVariant pv = new ProductVariant(
+                        rs.getInt("PV_ID"),
+                        rs.getInt("Product_ID"),
+                        rs.getString("Color"),
+                        rs.getInt("Size_ID"),
+                        rs.getInt("Quantity"), rs.getString("SizeValue")
+                );
+                list.add(pv);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }

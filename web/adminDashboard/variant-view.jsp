@@ -77,7 +77,7 @@
                                 <a href="shoesimage" class="dropdown-item" style="margin-left: 50px">Image shoes</a>
                                 <a href="shoesvariant" class="dropdown-item" style="margin-left: 50px">Variant shoes</a>
                                 <a href="shoessize" class="dropdown-item" style="margin-left: 50px">Shoe Sizes</a>
-                               
+
                             </div>
                         </div>
                         <a href="brand" class="nav-item nav-link active"><i class="fa fa-th me-2"></i>Category</a>
@@ -150,7 +150,7 @@
 
                             document.getElementById("variantId").value = id;
                             document.getElementById("variantColor").value = color;
-                            document.getElementById("variantSize").value = size;
+                            document.getElementById("variantSize").value = sizeID;
                             document.getElementById("variantQuantity").value = quantity;
 
 
@@ -214,10 +214,11 @@
                             <div class="row justify-content-center">
                                 <div class="col-md-6">
                                     <div class="search-container">
-                                        <form action="shoesvariant" method="post" style="display: flex; align-items: center;">
-                                            <input type="hidden" name="action" value="searchname">
-                                            <label for="nameSearch" style="margin-right: 10px;">Search By Name:</label>
-                                            <input name="nameSearch" type="text" class="form-control search-input" placeholder="Input name..." style="flex: 1;">
+                                        <form action="shoesvariant" method="get" style="display: flex; align-items: center;">
+                                            <label for="search" style="margin-right: 10px;">Search:</label>
+                                            <input name="search" type="text" class="form-control search-input" 
+                                                   placeholder="Search by name, color, size..." 
+                                                   style="flex: 1;" value="${param.search}">
                                             <button type="submit" class="btn btn-primary btn-edit" style="margin-left: 10px;">
                                                 Search
                                             </button>
@@ -248,23 +249,24 @@
                                                     <td>${listProduct.getProductName()}</td></c:if>
                                             </c:forEach>
                                             <td>${listProductVariant.getColor()}</td>
-                                            <td>${listProductVariant.getSize()}</td>
+                                            <td>${listProductVariant.getSizeValue()}</td>
                                             <td>${listProductVariant.getQuantity()}</td>
                                             <td>
                                                 <button type="button" class="btn btn-primary edit-btn"
                                                         data-bs-toggle="modal" data-bs-target="#staticBackdrop"
                                                         data-id="${listProductVariant.getPv_id()}"
                                                         data-color="${listProductVariant.getColor()}"
-                                                        data-size="${listProductVariant.getSize()}"
+                                                        data-size="${listProductVariant.getSizeValue()}"
                                                         data-quantity="${listProductVariant.getQuantity()}"
                                                         data-productid="${listProductVariant.getProduct_id()}">
                                                     Edit variant
                                                 </button>
-                                                <form action="shoesvariant" method="post" onsubmit="return confirmDelete()">
-                                                    <input type="hidden" name="action" value="delete">
-                                                    <input type="hidden" name="idc" value="${listProductVariant.getPv_id()}">
-                                                    <input type="submit" class="btn btn-danger" value="Delete">
+                                                <form action="shoesvariant" method="post">
+                                                    <input type="hidden" name="action" value="delete"/>
+                                                    <input type="hidden" name="id" value="${listProductVariant.getPv_id()}"/>
+                                                    <button type="submit" onclick="return confirm('Are you sure?')">Delete</button>
                                                 </form>
+
                                             </td>
                                         </tr>
                                     </c:forEach>

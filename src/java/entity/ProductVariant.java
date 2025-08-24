@@ -9,21 +9,24 @@ package entity;
  * @author Admin
  */
 public class ProductVariant {
+
     public int pv_id;
     public int product_id;
     public String color;
     public int sizeID;
     public int quantity;
+    public String sizeValue;
 
     public ProductVariant() {
     }
 
-    public ProductVariant(int pv_id, int product_id, String color, int sizeID, int quantity) {
+    public ProductVariant(int pv_id, int product_id, String color, int sizeID, int quantity, String sizeValue) {
         this.pv_id = pv_id;
         this.product_id = product_id;
         this.color = color;
         this.sizeID = sizeID;
         this.quantity = quantity;
+        this.sizeValue = sizeValue;
     }
 
     public int getPv_id() {
@@ -50,12 +53,12 @@ public class ProductVariant {
         this.color = color;
     }
 
-    public int getSize() {
+    public int getSizeID() {
         return sizeID;
     }
 
-    public void setSize(int size) {
-        this.sizeID = size;
+    public void setSizeID(int sizeID) {
+        this.sizeID = sizeID;
     }
 
     public int getQuantity() {
@@ -66,10 +69,17 @@ public class ProductVariant {
         this.quantity = quantity;
     }
 
+    public String getSizeValue() {
+        return sizeValue;
+    }
+
+    public void setSizeValue(String sizeValue) {
+        this.sizeValue = sizeValue;
+    }
+
     @Override
     public String toString() {
-        return "ProductVarivant{" + "pv_id=" + pv_id + ", product_id=" + product_id + ", color=" + color + ", size=" + sizeID + ", quantity=" + quantity + '}';
+        return "ProductVarivant{" + "pv_id=" + pv_id + ", product_id=" + product_id + ", color=" + color + ", sizeid=" + sizeID + ", quantity=" + quantity + ",sizeValue" + sizeValue + '}';
     }
-    
-    
+
 }
