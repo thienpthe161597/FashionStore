@@ -21,7 +21,7 @@ public class DBContext {
     public DBContext() {
         try {
             String user = "sa";
-            String pass = "43413112221a";
+            String pass = "123";
             String url = "jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=ShoesOnlineShop";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             connection = DriverManager.getConnection(url, user, pass);
@@ -34,7 +34,7 @@ public class DBContext {
         try {
             Connection connection = null;
             String user = "sa";
-            String pass = "43413112221a";
+            String pass = "123";
             String url = "jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=ShoesOnlineShop";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             return connection = DriverManager.getConnection(url, user, pass);
