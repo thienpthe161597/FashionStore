@@ -1,14 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package entity;
 
-/**
- *
- * @author Admin
- */
+import java.util.Date;
+
 public class User {
+
     public int User_ID;
     public String User_Name;
     public String Email;
@@ -16,8 +11,11 @@ public class User {
     public String Address;
     public String Phone;
     public String Role;
-    
+    public Date Created_At;
+    public boolean isActive; // New field for ban status (true = active, false = banned)
+
     public User() {
+        this.isActive = true; // Default to active
     }
 
     public User(int User_ID, String User_Name, String Address, String Phone) {
@@ -25,15 +23,18 @@ public class User {
         this.User_Name = User_Name;
         this.Address = Address;
         this.Phone = Phone;
+        this.isActive = true;
     }
 
     public User(String Email) {
         this.Email = Email;
+        this.isActive = true;
     }
 
     public User(String Email, String Password) {
         this.Email = Email;
         this.Password = Password;
+        this.isActive = true;
     }
 
     public User(String User_Name, String Email, String Password, String Role) {
@@ -41,8 +42,9 @@ public class User {
         this.Email = Email;
         this.Password = Password;
         this.Role = Role;
+        this.isActive = true;
     }
- 
+
     public User(int User_ID, String User_Name, String Email, String Password, String Address, String Phone, String Role) {
         this.User_ID = User_ID;
         this.User_Name = User_Name;
@@ -51,8 +53,10 @@ public class User {
         this.Address = Address;
         this.Phone = Phone;
         this.Role = Role;
+        this.isActive = true;
     }
 
+    // Getters and Setters
     public int getUser_ID() {
         return User_ID;
     }
@@ -109,10 +113,24 @@ public class User {
         this.Role = Role;
     }
 
+    public Date getCreated_At() {
+        return Created_At;
+    }
+
+    public void setCreated_At(Date Created_At) {
+        this.Created_At = Created_At;
+    }
+
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
     @Override
     public String toString() {
-        return "User{" + "User_ID=" + User_ID + ", User_Name=" + User_Name + ", Email=" + Email + ", Password=" + Password + ", Address=" + Address + ", Phone=" + Phone + ", Role=" + Role + '}';
+        return "User{" + "User_ID=" + User_ID + ", User_Name=" + User_Name + ", Email=" + Email + ", Password=" + Password + ", Address=" + Address + ", Phone=" + Phone + ", Role=" + Role + ", Created_At=" + Created_At + ", isActive=" + isActive + '}';
     }
-    
-    
 }

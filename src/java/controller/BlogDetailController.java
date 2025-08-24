@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
+
 package controller;
 
-import dao.UserDAO;
-import entity.User;
+import dao.BlogDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,101 +13,83 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import utils.HashPass;
+import entity.Blog;
 
 /**
  *
- * @author Admin
+ * @author minhs
  */
-@WebServlet(name = "loginController", urlPatterns = {"/login"})
-public class loginController extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
+@WebServlet(name="BlogDetailController", urlPatterns={"/blog-detail"})
+public class BlogDetailController extends HttpServlet {
+   
+    /** 
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet loginController</title>");
+            out.println("<title>Servlet BlogDetailController</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet loginController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet BlogDetailController at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    }
+    } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
+    /** 
      * Handles the HTTP <code>GET</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    BlogDAO dao = new BlogDAO();
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("account-login.jsp").forward(request, response);
+        try {
+            int blogID = Integer.parseInt(request.getParameter("idBlog"));
+            Blog blog = dao.getBlogByID(blogID);
+
+            if (blog != null) {
+                request.setAttribute("blog", blog);
+                request.getRequestDispatcher("blog-details.jsp").forward(request, response);
+            } else {
+                response.sendRedirect("blog.jsp"); // fallback nếu blog không tồn tại
+            }
+
+        } catch (Exception e) {
+            response.sendRedirect("blog.jsp"); // fallback nếu tham số sai
+        }
     }
 
-    /**
+    /** 
      * Handles the HTTP <code>POST</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    UserDAO dao = new UserDAO();
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession s = request.getSession();
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        HashPass hash = new HashPass();
-        User u = new User(email, hash.hashPassword(password));
-        if (!dao.checkLogin(u)) {
-            request.setAttribute("mess", "Please check again email or password");
-            request.getRequestDispatcher("account-login.jsp").forward(request, response);
-        } else {
-            User user = dao.getUser(email);
-            if (!user.isIsActive()) {
-                request.setAttribute("mess", "Your account is banned!");
-                request.getRequestDispatcher("account-login.jsp").forward(request, response);
-                return;
-            }
-            boolean isLoginSuccessful = true;
-            if (user.getRole().equals("User")) {
-                s.setAttribute("user", user);
-                request.getRequestDispatcher("index.jsp").forward(request, response);
-            }
-            if (user.getRole().equals("Admin")) {
-                s.setAttribute("isLoggedIn", true);
-                s.setAttribute("user", user);
-                response.sendRedirect("shoes");
-            }
-        }
+    throws ServletException, IOException {
+        processRequest(request, response);
     }
 
-    /**
+    /** 
      * Returns a short description of the servlet.
-     *
      * @return a String containing servlet description
      */
     @Override

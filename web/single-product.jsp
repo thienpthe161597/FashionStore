@@ -362,7 +362,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <% if (totalPages > 1) { %>
                     <div class="review-pagination">
                         <% if (feedbackPage > 1) { %>
-                            <a href="?id=<%= productId %>&page=<%= feedbackPage - 1 %>#reviews" class="pagination-prev">« Previous</a>
+                            <a href="?id=<%= productId %>&page=<%= feedbackPage - 1 %>#reviews" class="pagination-prev">? Previous</a>
                         <% } %>
 
                         <% for (int i = 1; i <= totalPages; i++) { %>
@@ -370,7 +370,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         <% } %>
 
                         <% if (feedbackPage < totalPages) { %>
-                            <a href="?id=<%= productId %>&page=<%= feedbackPage + 1 %>#reviews" class="pagination-next">Next »</a>
+                            <a href="?id=<%= productId %>&page=<%= feedbackPage + 1 %>#reviews" class="pagination-next">Next ?</a>
                         <% } %>
                     </div>
                     <% } %>
@@ -461,23 +461,23 @@ document.addEventListener("DOMContentLoaded", function () {
     <div class="offcanvas-body">
       <ul class="aside-cart-product-list">
         <li class="product-list-item">
-          <a href="#/" class="remove">Ã—</a>
+          <a href="#/" class="remove">×</a>
           <a href="single-product.jsp">
             <img src="assets/img/shop/product-mini/1.webp" width="90" height="110" alt="Image-HasTech">
             <span class="product-title">Leather Mens Slipper</span>
           </a>
-          <span class="product-price">1 Ã— Â£69.99</span>
+          <span class="product-price">1 × £69.99</span>
         </li>
         <li class="product-list-item">
-          <a href="#/" class="remove">Ã—</a>
+          <a href="#/" class="remove">×</a>
           <a href="single-product.jsp">
             <img src="assets/img/shop/product-mini/2.webp" width="90" height="110" alt="Image-HasTech">
             <span class="product-title">Quickiin Mens shoes</span>
           </a>
-          <span class="product-price">1 Ã— Â£20.00</span>
+          <span class="product-price">1 × £20.00</span>
         </li>
       </ul>
-      <p class="cart-total"><span>Subtotal:</span><span class="amount">Â£89.99</span></p>
+      <p class="cart-total"><span>Subtotal:</span><span class="amount">£89.99</span></p>
       <a class="btn-theme" data-margin-bottom="10" href="shop-cart.jsp">View cart</a>
       <a class="btn-theme" href="shop-checkout.jsp">Checkout</a>
       <a class="d-block text-end lh-1" href="shop-checkout.jsp"><img src="assets/img/photos/paypal.webp" width="133" height="26" alt="Has-image"></a>
@@ -500,7 +500,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <form action="#" method="post">
             <div class="search-form position-relative">
               <label for="search-input" class="visually-hidden">Search</label>
-              <input id="search-input" type="search" class="form-control" placeholder="Search entire storeâ€¦">
+              <input id="search-input" type="search" class="form-control" placeholder="Search entire store?">
               <button class="search-button"><i class="fa fa-search"></i></button>
             </div>
           </form>

@@ -71,14 +71,24 @@
                     </div>
                     <div class="navbar-nav w-100">
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class=" fas fa-shoe-prints me-2"></i>Shoes</a>
-                            <div class="dropdown-menu bg-transparent border-0">
+                            <a href="#" class="nav-link dropdown-toggle " data-bs-toggle="dropdown"><i class=" fas fa-shoe-prints me-2"></i>Fashion Store</a>
+                            <div class="dropdown-menu bg-transparent border-
+                                <a href="dashBoard" class="dropdown-item" style="margin-left: 50px">DashBoard</a>
                                 <a href="shoes" class="dropdown-item" style="margin-left: 50px">List shoes</a>
+                                <a href="shoes-sale" class="dropdown-item" style="margin-left: 50px">List sale shoes</a>
+                                <a href="shoes" class="dropdown-item " style="margin-left: 50px">List shoes</a>
                                 <a href="shoesimage" class="dropdown-item" style="margin-left: 50px">Image shoes</a>
                                 <a href="shoesvariant" class="dropdown-item" style="margin-left: 50px">Variant shoes</a>
+                                <a href="shoessize" class="dropdown-item" style="margin-left: 50px">Shoe Sizes</a>
+                               
                             </div>
                         </div>
-                        <a href="brand" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Category</a>
+                        <a href="brand" class="nav-item nav-link active"><i class="fa fa-th me-2"></i>Category</a>
+                        <c:if test="${user.getRole() eq 'Admin'}">
+                            <a href="userlist" class="nav-item nav-link "><i class="fa fa-th me-2"></i>User List</a>
+                        </c:if>
+                        <a href="customer-list" class="dropdown-item" style="margin-left: 50px">Customer List</a>
+                        <a href="order" class="nav-item nav-link "><i class="fa fa-th me-2"></i>Oder List</a>
                         <a href="logout" class="nav-item nav-link"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
                         <!--                    <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
                                             <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>-->
@@ -120,7 +130,7 @@
                                             <option value="Female">Female</option>
                                         </select>
                                         <label for="exampleInputEmail1" class="form-label" >Description</label>
-                                        <input type="text" class="form-control" name="shoesdescription" required>
+                                        <input type="text" class="form-control" name="shoesdescription" required minlength="10">
                                     </div>
 
                                 </div>
@@ -168,14 +178,17 @@
                                 <div class="mb-3">
                                     <label class="form-label">Gender</label>
                                     <select class="form-select" id="editGender" name="shoesgender">
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
+                                        <option value="Men">Men</option>
+                                        <option value="Women">Women</option>
+                                        <option value="Unisex">Unisex</option>
+
+
                                     </select>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label">Description</label>
-                                    <input type="text" class="form-control" id="editDescription" name="shoesdescription">
+                                    <input type="text" class="form-control" id="editDescription" name="shoesdescription" required minlength="10">
                                 </div>
 
                                 <div class="modal-footer">
@@ -189,7 +202,7 @@
             </div>
             <script>
                 document.addEventListener("DOMContentLoaded", function () {
-                    // L?y t?t c? n˙t "Edit shoes"
+                    // L?y t?t c? n√∫t "Edit shoes"
                     let editButtons = document.querySelectorAll(".btn-edit");
 
                     editButtons.forEach(button => {
@@ -202,7 +215,7 @@
                             let productGender = this.getAttribute("data-gender");
                             let productDescription = this.getAttribute("data-description");
 
-                            // G·n d? li?u v‡o modal
+                            // G√°n d? li?u v√†o modal
                             document.getElementById("editProductId").value = productId;
                             document.getElementById("editName").value = productName;
                             document.getElementById("editCategory").value = productCategory;
@@ -224,7 +237,39 @@
                                 Add new shoes
                             </button>
                         </div>
-                     
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-md-6">
+                                    <div class="search-container">
+                                        <form action="shoes" method="post" style="display: flex; align-items: center;">
+                                            <input type="hidden" name="action" value="searchname">
+                                            <label for="nameSearch" style="margin-right: 10px;">Search By Name:</label>
+                                            <input name="nameSearch" type="text" class="form-control search-input" placeholder="Input name..." style="flex: 1;">
+                                            <button type="submit" class="btn btn-primary btn-edit" style="margin-left: 10px;">
+                                                Search
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="search-container" style="margin-top: 10px">
+                                        <form action="shoes" method="post" style="display: flex; align-items: center; gap: 10px;">
+                                            <input type="hidden" name="action" value="filter">
+                                            <label for="nameSearch">Filter By Brand</label>
+                                            <select name="brandCheck" class="form-select" aria-label="Default select example" style="flex: 1;">
+                                                <c:forEach items="${listCategory}" var="listCategory">
+                                                    <option value="${listCategory.getCategoryID()}">${listCategory.getCategoryName()}</option>
+                                                </c:forEach>
+                                            </select>
+                                            <button type="submit" class="btn btn-primary btn-edit">
+                                                Filter
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><div style="margin-top: 30px"></div>
+                        <c:if test="${message != null}">
+                            <p style="color: green">${message}</p>
+                        </c:if>
                         <div class="table-responsive">
                             <table class="table text-start align-middle table-bordered table-hover mb-0">
                                 <thead>
@@ -250,7 +295,6 @@
                                             <td>${listProduct.getGender()}</td>
                                             <td>${listProduct.getDescription()}</td>
                                             <td>
-                                                <!-- N˙t Edit cÛ ch?a data-* ?? l?u thÙng tin -->
                                                 <button type="button" class="btn btn-primary btn-edit"
                                                         data-bs-toggle="modal" data-bs-target="#staticBackdrop"
                                                         data-name="${listProduct.getProductName()}"
@@ -262,27 +306,117 @@
                                                     Edit shoes
                                                 </button>
 
-                                                <form action="shoes" method="post">
+                                                <form action="shoes" method="post" onsubmit="return confirmDelete()">
                                                     <input type="hidden" name="action" value="delete">
                                                     <input type="hidden" name="idtodel" value="${listProduct.getProductID()}">
                                                     <input type="submit" class="btn btn-danger" value="Delete">
                                                 </form>
+                                                <script>
+                                                    function confirmDelete() {
+                                                        var confirmAction = confirm("Are you sure you want to delete?");
+                                                        if (confirmAction) {
+                                                            return true;
+                                                        }
+                                                        return false;
+                                                    }
+                                                </script>
                                             </td>
                                         </tr>
                                     </c:forEach>
-
                                 </tbody>
                             </table>
-
-
                         </div>
                     </div>
-                    <c:if test="${message != null}">
-                        <p style="color: green">${message}</p>
-                    </c:if>
-                </div>
-                <!-- Recent Sales End -->
 
+                    <c:if test="${nameSearch == null && brandCheck == null}">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination" style="margin-left: 300px; margin-top: 30px">
+                                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                                    <a class="page-link" href="shoes?page=${currentPage - 1}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <c:forEach var="i" begin="1" end="${totalPages}">
+                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                        <a class="page-link" href="shoes?page=${i}">${i}</a>
+                                    </li>
+                                </c:forEach>
+                                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                    <a class="page-link" href="shoes?page=${currentPage + 1}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </c:if>
+
+                    <c:if test="${nameSearch != null && brandCheck == null}">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination" style="margin-left: 300px; margin-top: 30px">
+                                <!-- N√∫t Previous -->
+                                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                                    <form method="POST" action="shoes">
+                                        <input type="hidden" name="action" value="searchname">
+                                        <input type="hidden" name="nameSearch" value="${nameSearch}">
+                                        <input type="hidden" name="page" value="${currentPage - 1}">
+                                        <button type="submit" class="page-link">&laquo;</button>
+                                    </form>
+                                </li>
+                                <c:forEach var="i" begin="1" end="${totalPages}">
+                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                        <form method="POST" action="shoes">
+                                            <input type="hidden" name="action" value="searchname">
+                                            <input type="hidden" name="nameSearch" value="${nameSearch}">
+                                            <input type="hidden" name="page" value="${i}">
+                                            <button type="submit" class="page-link">${i}</button>
+                                        </form>
+                                    </li>
+                                </c:forEach>
+                                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                    <form method="POST" action="shoes">
+                                        <input type="hidden" name="action" value="searchname">
+                                        <input type="hidden" name="nameSearch" value="${nameSearch}">
+                                        <input type="hidden" name="page" value="${currentPage + 1}">
+                                        <button type="submit" class="page-link">&raquo;</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </nav>
+                    </c:if>    
+
+                    <c:if test="${nameSearch == null && brandCheck != null}">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination" style="margin-left: 300px; margin-top: 30px">
+                                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                                    <form method="POST" action="shoes">
+                                        <input type="hidden" name="action" value="filter">
+                                        <input type="hidden" name="brandCheck" value="${brandCheck}">
+                                        <input type="hidden" name="page" value="${currentPage - 1}">
+                                        <button type="submit" class="page-link">&laquo;</button>
+                                    </form>
+                                </li>
+                                <c:forEach var="i" begin="1" end="${totalPages}">
+                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                        <form method="POST" action="shoes">
+                                            <input type="hidden" name="action" value="filter">
+                                            <input type="hidden" name="brandCheck" value="${brandCheck}">
+                                            <input type="hidden" name="page" value="${i}">
+                                            <button type="submit" class="page-link">${i}</button>
+                                        </form>
+                                    </li>
+                                </c:forEach>
+                                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                    <form method="POST" action="shoes">
+                                        <input type="hidden" name="action" value="filter">
+                                        <input type="hidden" name="brandCheck" value="${brandCheck}">
+                                        <input type="hidden" name="page" value="${currentPage + 1}">
+                                        <button type="submit" class="page-link">&raquo;</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </nav>
+                    </c:if>    
+                </div>
 
             </div>
             <!-- Content End -->

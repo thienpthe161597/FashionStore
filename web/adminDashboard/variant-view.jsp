@@ -71,14 +71,21 @@
                     </div>
                     <div class="navbar-nav w-100">
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class=" fas fa-shoe-prints me-2"></i>Shoes</a>
+                            <a href="#" class="nav-link dropdown-toggle " data-bs-toggle="dropdown"><i class=" fas fa-shoe-prints me-2"></i>Fashion Store</a>
                             <div class="dropdown-menu bg-transparent border-0">
-                                <a href="shoes" class="dropdown-item" style="margin-left: 50px">List shoes</a>
+                                <a href="shoes" class="dropdown-item " style="margin-left: 50px">List shoes</a>
                                 <a href="shoesimage" class="dropdown-item" style="margin-left: 50px">Image shoes</a>
                                 <a href="shoesvariant" class="dropdown-item" style="margin-left: 50px">Variant shoes</a>
+                                <a href="shoessize" class="dropdown-item" style="margin-left: 50px">Shoe Sizes</a>
+                               
                             </div>
                         </div>
-                        <a href="brand" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Category</a>
+                        <a href="brand" class="nav-item nav-link active"><i class="fa fa-th me-2"></i>Category</a>
+                        <c:if test="${user.getRole() eq 'Admin'}">
+                            <a href="userlist" class="nav-item nav-link "><i class="fa fa-th me-2"></i>User List</a>
+                        </c:if>
+                        <a href="customer-list" class="dropdown-item" style="margin-left: 50px">Customer List</a>
+                        <a href="order" class="nav-item nav-link "><i class="fa fa-th me-2"></i>Oder List</a>
                         <a href="logout" class="nav-item nav-link"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
                         <!--                    <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
                                             <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>-->
@@ -129,68 +136,68 @@
                 </div>
             </div>
             <!-- Content Start -->
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    let editButtons = document.querySelectorAll(".edit-btn");
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    let editButtons = document.querySelectorAll(".edit-btn");
 
-    editButtons.forEach(button => {
-        button.addEventListener("click", function() {
-            let id = this.getAttribute("data-id");
-            let color = this.getAttribute("data-color");
-            let size = this.getAttribute("data-size");
-            let quantity = this.getAttribute("data-quantity");
-            let productId = this.getAttribute("data-productid");
+                    editButtons.forEach(button => {
+                        button.addEventListener("click", function () {
+                            let id = this.getAttribute("data-id");
+                            let color = this.getAttribute("data-color");
+                            let size = this.getAttribute("data-size");
+                            let quantity = this.getAttribute("data-quantity");
+                            let productId = this.getAttribute("data-productid");
 
-            document.getElementById("variantId").value = id;
-            document.getElementById("variantColor").value = color;
-            document.getElementById("variantSize").value = size;
-            document.getElementById("variantQuantity").value = quantity;
+                            document.getElementById("variantId").value = id;
+                            document.getElementById("variantColor").value = color;
+                            document.getElementById("variantSize").value = size;
+                            document.getElementById("variantQuantity").value = quantity;
 
-            
-            let selectProduct = document.getElementById("variantProduct");
-            for (let option of selectProduct.options) {
-                if (option.value === productId) {
-                    option.selected = true;
-                    break;
-                }
-            }
-        });
-    });
-});
-</script>
+
+                            let selectProduct = document.getElementById("variantProduct");
+                            for (let option of selectProduct.options) {
+                                if (option.value === productId) {
+                                    option.selected = true;
+                                    break;
+                                }
+                            }
+                        });
+                    });
+                });
+            </script>
 
             <!-- Modal -->
             <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <form action="shoesvariant" method="post">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit variant</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <input type="hidden" class="form-control" name="action" value="edit">
-                                <input type="hidden" class="form-control" name="id" id="variantId">
-                                <label class="form-label">Color</label>
-                                <input type="text" class="form-control" name="color" id="variantColor" required>
-                                <label class="form-label">Size</label>
-                                <input type="number" class="form-control" name="size" id="variantSize" required>
-                                <label class="form-label">Quantity</label>
-                                <input type="number" class="form-control" name="quantity" id="variantQuantity" required>
-                                <label class="form-label">Shoes Name</label>
-                                <select name="shoesvariantname" class="form-select" id="variantProduct">
-                                    <c:forEach items="${listProduct}" var="listProduct">
-                                        <option  value="${listProduct.getProductID()}">${listProduct.getProductName()}</option>
-                                    </c:forEach>
-                                </select>
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit variant</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Edit</button>
-                        </div>
-                    </div></form>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <input type="hidden" class="form-control" name="action" value="edit">
+                                    <input type="hidden" class="form-control" name="id" id="variantId">
+                                    <label class="form-label">Color</label>
+                                    <input type="text" class="form-control" name="color" id="variantColor" required>
+                                    <label class="form-label">Size</label>
+                                    <input type="number" class="form-control" name="size" id="variantSize" required>
+                                    <label class="form-label">Quantity</label>
+                                    <input type="number" class="form-control" name="quantity" id="variantQuantity" required>
+                                    <label class="form-label">Shoes Name</label>
+                                    <select name="shoesvariantname" class="form-select" id="variantProduct">
+                                        <c:forEach items="${listProduct}" var="listProduct">
+                                            <option  value="${listProduct.getProductID()}">${listProduct.getProductName()}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Edit</button>
+                            </div>
+                        </div></form>
                 </div>
             </div>
             <div class="content">
@@ -203,11 +210,30 @@ document.addEventListener("DOMContentLoaded", function() {
                                 Add new variant
                             </button>
                         </div>
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-md-6">
+                                    <div class="search-container">
+                                        <form action="shoesvariant" method="post" style="display: flex; align-items: center;">
+                                            <input type="hidden" name="action" value="searchname">
+                                            <label for="nameSearch" style="margin-right: 10px;">Search By Name:</label>
+                                            <input name="nameSearch" type="text" class="form-control search-input" placeholder="Input name..." style="flex: 1;">
+                                            <button type="submit" class="btn btn-primary btn-edit" style="margin-left: 10px;">
+                                                Search
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><div style="margin-top: 30px"></div>
+                        <c:if test="${message != null}">
+                            <p style="color: green">${message}</p>
+                        </c:if>
                         <div class="table-responsive">
                             <table class="table text-start align-middle table-bordered table-hover mb-0">
                                 <thead>
                                     <tr class="text-dark">
-                                        <th scope="col">Name</th>
+                                        <th scope="col">Original product name</th>
                                         <th scope="col">Color</th>
                                         <th scope="col">Size</th>
                                         <th scope="col">Quantity</th>
@@ -234,9 +260,9 @@ document.addEventListener("DOMContentLoaded", function() {
                                                         data-productid="${listProductVariant.getProduct_id()}">
                                                     Edit variant
                                                 </button>
-                                                <form action="shoesvariant" method="post">
+                                                <form action="shoesvariant" method="post" onsubmit="return confirmDelete()">
                                                     <input type="hidden" name="action" value="delete">
-                                                    <input type="hidden" name="id" value="${listProductVariant.getPv_id()}">
+                                                    <input type="hidden" name="idc" value="${listProductVariant.getPv_id()}">
                                                     <input type="submit" class="btn btn-danger" value="Delete">
                                                 </form>
                                             </td>
@@ -244,12 +270,70 @@ document.addEventListener("DOMContentLoaded", function() {
                                     </c:forEach>
                                 </tbody>
                             </table>
-
-
+                            <script>
+                                function confirmDelete() {
+                                    var confirmAction = confirm("Are you sure you want to delete?");
+                                    if (confirmAction) {
+                                        return true;
+                                    }
+                                    return false;
+                                }
+                            </script>
                         </div>
                     </div>
-                    <c:if test="${message != null}">
-                        <p style="color: green">${message}</p>
+                    <c:if test="${nameSearch == null}">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination" style="margin-left: 300px; margin-top: 30px">
+                                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                                    <a class="page-link" href="shoesvariant?page=${currentPage - 1}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <c:forEach var="i" begin="1" end="${totalPages}">
+                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                        <a class="page-link" href="shoesvariant?page=${i}">${i}</a>
+                                    </li>
+                                </c:forEach>
+                                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                    <a class="page-link" href="shoesvariant?page=${currentPage + 1}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </c:if>
+                    <c:if test="${nameSearch != null}">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination" style="margin-left: 300px; margin-top: 30px">
+                                <!-- Nút Previous -->
+                                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                                    <form method="POST" action="shoesvariant">
+                                        <input type="hidden" name="action" value="searchname">
+                                        <input type="hidden" name="nameSearch" value="${nameSearch}">
+                                        <input type="hidden" name="page" value="${currentPage - 1}">
+                                        <button type="submit" class="page-link">&laquo;</button>
+                                    </form>
+                                </li>
+                                <c:forEach var="i" begin="1" end="${totalPages}">
+                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                        <form method="POST" action="shoesvariant">
+                                            <input type="hidden" name="action" value="searchname">
+                                            <input type="hidden" name="nameSearch" value="${nameSearch}">
+                                            <input type="hidden" name="page" value="${i}">
+                                            <button type="submit" class="page-link">${i}</button>
+                                        </form>
+                                    </li>
+                                </c:forEach>
+                                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                    <form method="POST" action="shoesvariant">
+                                        <input type="hidden" name="action" value="searchname">
+                                        <input type="hidden" name="nameSearch" value="${nameSearch}">
+                                        <input type="hidden" name="page" value="${currentPage + 1}">
+                                        <button type="submit" class="page-link">&raquo;</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </nav>
                     </c:if>
                 </div>
                 <!-- Recent Sales End -->
