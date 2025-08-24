@@ -212,14 +212,7 @@
                                 </div>
                             </div>    
 
-                            <div class="shop-sidebar-price-range">
-                                <h4 class="sidebar-title">Sort By Price</h4>
-                                <select name="sort">
-                                    <option value="default" <%= selectedSort.equals("default") ? "selected" : "" %>>Default</option>
-                                    <option value="asc" <%= selectedSort.equals("asc") ? "selected" : "" %>>Low to High</option>
-                                    <option value="desc" <%= selectedSort.equals("desc") ? "selected" : "" %>>High to Low</option>
-                                </select>
-                            </div>
+                            
 
                             <input type="hidden" name="page" value="1">
                             <button type="submit">Apply Filters</button>
