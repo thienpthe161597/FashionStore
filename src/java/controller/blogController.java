@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author Admin
  */
 @WebServlet(name = "blogController", urlPatterns = {"/blog"})
-public class blogController extends HttpServlet {
+public class BlogController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
