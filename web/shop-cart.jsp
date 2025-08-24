@@ -113,24 +113,59 @@
                         <form action="#" method="post">
                             <div class="row row-gutter-20">
                                 <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="stateCounty">Province / City</label>
-                                        <input type="text" id="stateCounty" class="form-control" placeholder="Enter your city">
-                                    </div>
+                                    <label for="province">Province / City</label>
+                                    <select id="province" class="form-control">
+                                        <option value="">-- Select Province --</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="townCity">District</label>
-                                        <input type="text" id="townCity" class="form-control" placeholder="Enter your district">
-                                    </div>
+                                    <label for="district">District</label>
+                                    <select id="district" class="form-control" disabled>
+                                        <option value="">-- Select District --</option>
+                                    </select>
                                 </div>
-                                <!-- Optional: remove if you don't need Ward -->
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="ward">Ward (optional)</label>
-                                        <input type="text" id="ward" class="form-control" placeholder="Enter your ward">
-                                    </div>
-                                </div>
+                                <script>
+                                    const provinceSelect = document.getElementById("province");
+                                    const districtSelect = document.getElementById("district");
+
+                                    fetch("<%= request.getContextPath() %>/json/vietnam_provinces.json")
+                                            .then(resp => resp.json())
+                                            .then(data => {
+                                                console.log("Dữ liệu JSON:", data);
+
+                                                // Load provinces
+                                                data.forEach(province => {
+                                                    let opt = document.createElement("option");
+                                                    opt.value = province.Code;     // dùng Code thay vì code
+                                                    opt.textContent = province.Name;
+                                                    provinceSelect.appendChild(opt);
+                                                });
+
+                                                // Khi chọn tỉnh
+                                                provinceSelect.addEventListener("change", function () {
+                                                    districtSelect.innerHTML = "<option value=''>-- Chọn Quận/Huyện --</option>";
+
+                                                    const selectedProvince = data.find(p => String(p.Code) === this.value);
+                                                    console.log("Tỉnh được chọn:", selectedProvince);
+
+                                                    if (selectedProvince && selectedProvince.Wards) {
+                                                        selectedProvince.Wards.forEach(ward => {
+                                                            let o = document.createElement("option");
+                                                            o.value = ward.Code;
+                                                            o.textContent = ward.Name;
+                                                            districtSelect.appendChild(o);
+                                                        });
+                                                        districtSelect.disabled = false;
+                                                    } else {
+                                                        districtSelect.disabled = true;
+                                                    }
+                                                });
+                                            })
+                                            .catch(err => console.error("Lỗi load JSON:", err));
+                                </script>
+
+
+                                
                                 <!-- New Detailed Address -->
                                 <div class="col-md-12">
                                     <div class="form-group">

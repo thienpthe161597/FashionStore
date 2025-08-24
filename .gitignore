@@ -1,4 +1,31 @@
+# Ignore build output
 /build/
-/build/
-/nbproject/private/
+/dist/
+/target/
+/out/
+
+# Ignore compiled class files
 *.class
+
+# Ignore IDE-specific files
+/nbproject/private/
+/nbproject/config/
+/nbproject/cache/
+/nbproject/private.properties
+/private/
+/.idea/
+/*.iml
+/.project
+/.classpath
+/.settings/
+
+# Ignore logs
+*.log
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore temporary files
+*.swp
+*.tmp
