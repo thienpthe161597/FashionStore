@@ -68,7 +68,7 @@ public class ProductVariant {
 
     @Override
     public String toString() {
-        return "ProductVarivant{" + "pv_id=" + pv_id + ", product_id=" + product_id + ", color=" + color + ", size=" + sizeID + ", quantity=" + quantity + '}';
+        return "ProductVariant{" + "pv_id=" + pv_id + ", product_id=" + product_id + ", color=" + color + ", size=" + sizeID + ", quantity=" + quantity + '}';
     }
     
     
