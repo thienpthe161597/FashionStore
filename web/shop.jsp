@@ -8,7 +8,7 @@
 <%  
     ProductDAO productDao = new ProductDAO();
     CategoryDAO categoryDao = new CategoryDAO();
-    List<Category> categoryList = categoryDao.getAllCategories();
+    List<Category> categoryList = categoryDao.getAllCategory();
     List<Product> productList = (List<Product>) request.getAttribute("productList");
     
     int currentPage = (request.getAttribute("currentPage") != null) ? (int) request.getAttribute("currentPage") : 1;
@@ -75,7 +75,7 @@
 
                                 <!-- Dropdown sắp xếp giá bên phải -->
                                 <div class="shop-sort-price ms-3">
-                                    <form id="sortForm" action="ProductController" method="get" class="d-inline">
+<form id="sortForm" action="ProductController" method="get" class="d-inline">
                                         <input type="hidden" name="category" value="<%= selectedCategory %>">
                                         <input type="hidden" name="gender" value="<%= selectedGender %>">
                                         <input type="hidden" name="page" value="1">
@@ -111,7 +111,7 @@
                                                     <h4 class="title">
                                                         <a href="product-detail?id=<%= product.getProductID() %>" class="text-dark text-decoration-none d-block">
                                                             <%= product.getProductName() %>
-                                                        </a>
+</a>
                                                     </h4>
                                                     <div class="prices mt-auto">
                                                         <% if (product.getSaleID() != 0) { 
@@ -153,7 +153,7 @@
                                 <li class="page-item <%= (i == currentPage) ? "active" : "" %>">
                                     <a class="page-link" href="ProductController?page=<%= i %>&category=<%= selectedCategory %>&sort=<%= selectedSort %>&gender=<%= selectedGender %>"><%= i %></a>
                                 </li>
-                                <% } %>
+<% } %>
 
                                 <% if (currentPage < totalPages) { %>
                                 <li class="page-item">
@@ -200,7 +200,7 @@
                                         <label for="gender1">Men</label>
                                     </div>
                                     <div>
-                                        <input type="radio" id="gender2" name="gender" value="Women" 
+<input type="radio" id="gender2" name="gender" value="Women" 
                                                <%= selectedGender.equals("Women") ? "checked" : "" %>>
                                         <label for="gender2">Women</label>
                                     </div>
@@ -258,7 +258,7 @@
                                 <select class="form-select" id="forSize" required>
                                     <option selected value="">s</option>
                                     <option>m</option>
-                                    <option>l</option>
+<option>l</option>
                                     <option>xl</option>
                                 </select>
                             </div>
@@ -316,7 +316,7 @@
         <p class="cart-total"><span>Subtotal:</span><span class="amount">Â£89.99</span></p>
         <a class="btn-theme" data-margin-bottom="10" href="shop-cart.jsp">View cart</a>
         <a class="btn-theme" href="shop-checkout.jsp">Checkout</a>
-        <a class="d-block text-end lh-1" href="shop-checkout.jsp"><img src="assets/img/photos/paypal.webp" width="133" height="26" alt="Has-image"></a>
+<a class="d-block text-end lh-1" href="shop-checkout.jsp"><img src="assets/img/photos/paypal.webp" width="133" height="26" alt="Has-image"></a>
     </div>
 </div>
 <!--== End Aside Cart Menu ==-->
@@ -374,7 +374,7 @@
                     <ul class="sub-menu">
                         <li><a href="account.jsp">Account</a></li>
                         <li><a href="account-login.jsp">Login</a></li>
-                        <li><a href="account-register.jsp">Register</a></li>
+<li><a href="account-register.jsp">Register</a></li>
                         <li><a href="page-not-found.jsp">Page Not Found</a></li>
                     </ul>
                 </li>
@@ -424,7 +424,7 @@
                         </li>
                     </ul>
                 </li>
-                <li><a href="contact.jsp">Contact</a></li>
+<li><a href="contact.jsp">Contact</a></li>
             </ul>
         </div>
         <!-- Mobile Menu End -->

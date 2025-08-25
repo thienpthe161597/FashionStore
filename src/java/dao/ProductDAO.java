@@ -334,4 +334,110 @@ public class ProductDAO {
         }
         return product;
     }
+
+   public List<Product> getFilteredProducts(int catId, String sort, String gender, int page, int pageSize) throws SQLException {
+    List<Product> productList = new ArrayList<>();
+    String query = "SELECT * FROM Product WHERE 1=1";
+
+    if (catId > 0) {
+        query += " AND Category_ID = ?";
+    }
+
+    if (gender != null && !"default".equals(gender)) {
+        if ("Men".equals(gender)) query += " AND (Gender='Men' OR Gender='Unisex')";
+        else if ("Women".equals(gender)) query += " AND (Gender='Women' OR Gender='Unisex')";
+        else if ("Unisex".equals(gender)) query += " AND Gender='Unisex'";
+    }
+
+    if ("asc".equals(sort)) query += " ORDER BY Price ASC";
+    else if ("desc".equals(sort)) query += " ORDER BY Price DESC";
+    else query += " ORDER BY Product_ID";
+
+    query += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+    try (PreparedStatement statement = con.prepareStatement(query)) {
+        int paramIndex = 1;
+        if (catId > 0) statement.setInt(paramIndex++, catId);
+
+        statement.setInt(paramIndex++, (page - 1) * pageSize);
+        statement.setInt(paramIndex, pageSize);
+
+        try (ResultSet rs = statement.executeQuery()) {
+            while (rs.next()) {
+                productList.add(new Product(
+                        rs.getInt("Product_ID"),
+                        rs.getInt("Category_ID"),
+                        rs.getInt("Sale_ID"),
+                        rs.getString("ProductName"),
+                        rs.getString("Description"),
+                        rs.getInt("Price"),
+                        rs.getString("Gender"),
+                        rs.getString("Image")
+                ));
+            }
+        }
+    }
+    return productList;
+}
+
+// Method tính tổng sản phẩm theo filter
+public int getTotalProductCount(int catId, String gender) {
+    String query = "SELECT COUNT(*) FROM Product WHERE 1=1";
+    if (catId > 0) query += " AND Category_ID = ?";
+    if (gender != null && !"default".equals(gender)) {
+        if ("Men".equals(gender)) query += " AND (Gender='Men' OR Gender='Unisex')";
+        else if ("Women".equals(gender)) query += " AND (Gender='Women' OR Gender='Unisex')";
+        else if ("Unisex".equals(gender)) query += " AND Gender='Unisex'";
+    }
+
+    try (PreparedStatement ps = con.prepareStatement(query)) {
+        int paramIndex = 1;
+        if (catId > 0) ps.setInt(paramIndex++, catId);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return 0;
+}
+public double getSaleDiscount(int saleId) {
+    String query = "SELECT Discount FROM Sale WHERE Sale_ID = ?";
+    try (PreparedStatement ps = con.prepareStatement(query)) {
+        ps.setInt(1, saleId);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getDouble("Discount");
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return 0; // nếu không tìm thấy sale, trả về 0%
+}
+public Product getProductByIDFull(int id) {
+    String query = "SELECT * FROM Product WHERE Product_ID = ?";
+    try (PreparedStatement ps = con.prepareStatement(query)) {
+        ps.setInt(1, id);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return new Product(
+                    rs.getInt("Product_ID"),
+                    rs.getInt("Category_ID"),
+                    rs.getInt("Sale_ID"),
+                    rs.getString("ProductName"),
+                    rs.getString("Description"),
+                    rs.getInt("Price"),
+                    rs.getString("Gender"),
+                    rs.getString("Image")
+                );
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null; // Nếu không tìm thấy
+}
+
+
 }
