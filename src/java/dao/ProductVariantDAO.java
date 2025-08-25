@@ -102,6 +102,27 @@ public class ProductVariantDAO {
         return pv;
     }
 
+    public List<ProductVariant> getVariantsByProductId(int productId) {
+        List<ProductVariant> list = new ArrayList<>();
+        String sql = "SELECT * FROM [ShoesOnlineShop].[dbo].[Product_Variant] WHERE product_id = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, productId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ProductVariant variant = new ProductVariant();
+                variant.setPv_id(rs.getInt("variant_id"));
+                variant.setProduct_id(rs.getInt("product_id"));
+                variant.setColor(rs.getString("color"));
+                variant.setSize(rs.getInt("size"));
+                variant.setQuantity(rs.getInt("quantity"));
+                list.add(variant);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public List<ProductVariant> getVariantByShoesName(int idProduct) {
         List<ProductVariant> pv = new ArrayList<>();
         String query = " select * from [dbo].[Product_Variant] where Product_ID = ? ";
