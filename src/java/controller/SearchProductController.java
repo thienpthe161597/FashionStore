@@ -20,8 +20,8 @@ import java.util.List;
  *
  * @author Admin
  */
-@WebServlet(name="ProductController", urlPatterns={"/ProductController"})
-public class ProductController extends HttpServlet {
+@WebServlet(name="SearchProductController", urlPatterns={"/SearchProductController"})
+public class SearchProductController extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -38,10 +38,10 @@ public class ProductController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductController</title>");  
+            out.println("<title>Servlet SearchProductController</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProductController at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet SearchProductController at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -56,41 +56,33 @@ public class ProductController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    ProductDAO productDao = new ProductDAO();
-    
-    int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
-    int pageSize = 9; 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        ProductDAO productDao = new ProductDAO();
 
-    int categoryId = request.getParameter("category") != null ? Integer.parseInt(request.getParameter("category")) : 0;
-    String sort = request.getParameter("sort") != null ? request.getParameter("sort") : "default";
-    String gender = request.getParameter("gender") != null ? request.getParameter("gender") : "default";
+        // Get search keyword and pagination parameters
+        String keyword = request.getParameter("search") != null ? request.getParameter("search").trim() : "";
+        int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
+        int pageSize = 9; // Products per page
 
-    try {
-        List<Product> productList = productDao.getFilteredProducts(categoryId, sort, gender, page, pageSize);
-List<Product> allProducts = productDao.getAllProductt(); // lấy tất cả sản phẩm
-int totalProducts = allProducts.size();
+        try {
+            List<Product> productList = productDao.searchProducts(keyword, page, pageSize);
+            int totalProducts = productDao.getTotalSearchResults(keyword);
+            int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
 
+            // Set attributes for pagination and search results
+            request.setAttribute("productList", productList);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("search", keyword);
 
-        request.setAttribute("productList", productList);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("totalPages", totalProducts);
-        int totalProducts = productDao.getTotalProducts(categoryId, gender);
-        int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+            // Forward to search.jsp
+            request.getRequestDispatcher("shop-three-columns.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace(response.getWriter());
 
-        request.setAttribute("productList", productList);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("totalPages", totalPages);
-        request.setAttribute("category", categoryId);
-        request.setAttribute("gender", gender);
-        request.setAttribute("sort", sort);
-        
-        request.getRequestDispatcher("shop.jsp").forward(request, response);
-    } catch (Exception e) {
-        e.printStackTrace(response.getWriter());
-    }
-}
- 
+        }
+    } 
 
     /** 
      * Handles the HTTP <code>POST</code> method.
@@ -112,7 +104,6 @@ int totalProducts = allProducts.size();
     @Override
     public String getServletInfo() {
         return "Short description";
-    }
+    }// </editor-fold>
 
-}
 }

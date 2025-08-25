@@ -93,12 +93,20 @@ public class shoesController extends HttpServlet {
             request.setAttribute("listProduct", listProduct);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("currentPage", page);
+        List<Product> listProduct = pdao.getAllProduct();
+        List<Category> listCategory = cdao.getAllCategory();
+        Boolean isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
+        if (isLoggedIn == null) {
+            request.setAttribute("listCategory", listCategory);
+            request.setAttribute("listProduct", listProduct);
+
             request.getRequestDispatcher("adminDashboard/shoe-view.jsp").forward(request, response);
         } else {
             request.setAttribute("listCategory", listCategory);
             request.setAttribute("listProduct", listProduct);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("currentPage", page);
+
             request.setAttribute("loginMessage", "Login successfully!");
             session.removeAttribute("isLoggedIn");
             request.getRequestDispatcher("adminDashboard/shoe-view.jsp").forward(request, response);
@@ -129,11 +137,15 @@ public class shoesController extends HttpServlet {
                 desc = request.getParameter("shoesdescription");
                 if (pdao.getProductByNamee(name) != null) {
                     request.getSession().setAttribute("message", "Product name " + name + " already exited");
+                if (pdao.getProductByName(name) != null) {
+                    request.setAttribute("message", "Product name " + name + " already exited");
+
                 } else {
                     product = new Product(0, Integer.parseInt(category),
                             1, name, desc, Integer.parseInt(price), gender, "");
                     pdao.addNewProduct(product);
                     request.getSession().setAttribute("message", "Add successfully");
+                    request.setAttribute("message", "Add successfully");
                 }
                 break;
             case "update":
@@ -144,11 +156,14 @@ public class shoesController extends HttpServlet {
                 desc = request.getParameter("shoesdescription");
                 if (pdao.getProductByName(name, Integer.parseInt(id)) != null) {
                     request.getSession().setAttribute("message", "Product name " + name + " already exited");
+                if (pdao.getProductByName(name) != null) {
+                    request.setAttribute("message", "Product name " + name + " already exited");
                 } else {
                     product = new Product(Integer.parseInt(id), Integer.parseInt(category),
                             1, name, desc, Integer.parseInt(price), gender, "");
                     pdao.updateProduct(product);
                     request.getSession().setAttribute("message", "Edit successfully");
+                    request.setAttribute("message", "Edit successfully");
                 }
 
                 break;
@@ -209,6 +224,16 @@ public class shoesController extends HttpServlet {
                 throw new AssertionError();
         }
         response.sendRedirect("shoes");
+                request.setAttribute("message", "Delete successfully");
+                break;
+            default:
+                throw new AssertionError();
+        }
+        List<Product> listProduct = pdao.getAllProduct();
+        List<Category> listCategory = cdao.getAllCategory();
+        request.setAttribute("listCategory", listCategory);
+        request.setAttribute("listProduct", listProduct);
+        request.getRequestDispatcher("adminDashboard/shoe-view.jsp").forward(request, response);
     }
 
     /**

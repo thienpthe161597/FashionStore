@@ -13,6 +13,8 @@ public class User {
     public String Role;
     public Date Created_At;
 
+    public boolean isActive;   // ✅ thêm mới
+
     public User() {
     }
 
@@ -47,6 +49,20 @@ public class User {
         this.Address = Address;
         this.Phone = Phone;
         this.Role = Role;
+    }
+
+
+    // ✅ Constructor đầy đủ có isActive
+    public User(int User_ID, String User_Name, String Email, String Password, String Address, String Phone, String Role, Date Created_At, boolean isActive) {
+        this.User_ID = User_ID;
+        this.User_Name = User_Name;
+        this.Email = Email;
+        this.Password = Password;
+        this.Address = Address;
+        this.Phone = Phone;
+        this.Role = Role;
+        this.Created_At = Created_At;
+        this.isActive = isActive;
     }
 
     public int getUser_ID() {
@@ -111,6 +127,15 @@ public class User {
 
     public void setCreated_At(Date Created_At) {
         this.Created_At = Created_At;
+    }
+
+    // ✅ Getter/Setter cho isActive
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     @Override

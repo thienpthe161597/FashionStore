@@ -80,6 +80,7 @@ public class ProductVariant {
     @Override
     public String toString() {
         return "ProductVarivant{" + "pv_id=" + pv_id + ", product_id=" + product_id + ", color=" + color + ", sizeid=" + sizeID + ", quantity=" + quantity + ",sizeValue" + sizeValue + '}';
+        
     }
 
 }

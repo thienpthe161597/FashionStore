@@ -38,6 +38,7 @@ public class logOutController extends HttpServlet {
             out.println("<html>");
             out.println("<head>");
             out.println("<title>Servlet logOutController</title>");
+
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet logOutController at " + request.getContextPath() + "</h1>");
