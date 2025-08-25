@@ -82,7 +82,7 @@
                 <div class="col-lg-6">
                     <div class="divider-thumb-content">
                         <div class="thumb">
-                            <a href="shop.jsp">
+                            <a href="ProductController">
                                 <img src="assets/img/shop/banner/1.webp" width="570" height="350" alt="Image-HasTech">
                             </a>
                         </div>
@@ -96,7 +96,7 @@
                 <div class="col-lg-6">
                     <div class="divider-thumb-content">
                         <div class="thumb">
-                            <a href="shop.jsp">
+                            <a href="ProductController">
                                 <img src="assets/img/shop/banner/2.webp" width="570" height="700" alt="Image-HasTech">
                             </a>
                         </div>
