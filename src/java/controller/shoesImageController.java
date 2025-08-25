@@ -76,6 +76,7 @@ public class shoesImageController extends HttpServlet {
             throws ServletException, IOException {
         List<ProductImage> listImage = pidao.getAllProductImage();
         List<ProductVariant> listVariant = pvdao.getAllProductVariant();
+        List<Product> listPro = pdao.getAllProductt();
         List<Product> listPro = pdao.getAllProduct();
         request.setAttribute("listImage", listImage);
         request.setAttribute("listPro", listPro);
@@ -134,6 +135,7 @@ public class shoesImageController extends HttpServlet {
         }
         List<ProductImage> listImage = pidao.getAllProductImage();
         List<ProductVariant> listVariant = pvdao.getAllProductVariant();
+        List<Product> listPro = pdao.getAllProductt();
         List<Product> listPro = pdao.getAllProduct();
         request.setAttribute("listImage", listImage);
         request.setAttribute("listPro", listPro);

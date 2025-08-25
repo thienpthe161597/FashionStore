@@ -30,9 +30,31 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label for="email">Email address</label>
-                                        <input id="email" class="form-control" type="email" name="email" required="">
+                                        <input id="email" class="form-control" type="email" name="email" required="" oninput="validateEmail()">
+                                        <small id="emailError" class="text-danger" style="display: none;">Please enter a valid Gmail address (e.g., example@gmail.com).</small>
                                     </div>
                                 </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="phone">Phone number</label>
+                                        <input id="phone" class="form-control" type="text" name="phone" required="">
+                                    </div>
+                                </div>
+
+                                <script>
+                                    function validateEmail() {
+                                        var emailInput = document.getElementById('email');
+                                        var email = emailInput.value.trim();
+                                        var gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+                                        if (!gmailRegex.test(email)) {
+                                            document.getElementById('emailError').style.display = 'block';
+                                            emailInput.setCustomValidity("Please enter a valid Gmail address (e.g., example@gmail.com).");
+                                        } else {
+                                            document.getElementById('emailError').style.display = 'none';
+                                            emailInput.setCustomValidity("");
+                                        }
+                                    }
+                                </script>
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label for="password">Password</label>
@@ -41,39 +63,40 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group">
-                                        <label for="cpassword">Confirm password</label>
+                                        <label for="password">Confirm password</label>
                                         <input id="cpassword" class="form-control" type="password" name="cpassword" required="">
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group">
-                                        <span style="color: red;">${mess}</span>
+                                        <label><a style="color: red">${mess}</a></label>
+
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group mb--0">
-                                        <button type="submit" class="btn-register">Register</button>
+                                        <button type="submit" class="btn-register">
+                                            <a>Register</a>
+                                        </button>
+                                        <script>
+                                            function validateForm() {
+                                                const username = document.getElementById('username').value;
+                                                const password = document.getElementById('password').value;
+                                                if (username.length <= 6) {
+                                                    alert('Username must be greater than 6 characters');
+                                                    return false;
+                                                }
+                                                if (password.length <= 6) {
+                                                    alert('Password must be greater than 6 characters');
+                                                    return false;
+                                                }
+                                                return true;
+                                            }
+                                        </script>
                                     </div>
                                 </div>
                             </div>
                         </form>
-                        <script>
-                            function validateForm() {
-                                const username = document.getElementById('username').value;
-                                const password = document.getElementById('password').value;
-                                const cpassword = document.getElementById('cpassword').value;
-
-                                if (username.length <= 6) {
-                                    alert('Username must be greater than 6 characters');
-                                    return false;
-                                }
-                                if (password !== cpassword) {
-                                    alert('Password and Confirm Password do not match!');
-                                    return false;
-                                }
-                                return true;
-                            }
-                        </script>
                     </div>
                 </div>
             </div>
@@ -155,23 +178,23 @@
     <div class="offcanvas-body">
         <ul class="aside-cart-product-list">
             <li class="product-list-item">
-                <a href="#/" class="remove">×</a>
+                <a href="#/" class="remove">Ã—</a>
                 <a href="single-product.jsp">
                     <img src="assets/img/shop/product-mini/1.webp" width="90" height="110" alt="Image-HasTech">
                     <span class="product-title">Leather Mens Slipper</span>
                 </a>
-                <span class="product-price">1 × £69.99</span>
+                <span class="product-price">1 Ã— Â£69.99</span>
             </li>
             <li class="product-list-item">
-                <a href="#/" class="remove">×</a>
+                <a href="#/" class="remove">Ã—</a>
                 <a href="single-product.jsp">
                     <img src="assets/img/shop/product-mini/2.webp" width="90" height="110" alt="Image-HasTech">
                     <span class="product-title">Quickiin Mens shoes</span>
                 </a>
-                <span class="product-price">1 × £20.00</span>
+                <span class="product-price">1 Ã— Â£20.00</span>
             </li>
         </ul>
-        <p class="cart-total"><span>Subtotal:</span><span class="amount">£89.99</span></p>
+        <p class="cart-total"><span>Subtotal:</span><span class="amount">Â£89.99</span></p>
         <a class="btn-theme" data-margin-bottom="10" href="shop-cart.jsp">View cart</a>
         <a class="btn-theme" href="shop-checkout.jsp">Checkout</a>
         <a class="d-block text-end lh-1" href="shop-checkout.jsp"><img src="assets/img/photos/paypal.webp" width="133" height="26" alt="Has-image"></a>
@@ -194,7 +217,7 @@
                 <form action="#" method="post">
                     <div class="search-form position-relative">
                         <label for="search-input" class="visually-hidden">Search</label>
-                        <input id="search-input" type="search" class="form-control" placeholder="Search entire store?">
+                        <input id="search-input" type="search" class="form-control" placeholder="Search entire storeâ€¦">
                         <button class="search-button"><i class="fa fa-search"></i></button>
                     </div>
                 </form>
@@ -292,18 +315,35 @@
 </div>
 
 <!--=======================Javascript============================-->
+
+<!--=== jQuery Modernizr Min Js ===-->
 <script src="assets/js/modernizr.js"></script>
+<!--=== jQuery Min Js ===-->
 <script src="assets/js/jquery-main.js"></script>
+<!--=== jQuery Migration Min Js ===-->
 <script src="assets/js/jquery-migrate.js"></script>
+<!--=== jQuery Popper Min Js ===-->
 <script src="assets/js/popper.min.js"></script>
+<!--=== jQuery Bootstrap Min Js ===-->
 <script src="assets/js/bootstrap.min.js"></script>
+<!--=== jQuery Ui Min Js ===-->
 <script src="assets/js/jquery-ui.min.js"></script>
+<!--=== jQuery Swiper Min Js ===-->
 <script src="assets/js/swiper.min.js"></script>
+<!--=== jQuery Fancybox Min Js ===-->
 <script src="assets/js/fancybox.min.js"></script>
+<!--=== jQuery Waypoint Js ===-->
 <script src="assets/js/waypoint.js"></script>
+<!--=== jQuery Parallax Min Js ===-->
 <script src="assets/js/parallax.min.js"></script>
+<!--=== jQuery Aos Min Js ===-->
 <script src="assets/js/aos.min.js"></script>
+
+<!--=== jQuery Custom Js ===-->
 <script src="assets/js/custom.js"></script>
 
 </body>
+
+
+<!-- Mirrored from htmldemo.net/shome/shome/account-register.jsp by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 02 Feb 2025 02:23:50 GMT -->
 </html>

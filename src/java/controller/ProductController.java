@@ -68,6 +68,13 @@ public class ProductController extends HttpServlet {
 
     try {
         List<Product> productList = productDao.getFilteredProducts(categoryId, sort, gender, page, pageSize);
+List<Product> allProducts = productDao.getAllProductt(); // lấy tất cả sản phẩm
+int totalProducts = allProducts.size();
+
+
+        request.setAttribute("productList", productList);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalProducts);
         int totalProducts = productDao.getTotalProducts(categoryId, gender);
         int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
 
@@ -105,6 +112,7 @@ public class ProductController extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 
+}
 }

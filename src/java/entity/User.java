@@ -12,6 +12,7 @@ public class User {
     public String Phone;
     public String Role;
     public Date Created_At;
+
     public boolean isActive;   // ✅ thêm mới
 
     public User() {
@@ -49,6 +50,7 @@ public class User {
         this.Phone = Phone;
         this.Role = Role;
     }
+
 
     // ✅ Constructor đầy đủ có isActive
     public User(int User_ID, String User_Name, String Email, String Password, String Address, String Phone, String Role, Date Created_At, boolean isActive) {
@@ -138,6 +140,6 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" + "User_ID=" + User_ID + ", User_Name=" + User_Name + ", Email=" + Email + ", Password=" + Password + ", Address=" + Address + ", Phone=" + Phone + ", Role=" + Role + ", Created_At=" + Created_At + ", isActive=" + isActive + '}';
+        return "User{" + "User_ID=" + User_ID + ", User_Name=" + User_Name + ", Email=" + Email + ", Password=" + Password + ", Address=" + Address + ", Phone=" + Phone + ", Role=" + Role + ", Created_At=" + Created_At + '}';
     }
 }

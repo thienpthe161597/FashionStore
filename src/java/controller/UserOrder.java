@@ -4,7 +4,8 @@
  */
 package controller;
 
-import dao.BlogDAO;
+import dao.OrderDAO;
+import entity.Order;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,13 +13,17 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "blogController", urlPatterns = {"/blog"})
-public class blogController extends HttpServlet {
+@WebServlet(name = "UserOrder", urlPatterns = {"/user-order"})
+public class UserOrder extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -32,18 +37,7 @@ public class blogController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet blogController</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet blogController at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -55,13 +49,20 @@ public class blogController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    BlogDAO dao = new BlogDAO();
+    OrderDAO orderDAO = new OrderDAO();
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("blog", dao.getAllBlog());
-        request.setAttribute("blogImg", dao.getAllBlogImg());
-        request.getRequestDispatcher("blog.jsp").forward(request, response);
+        processRequest(request, response);
+        try {
+            List<Order> listOrder = orderDAO.getAllOrder();
+            request.setAttribute("ORDERS", listOrder);
+            request.getRequestDispatcher("adminDashboard/user-order.jsp").forward(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(UserOrder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     /**
@@ -75,10 +76,26 @@ public class blogController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int blogID = Integer.parseInt(request.getParameter("idBlog"));
-        request.setAttribute("blog", dao.getBlogByID(blogID));
-        request.setAttribute("blogImg", dao.getBlogImgByID(blogID));
-        request.getRequestDispatcher("blog-details.jsp").forward(request, response);
+        processRequest(request, response);
+
+        String orderId = request.getParameter("orderId");
+        String newStatus = request.getParameter("newStatus");
+
+        if (orderId == null || newStatus == null) {
+            response.sendRedirect("adminDashboard/user-order.jsp");
+        }
+
+        boolean result = orderDAO.updateOrder(Integer.parseInt(orderId),newStatus);
+//        request.getRequestDispatcher("user-order").forward(request, response);
+        if (result) {
+            try {
+                List<Order> listOrder = orderDAO.getAllOrder();
+                request.setAttribute("ORDERS", listOrder);
+                request.getRequestDispatcher("adminDashboard/user-order.jsp").forward(request, response);
+            } catch (SQLException ex) {
+                Logger.getLogger(UserOrder.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     /**

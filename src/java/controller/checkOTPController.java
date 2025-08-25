@@ -75,6 +75,7 @@ public class checkOTPController extends HttpServlet {
     UserDAO dao = new UserDAO();
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
+
             throws ServletException, IOException {
         HttpSession s = request.getSession();
         HashPass hass = new HashPass();
@@ -114,6 +115,7 @@ public class checkOTPController extends HttpServlet {
                     request.setAttribute("mess", "Please check again password");
                     request.getRequestDispatcher("account-confirm-password-reset.jsp").forward(request, response);
                 } else {
+
                     User u = (User) s.getAttribute("userReset");
                     User userUpdate = new User(u.getEmail(), hass.hashPassword(password));
                     dao.resetPassword(userUpdate);

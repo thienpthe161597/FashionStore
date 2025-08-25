@@ -1,310 +1,515 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="en">
-
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Shoes Dashboard - Fashion Store</title>
 
-        <meta content="width=device-width, initial-scale=1.0" name="viewport">
-        <meta content="" name="keywords">
-        <meta content="" name="description">
-
-        <!-- Favicon -->
-        <link href="${pageContext.request.contextPath}/assets2/img/favicon.ico" rel="icon">
-        <title>Dashboard admin</title>
-        <!-- Google Web Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <!-- Google Fonts & Icons -->
         <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <!-- Icon Font Stylesheet -->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="${pageContext.request.contextPath}/assets2/img/favicon.ico" rel="icon">
 
-        <!-- Libraries Stylesheet -->
-        <link href="${pageContext.request.contextPath}/assets2/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-        <link href="${pageContext.request.contextPath}/assets2/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+        <!-- Custom CSS -->
+        <style>
+            :root{
+                --brand:#0d6efd;
+                --bg:#f5f7fb;
+            }
+            html,body{
+                height:100%;
+            }
+            body{
+                font-family:'Heebo',sans-serif;
+                background-color:var(--bg);
+            }
+            .container-xxl{
+                min-height:100%;
+            }
+            /* Sidebar */
+            .sidebar{
+                width:260px;
+                min-height:100vh;
+                background:#fff;
+                box-shadow:0 0 20px rgba(0,0,0,0.06);
+                position:sticky;
+                top:0;
+            }
+            .sidebar .nav-link{
+                color:#333;
+                font-weight:500;
+                border-radius:10px;
+                margin:2px 8px;
+            }
+            .sidebar .nav-link.active,.sidebar .nav-link:hover{
+                color:var(--brand);
+                background:#eef5ff;
+            }
+            /* Content card */
+            .content{
+                flex:1;
+                padding:24px;
+            }
+            .card{
+                border:none;
+                border-radius:14px;
+                box-shadow:0 8px 24px rgba(15,23,42,0.06);
+            }
+            /* Table (header sticky) */
+            .table thead th{
+                background:var(--brand);
+                color:#fff;
+                font-size:.85rem;
+                text-transform:uppercase;
+                letter-spacing:.04em;
+                position:sticky;
+                top:0;
+                z-index:1;
+            }
+            .table tbody tr:hover{
+                background:#f8fbff;
+            }
+            .table td{
+                vertical-align:middle;
+            }
+            /* Badges */
+            .badge-soft{
+                background:#eef5ff;
+                color:#0a58ca;
+                border:1px solid #d7e8ff;
+            }
+            .badge-gender{
+                background:#f1f1f1;
+                border:1px solid #e6e6e6;
+                color:#333;
+            }
+            /* Pagination */
+            .pagination .page-link{
+                border-radius:50%;
+                color:var(--brand);
+                border:none
+            }
+            .pagination .page-item.active .page-link{
+                background:var(--brand);
+                color:#fff;
+            }
+            /* Search area */
+            .search-container{
+                display:flex;
+                gap:10px;
+                align-items:center
+            }
+            .search-container .form-control{
+                flex:1
+            }
+            /* Empty state */
+            .empty{
+                text-align:center;
+                padding:48px 16px;
+                color:#6b7280
+            }
+            .empty i{
+                font-size:40px;
+                color:#9ca3af
+            }
+            /* Modal */
+            .modal-content{
+                border-radius:12px;
+            }
+            .form-label{
+                font-weight:600;
+            }
+            .form-control:focus,.form-select:focus{
+                border-color:var(--brand);
+                box-shadow:0 0 0 .25rem rgba(13,110,253,.25);
+            }
+            /* Action buttons */
+            .btn-icon{
+                display:inline-flex;
+                align-items:center;
+                gap:6px
+            }
 
-        <!-- Customized Bootstrap Stylesheet -->
-        <link href="${pageContext.request.contextPath}/assets2/css/bootstrap.min.css" rel="stylesheet">
-
-        <!-- Template Stylesheet -->
-        <link href="${pageContext.request.contextPath}/assets2/css/style.css" rel="stylesheet">
+            /* ====== S?a ?? b?ng luôn v?a ngang, KHÔNG cu?n ngang ====== */
+            /* Wrapper ch? cu?n d?c, ch?n cu?n ngang */
+            .table-wrap{
+                max-height: 65vh;     /* gi? cu?n d?c n?u nhi?u dòng */
+                overflow-y: auto;
+                overflow-x: hidden;   /* NG?N cu?n ngang */
+            }
+            /* Ép b?ng fit ngang màn hình, c?t chia theo không gian s?n có */
+            .table-fit{
+                width: 100%;
+                table-layout: fixed;  /* không n? theo n?i dung, giúp luôn v?a ngang */
+            }
+            /* Cho phép n?i dung ô xu?ng dòng/ng?t t? ?? không tràn ngang */
+            .table-fit th,
+            .table-fit td{
+                white-space: normal !important;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            }
+            /* N?u tr??c ?ây mô t? b? clamp 1 dòng + ... => m? ?? xu?ng dòng ??y ?? */
+            .desc-clamp{
+                max-width: none;
+                white-space: normal !important;
+                overflow: visible;
+                text-overflow: clip;
+            }
+        </style>
     </head>
 
     <body>
-        <%
-    String loginMessage = (String) request.getAttribute("loginMessage");
-    if (loginMessage != null) {
-        %>
-        <script type="text/javascript">
-            window.onload = function () {
-                alert('<%= loginMessage %>');
-            };
-        </script>
-        <%
-            }
-        %>
-        <div class="container-xxl position-relative bg-white d-flex p-0">
-            <!-- Spinner Start -->
-            <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-                <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-            <!-- Spinner End -->
-
-
-            <!-- Sidebar Start -->
+        <div class="container-xxl d-flex p-0">
+            <!-- Sidebar -->
             <div class="sidebar pe-4 pb-3">
                 <nav class="navbar bg-light navbar-light">
-
-                    <div class="d-flex align-items-center ms-4 mb-4" style="margin-top: 50px">
+                    <div class="d-flex align-items-center ms-4 mb-4" style="margin-top:50px;">
                         <div class="position-relative">
-                            <img class="rounded-circle" src="${pageContext.request.contextPath}/assets2/img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                            <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
+                            <img class="rounded-circle" src="${pageContext.request.contextPath}/assets2/img/user.jpg" alt="" style="width:44px;height:44px;">
+                            <span class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></span>
                         </div>
                         <div class="ms-3">
                             <h6 class="mb-0">${user.getUser_Name()}</h6>
-                            <span>${user.getRole()}</span>
+                            <small class="text-muted">${user.getRole()}</small>
                         </div>
                     </div>
+
                     <div class="navbar-nav w-100">
+                        <!-- Fashion Store -->
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class=" fas fa-shoe-prints me-2"></i>Shoes</a>
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fas fa-shoe-prints me-2"></i>Fashion Store
+                            </a>
                             <div class="dropdown-menu bg-transparent border-0">
-                                <a href="shoes" class="dropdown-item" style="margin-left: 50px">List shoes</a>
-                                <a href="shoesimage" class="dropdown-item" style="margin-left: 50px">Image shoes</a>
-                                <a href="shoesvariant" class="dropdown-item" style="margin-left: 50px">Variant shoes</a>
+                                <a href="shoes" class="dropdown-item ps-5">List Shoes</a>
                             </div>
                         </div>
-                        <a href="brand" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Category</a>
+
+                        <!-- Category -->
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fa fa-th me-2"></i>Category
+                            </a>
+                            <div class="dropdown-menu bg-transparent border-0">
+                                <a href="brand" class="dropdown-item ps-5">Brand</a>
+
+                                <a href="shoesimage" class="dropdown-item ps-5">Image Shoes</a>
+                                <a href="shoesvariant" class="dropdown-item ps-5">Variant Shoes</a>
+                                <a href="shoessize" class="dropdown-item ps-5">Shoe Sizes</a>
+                            </div>
+                        </div>
+
+                        <!-- Admin only -->
+                        <c:if test="${user.getRole() eq 'Admin'}">
+                            <a href="useru" class="nav-item nav-link"><i class="fa fa-users me-2"></i>User List</a>
+                        </c:if>
+                        <a href="customer-list" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Customer List</a>
+
+                        <a href="order" class="nav-item nav-link"><i class="fa fa-bag-shopping me-2"></i>Order List</a>
                         <a href="logout" class="nav-item nav-link"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
-                        <!--                    <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
-                                            <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>-->
-                        <!--                    <div class="nav-item dropdown">
-                                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
-                                                <div class="dropdown-menu bg-transparent border-0">
-                                                    <a href="signin.html" class="dropdown-item">Sign In</a>
-                                                    <a href="signup.html" class="dropdown-item">Sign Up</a>
-                                                    <a href="404.html" class="dropdown-item">404 Error</a>
-                                                    <a href="blank.html" class="dropdown-item">Blank Page</a>
-                                                </div>
-                                            </div>-->
                     </div>
                 </nav>
             </div>
-            <!-- Sidebar End -->
-            <div class="modal fade" id="modaladd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Add new shoes</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div> 
-                        <form action="shoes" method="post">
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <input type="hidden" class="form-control" name="action" value="add">
-                                    <label for="exampleInputEmail1" class="form-label">Name</label>
-                                    <input type="text" class="form-control" name="shoesname" required>
-                                    <label for="exampleInputEmail1" class="form-label">Category</label>
-                                    <select name="shoescategory" class="form-select" aria-label="Default select example"><c:forEach items="${listCategory}" var="listCategory">
-                                            <option value="${listCategory.getCategoryID()}">${listCategory.getCategoryName()}</option></c:forEach>
-                                        </select>
-                                        <label for="exampleInputEmail1" class="form-label">Price</label>
-                                        <input type="number" class="form-control" name="shoesprice" required>
-                                        <label for="exampleInputEmail1" class="form-label">Gender</label>
-                                        <select name="shoesgender" class="form-select" aria-label="Default select example">
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                        </select>
-                                        <label for="exampleInputEmail1" class="form-label" >Description</label>
-                                        <input type="text" class="form-control" name="shoesdescription" required>
-                                    </div>
 
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <input type="submit" class="btn btn-primary" value="Add">
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <!-- Content Start -->
-                <!-- Modal -->
-                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Shoes</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="shoes" method="post">
-                                    <input type="hidden" name="action" value="update">
-                                    <input type="hidden" id="editProductId" name="id">
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Name</label>
-                                        <input type="text" class="form-control" id="editName" name="shoesname" >
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Category</label>
-                                        <select class="form-select" id="editCategory" name="shoescategory">
-                                        <c:forEach items="${listCategory}" var="listCategory">
-                                            <option value="${listCategory.getCategoryID()}">${listCategory.getCategoryName()}</option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Price</label>
-                                    <input type="number" class="form-control" id="editPrice" name="shoesprice">
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Gender</label>
-                                    <select class="form-select" id="editGender" name="shoesgender">
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Description</label>
-                                    <input type="text" class="form-control" id="editDescription" name="shoesdescription">
-                                </div>
-
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <input type="submit" class="btn btn-primary" value="Save Changes">
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    // L?y t?t c? n?t "Edit shoes"
-                    let editButtons = document.querySelectorAll(".btn-edit");
-
-                    editButtons.forEach(button => {
-                        button.addEventListener("click", function () {
-                            // L?y d? li?u t? button
-                            let productId = this.getAttribute("data-id");
-                            let productName = this.getAttribute("data-name");
-                            let productCategory = this.getAttribute("data-category");
-                            let productPrice = this.getAttribute("data-price");
-                            let productGender = this.getAttribute("data-gender");
-                            let productDescription = this.getAttribute("data-description");
-
-                            // G?n d? li?u v?o modal
-                            document.getElementById("editProductId").value = productId;
-                            document.getElementById("editName").value = productName;
-                            document.getElementById("editCategory").value = productCategory;
-                            document.getElementById("editPrice").value = productPrice;
-                            document.getElementById("editGender").value = productGender;
-                            document.getElementById("editDescription").value = productDescription;
-                        });
-                    });
-                });
-
-            </script>
+            <!-- Content -->
             <div class="content">
-                <!-- Recent Sales Start -->
-                <div class="container-fluid pt-4 px-4">
-                    <div class="bg-light text-center rounded p-4"  style="margin-right: 80px; margin-top: 30px">
-                        <div class="d-flex align-items-center justify-content-between mb-4">
-                            <h6 class="mb-0">List shoes</h6>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modaladd">
-                                Add new shoes
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+                            <h5 class="card-title mb-0">Shoes List</h5>
+                            <button class="btn btn-success btn-icon" data-bs-toggle="modal" data-bs-target="#modaladd">
+                                <i class="fas fa-plus"></i> Add Shoes
                             </button>
                         </div>
-                     
-                        <div class="table-responsive">
-                            <table class="table text-start align-middle table-bordered table-hover mb-0">
-                                <thead>
-                                    <tr class="text-dark">
-                                        <th scope="col">Name</th>
-                                        <th scope="col">Category</th>
-                                        <th scope="col">Price</th>
-                                        <th scope="col">Gender</th>
-                                        <th scope="col">Description</th>
-                                        <th scope="col">Action</th>
+
+                        <!-- Search & Filter -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <form action="shoes" method="post" class="search-container">
+                                    <input type="hidden" name="action" value="searchname">
+                                    <input type="text" class="form-control" name="nameSearch" placeholder="Search by name..." value="${fn:escapeXml(nameSearch)}">
+                                    <button class="btn btn-primary" title="Search"><i class="fas fa-search"></i></button>
+                                </form>
+                            </div>
+                            <div class="col-md-6">
+                                <form action="shoes" method="post" class="search-container">
+                                    <input type="hidden" name="action" value="filter">
+                                    <select class="form-select" name="brandCheck">
+                                        <c:forEach items="${listCategory}" var="cat">
+                                            <option value="${cat.getCategoryID()}" <c:if test="${cat.getCategoryID() == brandCheck}">selected</c:if>>
+                                                ${cat.getCategoryName()}
+                                            </option>
+                                        </c:forEach>
+                                    </select>
+                                    <button class="btn btn-primary" title="Filter"><i class="fas fa-filter"></i></button>
+                                    <a href="shoes" class="btn btn-outline-secondary" title="Reset"><i class="bi bi-arrow-counterclockwise"></i></a>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Table (KHÔNG cu?n ngang) -->
+                        <div class="table-wrap">
+                            <table class="table table-hover table-bordered align-middle table-fit">
+                                <thead class="position-sticky top-0">
+                                    <tr>
+                                        <th style="min-width:200px;">Name</th>
+                                        <th style="min-width:140px;">Category</th>
+                                        <th style="min-width:120px;">Price</th>
+                                        <th style="min-width:120px;">Gender</th>
+                                        <th>Description</th>
+                                        <th style="min-width:140px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach items="${listProduct}" var="listProduct">
-                                        <tr>
-                                            <td>${listProduct.getProductName()}</td>
-                                            <c:forEach items="${listCategory}" var="listCategory">
-                                                <c:if test="${listCategory.getCategoryID() == listProduct.getCategoryID()}">
-                                                    <td>${listCategory.getCategoryName()}</td>
-                                                </c:if>
+                                    <c:choose>
+                                        <c:when test="${not empty listProduct}">
+                                            <c:forEach items="${listProduct}" var="product">
+                                                <tr>
+                                                    <td class="fw-semibold">${product.getProductName()}</td>
+
+                                                    <!-- Category badge -->
+                                                    <td>
+                                                        <c:set var="catName" value="-" />
+                                                        <c:forEach items="${listCategory}" var="cat">
+                                                            <c:if test="${cat.getCategoryID() == product.getCategoryID()}">
+                                                                <c:set var="catName" value="${cat.getCategoryName()}" />
+                                                            </c:if>
+                                                        </c:forEach>
+                                                        <span class="badge badge-soft">${catName}</span>
+                                                    </td>
+
+                                                    <!-- Price formatted -->
+                                                    <td>
+                                                        <fmt:formatNumber value="${product.getPrice()}" type="currency" currencySymbol="$" maxFractionDigits="2"/>
+                                                    </td>
+
+                                                    <!-- Gender badge -->
+                                                    <td>
+                                                        <span class="badge badge-gender">
+                                                            <i class="bi bi-gender-ambiguous me-1"></i>${product.getGender()}
+                                                        </span>
+                                                    </td>
+
+                                                    <!-- Description (cho phép xu?ng dòng, v?n có tooltip) -->
+                                                    <td>
+                                                        <span class="desc-clamp" data-bs-toggle="tooltip" data-bs-title="${fn:escapeXml(product.getDescription())}">
+                                                            ${product.getDescription()}
+                                                        </span>
+                                                    </td>
+
+                                                    <!-- Actions -->
+                                                    <td>
+                                                        <button
+                                                            class="btn btn-primary btn-sm btn-icon btn-edit me-2"
+                                                            data-bs-toggle="modal" data-bs-target="#modaledit"
+                                                            data-id="${product.getProductID()}"
+                                                            data-name="${fn:escapeXml(product.getProductName())}"
+                                                            data-category="${product.getCategoryID()}"
+                                                            data-price="${product.getPrice()}"
+                                                            data-gender="${product.getGender()}"
+                                                            data-description="${fn:escapeXml(product.getDescription())}">
+                                                            <i class="fas fa-edit"></i> Edit
+                                                        </button>
+
+                                                        <form action="shoes" method="post" class="d-inline"
+                                                              onsubmit="return confirm('Are you sure to delete this item?');">
+                                                            <input type="hidden" name="action" value="delete">
+                                                            <input type="hidden" name="idtodel" value="${product.getProductID()}">
+                                                            <button type="submit" class="btn btn-danger btn-sm btn-icon">
+                                                                <i class="fas fa-trash"></i> Delete
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
                                             </c:forEach>
-                                            <td>${listProduct.getPrice()}</td>
-                                            <td>${listProduct.getGender()}</td>
-                                            <td>${listProduct.getDescription()}</td>
-                                            <td>
-                                                <!-- N?t Edit c? ch?a data-* ?? l?u th?ng tin -->
-                                                <button type="button" class="btn btn-primary btn-edit"
-                                                        data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                                        data-name="${listProduct.getProductName()}"
-                                                        data-category="${listProduct.getCategoryID()}"
-                                                        data-price="${listProduct.getPrice()}"
-                                                        data-gender="${listProduct.getGender()}"
-                                                        data-description="${listProduct.getDescription()}"
-                                                        data-id="${listProduct.getProductID()}">
-                                                    Edit shoes
-                                                </button>
-
-                                                <form action="shoes" method="post">
-                                                    <input type="hidden" name="action" value="delete">
-                                                    <input type="hidden" name="idtodel" value="${listProduct.getProductID()}">
-                                                    <input type="submit" class="btn btn-danger" value="Delete">
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-
+                                        </c:when>
+                                        <c:otherwise>
+                                            <tr>
+                                                <td colspan="6">
+                                                    <div class="empty">
+                                                        <i class="bi bi-card-list mb-2"></i>
+                                                        <div class="mt-2">No shoes found. Try another search or add a new one.</div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </tbody>
                             </table>
-
-
                         </div>
+
+                        <!-- Pagination (preserve filters) -->
+                        <nav class="d-flex justify-content-center mt-4">
+                            <ul class="pagination">
+                                <c:forEach var="i" begin="1" end="${totalPages}">
+                                    <c:url var="pageUrl" value="shoes">
+                                        <c:param name="page" value="${i}" />
+                                        <c:if test="${not empty nameSearch}">
+                                            <c:param name="nameSearch" value="${nameSearch}" />
+                                        </c:if>
+                                        <c:if test="${not empty brandCheck}">
+                                            <c:param name="brandCheck" value="${brandCheck}" />
+                                        </c:if>
+                                    </c:url>
+                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                        <a class="page-link" href="${pageUrl}">${i}</a>
+                                    </li>
+                                </c:forEach>
+                            </ul>
+                        </nav>
                     </div>
-                    <c:if test="${message != null}">
-                        <p style="color: green">${message}</p>
-                    </c:if>
                 </div>
-                <!-- Recent Sales End -->
-
-
             </div>
-            <!-- Content End -->
 
+            <!-- Add Modal -->
+            <div class="modal fade" id="modaladd" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <form action="shoes" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Shoes</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="action" value="add">
 
-            <!-- Back to Top -->
-            <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+                                <div class="mb-3">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" class="form-control" name="shoesname" required minlength="2" maxlength="120">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select" name="shoescategory" required>
+                                        <c:forEach items="${listCategory}" var="cat">
+                                            <option value="${cat.getCategoryID()}">${cat.getCategoryName()}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Price</label>
+                                    <input type="number" step="0.01" min="0" class="form-control" name="shoesprice" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Gender</label>
+                                    <select class="form-select" name="shoesgender" required>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Unisex">Unisex</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" name="shoesdescription" rows="3" required minlength="10" maxlength="500"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                <button class="btn btn-primary" type="submit">Add Shoes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Modal -->
+            <div class="modal fade" id="modaledit" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <form action="shoes" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Shoes</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="action" value="update">
+                                <input type="hidden" id="editId" name="id">
+
+                                <div class="mb-3">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" class="form-control" id="editName" name="shoesname" required minlength="2" maxlength="120">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select" id="editCategory" name="shoescategory" required></select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Price</label>
+                                    <input type="number" step="0.01" min="0" class="form-control" id="editPrice" name="shoesprice" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Gender</label>
+                                    <select class="form-select" id="editGender" name="shoesgender" required>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Unisex">Unisex</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" id="editDescription" name="shoesdescription" rows="3" required minlength="10" maxlength="500"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                <button class="btn btn-primary" type="submit">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- JavaScript Libraries -->
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets2/lib/chart/chart.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets2/lib/easing/easing.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets2/lib/waypoints/waypoints.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets2/lib/owlcarousel/owl.carousel.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets2/lib/tempusdominus/js/moment.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets2/lib/tempusdominus/js/moment-timezone.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets2/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+        <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- Template Javascript -->
-        <script src="${pageContext.request.contextPath}/assets2/js/main.js"></script>
+        <!-- T?o m?ng listCategory h?p l? cho JS -->
+        <script>
+                                                                  const listCategory = [
+            <c:forEach items="${listCategory}" var="cat" varStatus="st">
+                                                                  { id: ${cat.getCategoryID()}, name: "${fn:escapeXml(cat.getCategoryName())}" }<c:if test="${!st.last}">,</c:if>
+            </c:forEach>
+                                                                  ];
+        </script>
+
+        <script>
+            // Enable tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+
+            // Fill edit modal
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const id = this.dataset.id;
+                    const name = this.dataset.name;
+                    const price = this.dataset.price;
+                    const gender = this.dataset.gender;
+                    const description = this.dataset.description;
+                    const category = this.dataset.category;
+
+                    document.getElementById('editId').value = id;
+                    document.getElementById('editName').value = name;
+                    document.getElementById('editPrice').value = price;
+                    document.getElementById('editGender').value = gender;
+                    document.getElementById('editDescription').value = description;
+
+                    const editCat = document.getElementById('editCategory');
+                    editCat.innerHTML = '';
+                    listCategory.forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = c.id;
+                        opt.textContent = c.name;
+                        if (String(c.id) === String(category))
+                            opt.selected = true;
+                        editCat.appendChild(opt);
+                    });
+                });
+            });
+        </script>
     </body>
-
 </html>

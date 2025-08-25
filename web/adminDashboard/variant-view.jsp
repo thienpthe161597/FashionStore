@@ -2,364 +2,277 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="utf-8">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Variant Dashboard - Fashion Store</title>
 
-        <meta content="width=device-width, initial-scale=1.0" name="viewport">
-        <meta content="" name="keywords">
-        <meta content="" name="description">
-
-        <!-- Favicon -->
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="${pageContext.request.contextPath}/assets2/img/favicon.ico" rel="icon">
-        <title>Dashboard admin</title>
-        <!-- Google Web Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <!-- Icon Font Stylesheet -->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Libraries Stylesheet -->
-        <link href="${pageContext.request.contextPath}/assets2/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-        <link href="${pageContext.request.contextPath}/assets2/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
 
-        <!-- Customized Bootstrap Stylesheet -->
-        <link href="${pageContext.request.contextPath}/assets2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body { font-family: 'Heebo', sans-serif; background-color: #f8f9fa; }
+        .sidebar { background-color: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        .sidebar .nav-link { color: #333; font-weight: 500; }
+        .sidebar .nav-link.active, .sidebar .nav-link:hover { color: #0d6efd; background-color: #f0f6ff; }
+        .content { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+        .card { border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: none; }
+        .table thead th { background-color: #0d6efd; color: #fff; font-size: 0.85rem; text-transform: uppercase; }
+        .table tbody tr:hover { background-color: #f8f9fa; }
+        .btn-primary { background-color: #0d6efd; border: none; }
+        .btn-primary:hover { background-color: #0a58ca; }
+        .btn-danger:hover { background-color: #bb2d3b; }
+        .pagination .page-link { border-radius: 50%; color: #0d6efd; }
+        .pagination .page-item.active .page-link { background-color: #0d6efd; color: #fff; }
+        .modal-content { border-radius: 8px; }
+        .form-label { font-weight: 500; }
+        .form-control:focus { border-color: #0d6efd; box-shadow: 0 0 0 0.25rem rgba(13,110,253,0.25); }
+        .search-container { display: flex; gap: 10px; align-items: center; }
+        .search-container .form-control { flex: 1; }
+    </style>
+</head>
 
-        <!-- Template Stylesheet -->
-        <link href="${pageContext.request.contextPath}/assets2/css/style.css" rel="stylesheet">
-    </head>
+<body>
+<div class="container-xxl d-flex p-0">
+   <!-- Sidebar Start -->
+<div class="sidebar pe-4 pb-3">
+    <nav class="navbar bg-light navbar-light">
+        <!-- User Info -->
+        <div class="d-flex align-items-center ms-4 mb-4" style="margin-top: 50px">
+            <div class="position-relative">
+                <img class="rounded-circle" src="${pageContext.request.contextPath}/assets2/img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
+            </div>
+            <div class="ms-3">
+                <h6 class="mb-0">${user.getUser_Name()}</h6>
+                <span>${user.getRole()}</span>
+            </div>
+        </div>
 
-    <body>
-        <%
-    String loginMessage = (String) request.getAttribute("loginMessage");
-    if (loginMessage != null) {
-        %>
-        <script type="text/javascript">
-            window.onload = function () {
-                alert('<%= loginMessage %>');
-            };
-        </script>
-        <%
-            }
-        %>
-        <div class="container-xxl position-relative bg-white d-flex p-0">
-            <!-- Spinner Start -->
-            <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-                <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                    <span class="sr-only">Loading...</span>
+        <div class="navbar-nav w-100">
+            <!-- Fashion Store Dropdown -->
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fas fa-shoe-prints me-2"></i>Fashion Store
+                </a>
+                <div class="dropdown-menu bg-transparent border-0">
+                    <a href="shoes" class="dropdown-item ps-5">List Shoes</a>
                 </div>
             </div>
-            <!-- Spinner End -->
 
-
-            <!-- Sidebar Start -->
-            <div class="sidebar pe-4 pb-3">
-                <nav class="navbar bg-light navbar-light">
-
-                    <div class="d-flex align-items-center ms-4 mb-4" style="margin-top: 50px">
-                        <div class="position-relative">
-                            <img class="rounded-circle" src="${pageContext.request.contextPath}/assets2/img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                            <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
-                        </div>
-                        <div class="ms-3">
-                            <h6 class="mb-0">${user.getUser_Name()}</h6>
-                            <span>${user.getRole()}</span>
-                        </div>
-                    </div>
-                    <div class="navbar-nav w-100">
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle " data-bs-toggle="dropdown"><i class=" fas fa-shoe-prints me-2"></i>Fashion Store</a>
-                            <div class="dropdown-menu bg-transparent border-0">
-                                <a href="shoes" class="dropdown-item " style="margin-left: 50px">List shoes</a>
-                                <a href="shoesimage" class="dropdown-item" style="margin-left: 50px">Image shoes</a>
-                                <a href="shoesvariant" class="dropdown-item" style="margin-left: 50px">Variant shoes</a>
-                                <a href="shoessize" class="dropdown-item" style="margin-left: 50px">Shoe Sizes</a>
-                               
-                            </div>
-                        </div>
-                        <a href="brand" class="nav-item nav-link active"><i class="fa fa-th me-2"></i>Category</a>
-                        <c:if test="${user.getRole() eq 'Admin'}">
-                            <a href="userlist" class="nav-item nav-link "><i class="fa fa-th me-2"></i>User List</a>
-                        </c:if>
-                        <a href="customer-list" class="dropdown-item" style="margin-left: 50px">Customer List</a>
-                        <a href="order" class="nav-item nav-link "><i class="fa fa-th me-2"></i>Oder List</a>
-                        <a href="logout" class="nav-item nav-link"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
-                        <!--                    <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
-                                            <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>-->
-                        <!--                    <div class="nav-item dropdown">
-                                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
-                                                <div class="dropdown-menu bg-transparent border-0">
-                                                    <a href="signin.html" class="dropdown-item">Sign In</a>
-                                                    <a href="signup.html" class="dropdown-item">Sign Up</a>
-                                                    <a href="404.html" class="dropdown-item">404 Error</a>
-                                                    <a href="blank.html" class="dropdown-item">Blank Page</a>
-                                                </div>
-                                            </div>-->
-                    </div>
-                </nav>
+            <!-- Category Dropdown -->
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fa fa-th me-2"></i>Category
+                </a>
+                <div class="dropdown-menu bg-transparent border-0">
+                    <a href="brand" class="dropdown-item ps-5">Brand</a>
+                    <a href="shoesimage" class="dropdown-item ps-5">Image Shoes</a>
+                    <a href="shoesvariant" class="dropdown-item ps-5">Variant Shoes</a>
+                    <a href="shoessize" class="dropdown-item ps-5">Shoe Sizes</a>
+                </div>
             </div>
-            <!-- Sidebar End -->
-            <div class="modal fade" id="modaladd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Add new variant</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div> 
-                        <form action="shoesvariant" method="post">
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <input type="hidden" class="form-control" name="action" value="add">
-                                    <label for="exampleInputEmail1" class="form-label">Color</label>
-                                    <input type="text" class="form-control" name="color" required>
-                                    <label for="exampleInputEmail1" class="form-label">Size</label>
-                                    <input type="number" class="form-control" name="size" required>
-                                    <label for="exampleInputEmail1" class="form-label">Quantity</label>
-                                    <input type="number" class="form-control" name="quantity" required>
-                                    <label for="exampleInputEmail1" class="form-label">Shoes Name</label>
-                                    <select name="shoesvariantname" class="form-select" aria-label="Default select example">
-                                        <c:forEach items="${listProduct}" var="listProduct">
-                                            <option value="${listProduct.getProductID()}">${listProduct.getProductName()}</option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <input type="submit" class="btn btn-primary" value="Add">
-                            </div>
+
+            <!-- Admin Only -->
+            <c:if test="${user.getRole() eq 'Admin'}">
+                <a href="userlist" class="nav-item nav-link"><i class="fa fa-th me-2"></i>User List</a>
+            </c:if>
+
+            <!-- Customer List -->
+            <a href="customer-list" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Customer List</a>
+
+            <!-- Orders -->
+            <a href="order" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Order List</a>
+
+            <!-- Logout -->
+            <a href="logout" class="nav-item nav-link"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+        </div>
+    </nav>
+</div>
+
+    <!-- Content -->
+    <div class="content flex-grow-1 p-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="card-title mb-0">Shoes Variants</h5>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modaladd">
+                        <i class="fas fa-plus me-2"></i>Add Variant
+                    </button>
+                </div>
+
+                <!-- Search -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <form action="shoesvariant" method="get" class="search-container">
+                            <input type="text" name="search" class="form-control" placeholder="Search by name, color, size..." value="${param.search}">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
                         </form>
                     </div>
                 </div>
-            </div>
-            <!-- Content Start -->
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    let editButtons = document.querySelectorAll(".edit-btn");
 
-                    editButtons.forEach(button => {
-                        button.addEventListener("click", function () {
-                            let id = this.getAttribute("data-id");
-                            let color = this.getAttribute("data-color");
-                            let size = this.getAttribute("data-size");
-                            let quantity = this.getAttribute("data-quantity");
-                            let productId = this.getAttribute("data-productid");
-
-                            document.getElementById("variantId").value = id;
-                            document.getElementById("variantColor").value = color;
-                            document.getElementById("variantSize").value = size;
-                            document.getElementById("variantQuantity").value = quantity;
-
-
-                            let selectProduct = document.getElementById("variantProduct");
-                            for (let option of selectProduct.options) {
-                                if (option.value === productId) {
-                                    option.selected = true;
-                                    break;
-                                }
-                            }
-                        });
-                    });
-                });
-            </script>
-
-            <!-- Modal -->
-            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <form action="shoesvariant" method="post">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit variant</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <input type="hidden" class="form-control" name="action" value="edit">
-                                    <input type="hidden" class="form-control" name="id" id="variantId">
-                                    <label class="form-label">Color</label>
-                                    <input type="text" class="form-control" name="color" id="variantColor" required>
-                                    <label class="form-label">Size</label>
-                                    <input type="number" class="form-control" name="size" id="variantSize" required>
-                                    <label class="form-label">Quantity</label>
-                                    <input type="number" class="form-control" name="quantity" id="variantQuantity" required>
-                                    <label class="form-label">Shoes Name</label>
-                                    <select name="shoesvariantname" class="form-select" id="variantProduct">
-                                        <c:forEach items="${listProduct}" var="listProduct">
-                                            <option  value="${listProduct.getProductID()}">${listProduct.getProductName()}</option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Edit</button>
-                            </div>
-                        </div></form>
+                <!-- Table -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Color</th>
+                                <th>Size</th>
+                                <th>Quantity</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach items="${listProductVariant}" var="variant">
+                            <tr>
+                                <c:forEach items="${listProduct}" var="product">
+                                    <c:if test="${product.getProductID() == variant.getProduct_id()}">
+                                        <td>${product.getProductName()}</td>
+                                    </c:if>
+                                </c:forEach>
+                                <td>${variant.getColor()}</td>
+                                <td>${variant.getSizeValue()}</td>
+                                <td>${variant.getQuantity()}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm btn-edit me-2"
+                                            data-bs-toggle="modal" data-bs-target="#modaledit"
+                                            data-id="${variant.getPv_id()}"
+                                            data-color="${variant.getColor()}"
+                                            data-size="${variant.getSizeValue()}"
+                                            data-quantity="${variant.getQuantity()}"
+                                            data-productid="${variant.getProduct_id()}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <form action="shoesvariant" method="post" style="display:inline;" onsubmit="return confirm('Are you sure?')">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="id" value="${variant.getPv_id()}">
+                                        <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
                 </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Page navigation" class="d-flex justify-content-center mt-4">
+                    <ul class="pagination">
+                        <c:forEach var="i" begin="1" end="${totalPages}">
+                            <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                <a class="page-link" href="shoesvariant?page=${i}">${i}</a>
+                            </li>
+                        </c:forEach>
+                    </ul>
+                </nav>
             </div>
-            <div class="content">
-                <!-- Recent Sales Start -->
-                <div class="container-fluid pt-4 px-4">
-                    <div class="bg-light text-center rounded p-4"  style="margin-right: 80px; margin-top: 30px">
-                        <div class="d-flex align-items-center justify-content-between mb-4">
-                            <h6 class="mb-0">List variant</h6>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modaladd">
-                                Add new variant
-                            </button>
+        </div>
+    </div>
+
+    <!-- Add Modal -->
+    <div class="modal fade" id="modaladd" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="shoesvariant" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Variant</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="action" value="add">
+                        <div class="mb-3">
+                            <label class="form-label">Color</label>
+                            <input type="text" class="form-control" name="color" required>
                         </div>
-                        <div class="container">
-                            <div class="row justify-content-center">
-                                <div class="col-md-6">
-                                    <div class="search-container">
-                                        <form action="shoesvariant" method="post" style="display: flex; align-items: center;">
-                                            <input type="hidden" name="action" value="searchname">
-                                            <label for="nameSearch" style="margin-right: 10px;">Search By Name:</label>
-                                            <input name="nameSearch" type="text" class="form-control search-input" placeholder="Input name..." style="flex: 1;">
-                                            <button type="submit" class="btn btn-primary btn-edit" style="margin-left: 10px;">
-                                                Search
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div><div style="margin-top: 30px"></div>
-                        <c:if test="${message != null}">
-                            <p style="color: green">${message}</p>
-                        </c:if>
-                        <div class="table-responsive">
-                            <table class="table text-start align-middle table-bordered table-hover mb-0">
-                                <thead>
-                                    <tr class="text-dark">
-                                        <th scope="col">Original product name</th>
-                                        <th scope="col">Color</th>
-                                        <th scope="col">Size</th>
-                                        <th scope="col">Quantity</th>
-                                        <th scope="col">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <c:forEach items="${listProductVariant}" var="listProductVariant">
-                                        <tr>
-                                            <c:forEach items="${listProduct}" var="listProduct">
-                                                <c:if test="${listProductVariant.getProduct_id() == listProduct.getProductID()}">
-                                                    <td>${listProduct.getProductName()}</td></c:if>
-                                            </c:forEach>
-                                            <td>${listProductVariant.getColor()}</td>
-                                            <td>${listProductVariant.getSize()}</td>
-                                            <td>${listProductVariant.getQuantity()}</td>
-                                            <td>
-                                                <button type="button" class="btn btn-primary edit-btn"
-                                                        data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                                        data-id="${listProductVariant.getPv_id()}"
-                                                        data-color="${listProductVariant.getColor()}"
-                                                        data-size="${listProductVariant.getSize()}"
-                                                        data-quantity="${listProductVariant.getQuantity()}"
-                                                        data-productid="${listProductVariant.getProduct_id()}">
-                                                    Edit variant
-                                                </button>
-                                                <form action="shoesvariant" method="post" onsubmit="return confirmDelete()">
-                                                    <input type="hidden" name="action" value="delete">
-                                                    <input type="hidden" name="idc" value="${listProductVariant.getPv_id()}">
-                                                    <input type="submit" class="btn btn-danger" value="Delete">
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
-                            <script>
-                                function confirmDelete() {
-                                    var confirmAction = confirm("Are you sure you want to delete?");
-                                    if (confirmAction) {
-                                        return true;
-                                    }
-                                    return false;
-                                }
-                            </script>
+                        <div class="mb-3">
+                            <label class="form-label">Size</label>
+                            <input type="number" class="form-control" name="size" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quantity</label>
+                            <input type="number" class="form-control" name="quantity" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Product</label>
+                            <select class="form-select" name="shoesvariantname">
+                                <c:forEach items="${listProduct}" var="product">
+                                    <option value="${product.getProductID()}">${product.getProductName()}</option>
+                                </c:forEach>
+                            </select>
                         </div>
                     </div>
-                    <c:if test="${nameSearch == null}">
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination" style="margin-left: 300px; margin-top: 30px">
-                                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                    <a class="page-link" href="shoesvariant?page=${currentPage - 1}" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                                <c:forEach var="i" begin="1" end="${totalPages}">
-                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                        <a class="page-link" href="shoesvariant?page=${i}">${i}</a>
-                                    </li>
-                                </c:forEach>
-                                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                                    <a class="page-link" href="shoesvariant?page=${currentPage + 1}" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </c:if>
-                    <c:if test="${nameSearch != null}">
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination" style="margin-left: 300px; margin-top: 30px">
-                                <!-- Nút Previous -->
-                                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                    <form method="POST" action="shoesvariant">
-                                        <input type="hidden" name="action" value="searchname">
-                                        <input type="hidden" name="nameSearch" value="${nameSearch}">
-                                        <input type="hidden" name="page" value="${currentPage - 1}">
-                                        <button type="submit" class="page-link">&laquo;</button>
-                                    </form>
-                                </li>
-                                <c:forEach var="i" begin="1" end="${totalPages}">
-                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                        <form method="POST" action="shoesvariant">
-                                            <input type="hidden" name="action" value="searchname">
-                                            <input type="hidden" name="nameSearch" value="${nameSearch}">
-                                            <input type="hidden" name="page" value="${i}">
-                                            <button type="submit" class="page-link">${i}</button>
-                                        </form>
-                                    </li>
-                                </c:forEach>
-                                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                                    <form method="POST" action="shoesvariant">
-                                        <input type="hidden" name="action" value="searchname">
-                                        <input type="hidden" name="nameSearch" value="${nameSearch}">
-                                        <input type="hidden" name="page" value="${currentPage + 1}">
-                                        <button type="submit" class="page-link">&raquo;</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </nav>
-                    </c:if>
-                </div>
-                <!-- Recent Sales End -->
-
-
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-primary" type="submit">Add Variant</button>
+                    </div>
+                </form>
             </div>
-            <!-- Content End -->
-
-
-            <!-- Back to Top -->
-            <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
         </div>
+    </div>
 
-        <!-- JavaScript Libraries -->
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets2/lib/chart/chart.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets2/lib/easing/easing.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets2/lib/waypoints/waypoints.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets2/lib/owlcarousel/owl.carousel.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets2/lib/tempusdominus/js/moment.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets2/lib/tempusdominus/js/moment-timezone.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets2/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Edit Modal -->
+    <div class="modal fade" id="modaledit" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="shoesvariant" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Variant</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="action" value="edit">
+                        <input type="hidden" id="editId" name="id">
+                        <div class="mb-3">
+                            <label class="form-label">Color</label>
+                            <input type="text" class="form-control" id="editColor" name="color" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Size</label>
+                            <input type="number" class="form-control" id="editSize" name="size" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="editQuantity" name="quantity" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Product</label>
+                            <select class="form-select" id="editProduct" name="shoesvariantname">
+                                <c:forEach items="${listProduct}" var="product">
+                                    <option value="${product.getProductID()}">${product.getProductName()}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-primary" type="submit">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-        <!-- Template Javascript -->
-        <script src="${pageContext.request.contextPath}/assets2/js/main.js"></script>
-    </body>
-
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Edit Modal populate
+    document.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('editId').value = this.dataset.id;
+            document.getElementById('editColor').value = this.dataset.color;
+            document.getElementById('editSize').value = this.dataset.size;
+            document.getElementById('editQuantity').value = this.dataset.quantity;
+            document.getElementById('editProduct').value = this.dataset.productid;
+        });
+    });
+</script>
+</body>
 </html>

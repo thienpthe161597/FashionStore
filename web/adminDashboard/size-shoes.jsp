@@ -50,39 +50,27 @@
                             <h6 class="mb-0">${user.getUser_Name()}</h6>
                             <span>${user.getRole()}</span>
                         </div>
-                    </div>
-                    <div class="navbar-nav w-100">
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle " data-bs-toggle="dropdown"><i class=" fas fa-shoe-prints me-2"></i>Fashion Store</a>
-                            <div class="dropdown-menu bg-transparent border-0">
-                                <a href="shoes" class="dropdown-item " style="margin-left: 50px">List shoes</a>
-                                <a href="shoesimage" class="dropdown-item" style="margin-left: 50px">Image shoes</a>
-                                <a href="shoesvariant" class="dropdown-item" style="margin-left: 50px">Variant shoes</a>
-                                <a href="shoessize" class="dropdown-item" style="margin-left: 50px">Shoe Sizes</a>
-                               
-                            </div>
+</div>
+                <div class="navbar-nav w-100">
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="fas fa-shoe-prints me-2"></i>Fashion Store</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="shoes" class="dropdown-item" style="margin-left: 50px">List shoes</a>
+                            
                         </div>
-                        <a href="brand" class="nav-item nav-link active"><i class="fa fa-th me-2"></i>Category</a>
-                        <c:if test="${user.getRole() eq 'Admin'}">
-                            <a href="userlist" class="nav-item nav-link "><i class="fa fa-th me-2"></i>User List</a>
-                        </c:if>
-                        <a href="customer-list" class="dropdown-item" style="margin-left: 50px">Customer List</a>
-                        <a href="order" class="nav-item nav-link "><i class="fa fa-th me-2"></i>Oder List</a>
-                        <a href="logout" class="nav-item nav-link"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
-                        <!--                    <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
-                                            <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>-->
-                        <!--                    <div class="nav-item dropdown">
-                                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
-                                                <div class="dropdown-menu bg-transparent border-0">
-                                                    <a href="signin.html" class="dropdown-item">Sign In</a>
-                                                    <a href="signup.html" class="dropdown-item">Sign Up</a>
-                                                    <a href="404.html" class="dropdown-item">404 Error</a>
-                                                    <a href="blank.html" class="dropdown-item">Blank Page</a>
-                                                </div>
-                                            </div>-->
                     </div>
-                </nav>
-            </div>
+                    <a href="brand" class="nav-link dropdown-toggle active " data-bs-toggle="dropdown"><i class="fa fa-th me-2"></i>Category</a>
+                            <a href="shoesimage" class="dropdown-item" style="margin-left: 50px">Image shoes</a>
+                            <a href="shoesvariant" class="dropdown-item" style="margin-left: 50px">Variant shoes</a>
+                            <a href="shoessize" class="dropdown-item" style="margin-left: 50px">Shoe Sizes</a>
+                    <c:if test="${user.getRole() eq 'Admin'}">
+                        <a href="useru" class="nav-item nav-link"><i class="fa fa-th me-2"></i>User List</a>
+                    </c:if>
+                    <a href="order" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Order List</a>
+                    <a href="logout" class="nav-item nav-link"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                </div>
+            </nav>
+        </div>
         <!-- Sidebar End -->
 
         <!-- Main Content -->
